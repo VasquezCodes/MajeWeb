@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -11,92 +13,96 @@ import {
   ShoppingBagIcon
 } from '@heroicons/react/24/solid';
 
-// --- Datos de Ejemplo para los Productos ---
-const products = [
+// --- Datos de Ejemplo para los Cursos ---
+const courses = [
   {
     id: 1,
-    title: "Kit Básico de Manicura",
+    title: "Mentoría: Manicura Rusa",
     description:
-      "Todo lo necesario para comenzar con manicura profesional: esmaltes, herramientas y guías de aprendizaje.",
+      "Perfecciona tu técnica de cutículas y esmaltado. Aprende el 'antes y después' que define un trabajo premium.",
     imageUrl:
       "https://images.unsplash.com/photo-1552693673-1bf958298935?auto=format&fit=crop&w=960&q=80",
-    tags: ["Herramientas básicas", "Esmaltes premium", "Guía incluida"],
-    price: 89.99,
-    originalPrice: 120.00,
-    inStock: true,
+    tags: ["Técnica avanzada", "Cutículas perfectas", "Esmaltado espejo"],
+    price: 250.00,
+    originalPrice: 300.00,
+    format: "Mentoría 1:1",
+    duration: "Duración: 3 horas",
   },
   {
-    title: "Sistema Dual Profesional",
+    title: "Mentoría: Sistema Dual (Dual System)",
     description:
-      "Kit completo para construcción de uñas con técnica de moldes duales, incluye moldes, líquidos y pinceles.",
+      "Domina la construcción de uñas esculpidas de forma rápida y precisa con la técnica de moldes duales.",
     imageUrl:
       "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=960&q=80",
-    tags: ["Esculpidas premium", "Moldes incluidos", "Profesional"],
-    price: 149.99,
-    originalPrice: 180.00,
-    inStock: true,
+    tags: ["Esculpidas premium", "Arquitectura precisa", "Modelado rápido"],
+    price: 350.00,
+    originalPrice: 400.00,
+    format: "Mentoría híbrida",
+    duration: "Duración: 4 horas",
   },
   {
-    title: "Productos Spa para Pedicura",
+    title: "Mentoría: Marketing de Belleza",
     description:
-      "Línea completa de productos para tratamientos spa: exfoliantes, cremas y aceites esenciales.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=960&q=80",
-    tags: ["Tratamientos spa", "Aceites esenciales", "Exfoliantes"],
-    price: 79.99,
-    originalPrice: 99.00,
-    inStock: true,
-  },
-  {
-    title: "Set de Marketing Digital",
-    description:
-      "Herramientas y plantillas para promocionar tu negocio de uñas: flyers, posts para redes y estrategias.",
+      "Deja de cobrar barato. Aprende a crear tu marca, atraer clientas de alto valor y llenar tu agenda.",
     imageUrl:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=960&q=80",
-    tags: ["Marketing digital", "Plantillas", "Estrategias"],
-    price: 59.99,
-    originalPrice: 80.00,
-    inStock: false,
+    tags: ["Branding de lujo", "Estrategia digital", "Precio premium"],
+    price: 200.00,
+    originalPrice: 250.00,
+    format: "Workshop VIP",
+    duration: "Duración: 2 sesiones",
+  },
+  {
+    title: "Mentoría: Manicura y Pedicura Spa",
+    description:
+      "Eleva tu servicio básico a una experiencia de lujo. Aprende protocolos de spa, exfoliación y masajes.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=960&q=80",
+    tags: ["Experiencia sensorial", "Protocolos spa", "Fidelización"],
+    price: 300.00,
+    originalPrice: 350.00,
+    format: "Práctica guiada",
+    duration: "Duración: 5 horas",
   },
 ];
 
 const stats = [
   {
-    value: "500+",
-    label: "Productos vendidos",
+    value: "200+",
+    label: "Alumnas certificadas",
   },
   {
-    value: "50+",
-    label: "Productos únicos",
+    value: "15+",
+    label: "Cursos disponibles",
   },
   {
-    value: "4.8/5",
-    label: "Calificación promedio",
+    value: "1:1",
+    label: "Mentoría personalizada",
   },
 ];
 
-// --- Datos para la sección "Cómo Comprar" ---
+// --- Datos para la sección "Cómo Inscribirte" ---
 const steps = [
   {
     icon: PencilSquareIcon,
-    title: "Paso 1: Elige tus Productos",
-    description: "Navega por nuestra tienda y agrega los productos que necesitas a tu carrito. Revisa las descripciones y precios."
+    title: "Paso 1: Elige tu Mentoría",
+    description: "Navega por nuestros cursos y selecciona la mentoría que mejor se adapte a tus objetivos. Revisa los detalles y precios."
   },
   {
     icon: ChatBubbleBottomCenterTextIcon,
-    title: "Paso 2: Revisa tu Carrito",
-    description: "Verifica los items en tu carrito, ajusta cantidades si es necesario y procede al checkout cuando estés listo."
+    title: "Paso 2: Completa tu Inscripción",
+    description: "Llena el formulario de inscripción con tus datos. Te contactaremos para coordinar la fecha y forma de pago."
   },
   {
     icon: CalendarDaysIcon,
-    title: "Paso 3: Completa tu Compra",
-    description: "Ingresa tus datos de envío y pago. Procesamos tu orden de forma segura y te enviamos la confirmación."
+    title: "Paso 3: Confirma tu Fecha",
+    description: "Una vez coordinado, confirma tu participación y realiza el pago. Tu lugar queda reservado inmediatamente."
   }
 ];
 
 // --- Componente Principal de la Página ---
 
-export default function TiendaPage() {
+export default function AcademiaPage() {
   const [cart, setCart] = useState([]);
 
   const addToCart = (product) => {
@@ -124,26 +130,26 @@ export default function TiendaPage() {
           {/* Texto del Hero */}
           <div className="text-center lg:text-left">
             <span className="inline-flex items-center justify-center rounded-full bg-white/70 px-5 py-2 text-sm font-semibold uppercase tracking-[0.3em] text-brand-text shadow-sm">
-              Tienda Online
+              Mentorías Exclusivas
             </span>
             <h1 className="mt-6 text-4xl md:text-6xl font-bold text-brand-text tracking-tight">
-              Productos premium para <span className="text-brand-pink">tu negocio</span>
+              Eleva tu carrera con <span className="text-brand-pink">Maje Academy</span>
             </h1>
             <p className="mt-6 text-lg md:text-xl text-brand-text-light max-w-xl mx-auto lg:mx-0">
-              Descubre nuestra selección curada de productos profesionales para manicura, pedicura y spa. Calidad premium a precios accesibles.
+              Diseñamos mentorías premium para artistas de uñas que desean dominar técnicas avanzadas, crear experiencias de lujo y posicionarse como referentes de la industria.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link
-                href="#productos"
+                href="#mentorias"
                 className="inline-flex items-center justify-center rounded-2xl bg-brand-pink px-8 py-4 text-lg font-semibold text-white shadow-xl shadow-brand-pink/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-pink/90"
               >
-                Ver Productos
+                Ver Mentorías
               </Link>
               <Link
                 href="#proceso"
                 className="inline-flex items-center justify-center rounded-2xl border border-brand-text/20 px-8 py-4 text-lg font-semibold text-brand-text transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-text"
               >
-                Cómo Comprar
+                Conoce el Proceso
               </Link>
             </div>
 
@@ -184,36 +190,34 @@ export default function TiendaPage() {
         </div>
       </section>
 
-      {/* === Sección 2: Lista de Productos === */}
-      <section id="productos" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
+      {/* === Sección 2: Lista de Mentorías === */}
+      <section id="mentorias" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
         <div className="text-center">
           <h2 className="text-sm font-semibold text-brand-pink uppercase tracking-widest">
-            Nuestra Tienda
+            Formación Profesional
           </h2>
           <p className="mt-3 text-3xl md:text-4xl font-bold text-brand-text">
-            Productos Profesionales
+            Nuestras Mentorías VIP
           </p>
         </div>
 
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-10">
-          {products.map((product, index) => (
-            <div key={product.title} className={`group relative rounded-[2rem] bg-gradient-to-br from-brand-gray-light via-white to-brand-pink-light p-[1px] animate-fadeInUp`} style={{ animationDelay: `${index * 200}ms` }}>
+          {courses.map((course, index) => (
+            <div key={course.title} className={`group relative rounded-[2rem] bg-gradient-to-br from-brand-gray-light via-white to-brand-pink-light p-[1px] animate-fadeInUp`} style={{ animationDelay: `${index * 200}ms` }}>
               <div className="flex h-full flex-col overflow-hidden rounded-[calc(2rem-1px)] bg-white/90 shadow-xl transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl">
                 <div className="relative overflow-hidden">
                   <Image
-                    src={product.imageUrl}
-                    alt={product.title}
+                    src={course.imageUrl}
+                    alt={course.title}
                     width={600}
                     height={400}
                     className="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-                  {!product.inStock && (
-                    <span className="absolute left-6 top-6 inline-flex items-center rounded-full bg-red-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white">
-                      Agotado
-                    </span>
-                  )}
-                  {product.originalPrice && (
+                  <span className="absolute left-6 top-6 inline-flex items-center rounded-full bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-brand-text">
+                    {course.format}
+                  </span>
+                  {course.originalPrice && (
                     <span className="absolute right-6 top-6 inline-flex items-center rounded-full bg-green-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white">
                       Oferta
                     </span>
@@ -221,14 +225,14 @@ export default function TiendaPage() {
                 </div>
                 <div className="flex flex-grow flex-col gap-6 p-8">
                   <div>
-                    <h3 className="text-2xl font-bold text-brand-text">{product.title}</h3>
+                    <h3 className="text-2xl font-bold text-brand-text">{course.title}</h3>
                     <p className="mt-4 text-base leading-relaxed text-brand-text-light">
-                      {product.description}
+                      {course.description}
                     </p>
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {product.tags.map((tag) => (
+                    {course.tags.map((tag) => (
                       <span
                         key={tag}
                         className="inline-flex items-center rounded-full bg-brand-gray-light/80 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand-text"
@@ -240,34 +244,26 @@ export default function TiendaPage() {
 
                   <div className="flex items-center justify-between text-sm font-medium text-brand-text-light">
                     <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-brand-pink">${product.price}</span>
-                      {product.originalPrice && (
-                        <span className="text-lg text-brand-text-light line-through">${product.originalPrice}</span>
+                      <span className="text-2xl font-bold text-brand-pink">${course.price}</span>
+                      {course.originalPrice && (
+                        <span className="text-lg text-brand-text-light line-through">${course.originalPrice}</span>
                       )}
                     </div>
-                    <span className={`inline-flex items-center gap-2 ${product.inStock ? 'text-green-600' : 'text-red-600'}`}>
-                      <span className="h-2 w-2 rounded-full bg-current"></span>
-                      {product.inStock ? 'En stock' : 'Agotado'}
-                    </span>
+                    <span>{course.duration}</span>
                   </div>
 
                   <div className="mt-auto flex flex-col gap-3">
                     <button
-                      onClick={() => addToCart(product)}
-                      disabled={!product.inStock}
-                      className={`inline-flex w-full items-center justify-center rounded-xl px-6 py-3 text-base font-semibold shadow-lg transition-all duration-300 ${
-                        product.inStock
-                          ? 'bg-brand-pink text-white shadow-brand-pink/30 hover:-translate-y-0.5 hover:bg-brand-pink/90'
-                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}
+                      onClick={() => addToCart(course)}
+                      className="inline-flex w-full items-center justify-center rounded-xl bg-brand-pink px-6 py-3 text-base font-semibold text-white shadow-lg shadow-brand-pink/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-pink/90"
                     >
-                      {product.inStock ? 'Agregar al Carrito' : 'Agotado'}
+                      Inscribirme Ahora
                     </button>
                     <Link
                       href="#"
                       className="inline-flex w-full items-center justify-center rounded-xl border border-brand-text/15 px-6 py-3 text-base font-semibold text-brand-text transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-text"
                     >
-                      Ver detalles
+                      Ver temario detallado
                     </Link>
                   </div>
                 </div>
@@ -277,15 +273,15 @@ export default function TiendaPage() {
         </div>
       </section>
 
-      {/* === Sección 3: Cómo Comprar === */}
+      {/* === Sección 3: Cómo Inscribirte === */}
       <section id="proceso" className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="absolute inset-x-10 -top-10 h-40 rounded-full bg-brand-gray-light/70 blur-3xl" />
         <div className="text-center">
           <h2 className="text-sm font-semibold text-brand-pink uppercase tracking-widest">
-            Compra Segura
+            Nuestro Proceso
           </h2>
           <p className="mt-3 text-3xl md:text-4xl font-bold text-brand-text">
-            Proceso Simple y Rápido
+            Una Experiencia 100% Personalizada
           </p>
         </div>
 
@@ -319,17 +315,17 @@ export default function TiendaPage() {
             <div className="absolute -right-20 -top-10 h-44 w-44 rounded-full bg-brand-pink/20 blur-3xl" />
             <div className="absolute -left-24 -bottom-12 h-52 w-52 rounded-full bg-brand-gray/10 blur-3xl" />
             <span className="inline-flex items-center justify-center rounded-full border border-brand-text/15 px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-brand-text">
-              Carrito Inteligente
+              Agenda Exclusiva
             </span>
             <h2 className="mt-6 text-3xl md:text-4xl font-bold text-brand-text">
-              ¿Listo para equipar tu negocio?
+              ¿Lista para dar el siguiente paso en tu carrera?
             </h2>
             <p className="mt-4 text-lg text-brand-text-light">
-              Agrega tus productos favoritos al carrito y completa tu compra en minutos. Envío rápido y seguro.
+              Reserva tu llamada de descubrimiento y te ayudamos a elegir la mentoría ideal para tus objetivos. Nuestro equipo te acompaña en cada detalle.
             </p>
             <div className="mt-6 text-center">
               <p className="text-sm text-brand-text-light">
-                Items en carrito: <span className="font-semibold text-brand-pink">{cart.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                Inscripciones en carrito: <span className="font-semibold text-brand-pink">{cart.reduce((sum, item) => sum + item.quantity, 0)}</span>
               </p>
               <p className="text-lg font-bold text-brand-text">
                 Total: ${cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}
@@ -337,13 +333,13 @@ export default function TiendaPage() {
             </div>
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Link
-                href="#productos"
+                href="#mentorias"
                 className="inline-flex items-center justify-center rounded-2xl bg-brand-pink px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-brand-pink/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-pink/90"
               >
-                Seguir Comprando
+                Revisar Mentorías
               </Link>
               <button
-                onClick={() => alert('Checkout próximamente con Stripe')}
+                onClick={() => alert('Proceso de inscripción próximamente con Stripe')}
                 disabled={cart.length === 0}
                 className={`inline-flex items-center justify-center rounded-2xl px-8 py-4 text-lg font-semibold shadow-lg transition-all duration-300 hover:-translate-y-0.5 ${
                   cart.length > 0
@@ -351,7 +347,7 @@ export default function TiendaPage() {
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >
-                Proceder al Pago
+                Completar Inscripción
               </button>
             </div>
           </div>
