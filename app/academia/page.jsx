@@ -110,9 +110,7 @@ export default function AcademiaPage() {
     setCart(prevCart => {
       const existing = prevCart.find(item => item.id === product.id);
       if (existing) {
-        return prevCart.map(item =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
-        );
+        return prevCart;
       }
       return [...prevCart, { ...product, quantity: 1 }];
     });
@@ -206,7 +204,10 @@ export default function AcademiaPage() {
 
         {/* Usamos 'grid-cols-1' y un 'gap' mayor */}
         <div className="mt-16 grid grid-cols-1 gap-12 md:gap-16">
-          {courses.map((course, index) => (
+          {courses.map((course, index) => {
+            const isInCart = cart.some(item => item.id === course.id);
+
+            return (
             <div key={course.title} className={`group relative rounded-[2rem] bg-gradient-to-br from-brand-gray-light via-white to-brand-pink-light p-[1px] animate-fadeInUp`} style={{ animationDelay: `${index * 200}ms` }}>
               
               {/* Contenedor con 'flex-col md:flex-row' */}
@@ -265,9 +266,15 @@ export default function AcademiaPage() {
                   <div className="mt-auto flex flex-col gap-3 pt-4">
                     <button
                       onClick={() => addToCart(course)}
-                      className="inline-flex w-full items-center justify-center rounded-xl bg-brand-pink px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-brand-pink/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-pink/90"
+                      disabled={isInCart}
+                      className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-base font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
+                        isInCart
+                          ? 'bg-brand-gray-light text-brand-text border border-brand-gray text-brand-text font-medium cursor-not-allowed shadow-inner'
+                          : 'bg-brand-black text-brand-white shadow-lg shadow-brand-black/25 hover:-translate-y-0.5 hover:bg-brand-charcoal'
+                      }`}
                     >
-                      Inscribirme Ahora
+                      <ShoppingBagIcon className={`h-5 w-5 ${isInCart ? 'text-brand-text' : 'text-brand-white'}`} />
+                      {isInCart ? 'Inscripción añadida' : 'Añadir al carrito'}
                     </button>
                     <Link
                       href="#"
@@ -279,42 +286,7 @@ export default function AcademiaPage() {
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* === Sección 3: Cómo Inscribirte === (Sin cambios) */}
-      <section id="proceso" className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="absolute inset-x-10 -top-10 h-40 rounded-full bg-brand-gray-light/70 blur-3xl" />
-        <div className="text-center">
-          <h2 className="text-sm font-semibold text-brand-pink uppercase tracking-widest">
-            Nuestro Proceso
-          </h2>
-          <p className="mt-3 text-3xl md:text-4xl font-bold text-brand-text">
-            Una Experiencia 100% Personalizada
-          </p>
-        </div>
-
-        <div className="mt-16 rounded-[2.5rem] bg-white/90 p-10 shadow-2xl ring-1 ring-brand-gray-light/60 backdrop-blur">
-          <div className="relative grid gap-8 md:grid-cols-3">
-            <div className="absolute left-[17%] top-12 hidden h-[2px] w-[66%] -translate-x-1/2 bg-gradient-to-r from-brand-pink/30 via-brand-gray/20 to-brand-pink/30 md:block" />
-            {steps.map((step, index) => (
-              <div
-                key={step.title}
-                className="relative flex flex-col items-center text-center rounded-2xl border border-brand-gray-light/70 bg-white/70 p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl animate-fadeInUp"
-                style={{ animationDelay: `${(index + 2) * 300}ms` }}
-              >
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-pink text-white shadow-lg">
-                  <step.icon className="h-7 w-7" />
-                </div>
-                <span className="mt-6 inline-flex items-center justify-center rounded-full bg-brand-gray-light/80 px-4 py-1 text-xs font-semibold uppercase tracking-[0.35em] text-brand-text">
-                  Paso {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="mt-4 text-2xl font-bold text-brand-text">{step.title}</h3>
-                <p className="mt-3 text-base leading-relaxed text-brand-text-light">{step.description}</p>
-              </div>
-            ))}
-          </div>
+          );})}
         </div>
       </section>
 
@@ -344,19 +316,21 @@ export default function AcademiaPage() {
             <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
               <Link
                 href="#mentorias"
-                className="inline-flex items-center justify-center rounded-2xl bg-brand-pink px-8 py-4 text-lg font-semibold text-white shadow-lg shadow-brand-pink/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-pink/90"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-8 py-4 text-lg font-semibold text-brand-white shadow-lg shadow-brand-black/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-charcoal"
               >
+                <AcademicCapIcon className="h-6 w-6" />
                 Revisar Mentorías
               </Link>
               <button
                 onClick={() => alert('Proceso de inscripción próximamente con Stripe')}
                 disabled={cart.length === 0}
-                className={`inline-flex items-center justify-center rounded-2xl px-8 py-4 text-lg font-semibold shadow-lg transition-all duration-300 hover:-translate-y-0.5 ${
+                className={`inline-flex items-center justify-center gap-2 rounded-2xl px-8 py-4 text-lg font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
                   cart.length > 0
-                    ? 'bg-brand-text text-white shadow-brand-text/30 hover:bg-brand-text/90'
-                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    ? 'bg-brand-black text-brand-white shadow-lg shadow-brand-black/25 hover:-translate-y-0.5 hover:bg-brand-charcoal'
+                    : 'bg-brand-gray/10 text-brand-gray cursor-not-allowed border border-brand-gray/40 shadow-inside'
                 }`}
               >
+                <ShoppingBagIcon className={`h-6 w-6 ${cart.length > 0 ? 'text-brand-white' : 'text-brand-gray'}`} />
                 Completar Inscripción
               </button>
             </div>
