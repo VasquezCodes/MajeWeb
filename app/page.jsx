@@ -12,11 +12,9 @@ import {
   PaintBrushIcon, 
   HandRaisedIcon, 
   StarIcon 
-} from '@heroicons/react/24/solid'; // Usamos 'solid' para íconos rellenos
+} from '@heroicons/react/24/solid';
 
 // --- Datos de Ejemplo ---
-// (En un proyecto real, esto vendría de un CMS o una base de datos)
-
 const featuredServices = [
   {
     name: "Manicura Semipermanente",
@@ -54,7 +52,6 @@ const testimonials = [
 ];
 
 // --- Componente Principal de la Página ---
-
 export default function HomePage() {
   const serviceRefs = useStaggeredAnimation(3, 0.2);
 
@@ -62,7 +59,7 @@ export default function HomePage() {
     <div className="space-y-32 md:space-y-40 mb-32 md:mb-40">
       
       {/* === Sección 1: Hero === */}
-      <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-center overflow-hidden">
+      <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-end lg:items-center overflow-hidden">
         <div className="absolute inset-0">
           <Image
             src="/photo4.JPEG"
@@ -72,34 +69,34 @@ export default function HomePage() {
             className="object-cover object-[center_25%] sm:object-[center_30%] lg:object-[center_22%]"
             sizes="100vw"
           />
-          {/* Gradiente más sutil en desktop para mostrar mejor la imagen */}
-          <div className="absolute inset-0 bg-gradient-to-r from-brand-black/70 via-brand-black/50 to-transparent lg:from-brand-black/80 lg:via-brand-black/40 lg:to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-black/30 via-transparent to-transparent" />
+          {/* Gradiente lateral para legibilidad */}
+          <div className="absolute inset-0 bg-gradient-to-r from-brand-black/80 via-brand-black/60 to-transparent lg:from-brand-black/80 lg:via-brand-black/40 lg:to-transparent" />
+          {/* Gradiente inferior suave */}
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-black/60 via-transparent to-transparent" />
         </div>
 
-        <div className="relative z-10 w-full px-4 sm:px-6 lg:px-16">
+        {/* Contenedor del texto - ajustado para móvil y desktop */}
+        <div className="relative z-10 w-full px-4 sm:px-6 lg:px-16 pb-12 lg:pb-0">
           <div className="max-w-7xl lg:ml-0">
-            {/* En mobile centrado, en desktop alineado a la izquierda */}
-            <div className="max-w-3xl lg:max-w-2xl space-y-6 lg:space-y-8 text-brand-white text-center lg:text-left">
-              <p className="text-xs md:text-sm tracking-[0.35em] uppercase text-brand-gray animate-fade-in">
-                Nails & spa boutique
-              </p>
-              <h1 className="text-4xl md:text-5xl lg:text-7xl font-serif font-bold leading-tight animate-slide-up">
+            <div className="max-w-3xl lg:max-w-2xl space-y-4 lg:space-y-8 text-brand-white text-left">
+              {/* Espaciado reducido en móvil para comprimir el contenido */}
+              <h1 className="text-3xl md:text-5xl lg:text-7xl font-serif font-bold leading-tight animate-slide-up">
                 Expertas en arte<br className="hidden lg:block" /> para tus uñas.
               </h1>
-              <p className="text-lg md:text-xl lg:text-2xl text-brand-gray-light leading-relaxed animate-fade-in delay-300">
+              <p className="font-crimson text-base md:text-xl lg:text-2xl text-brand-gray-light/90 leading-relaxed tracking-[0.08em] animate-fade-in delay-300">
                 Bienvenida a Maje Nail Spa. Nos especializamos en Kapping, Semipermanente y diseños de autor en un ambiente relajado, minimalista y profesional.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 pt-6 justify-center lg:justify-start animate-fade-in delay-500">
+              {/* Botones con espaciado reducido en móvil */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-4 lg:pt-6 justify-start animate-fade-in delay-500">
                 <Link
                   href="/reservas"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-brand-white text-brand-black text-lg font-semibold rounded-2xl shadow-lg hover:bg-brand-gray-light hover:shadow-xl hover:scale-105 transition-all duration-300"
+                  className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-white text-brand-black text-sm md:text-base lg:text-lg font-crimson tracking-[0.2em] rounded-2xl shadow-lg hover:bg-brand-gray-light hover:shadow-xl hover:scale-105 transition-all duration-300"
                 >
                   Reservar Turno
                 </Link>
                 <Link
                   href="/servicios"
-                  className="inline-flex items-center justify-center px-8 py-4 border-2 border-brand-white/70 text-brand-white text-lg font-semibold rounded-2xl hover:bg-brand-white/15 hover:border-brand-white transition-all duration-300"
+                  className="inline-flex items-center justify-center px-8 py-3.5 border-2 border-brand-white/70 text-brand-white text-sm md:text-base lg:text-lg font-crimson tracking-[0.2em] rounded-2xl hover:bg-brand-white/15 hover:border-brand-white transition-all duration-300"
                 >
                   Ver Servicios
                 </Link>

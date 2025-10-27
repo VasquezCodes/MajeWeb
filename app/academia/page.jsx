@@ -5,9 +5,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 // Importamos los iconos que usaremos
-import { 
-  AcademicCapIcon, 
-  PencilSquareIcon, 
+import {
+  AcademicCapIcon,
+  PencilSquareIcon,
   CalendarDaysIcon,
   ChatBubbleBottomCenterTextIcon,
   ShoppingBagIcon
@@ -20,8 +20,7 @@ const courses = [
     title: "Mentoría: Manicura Rusa",
     description:
       "Perfecciona tu técnica de cutículas y esmaltado. Aprende el 'antes y después' que define un trabajo premium.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1552693673-1bf958298935?auto=format&fit=crop&w=960&q=80",
+    imageUrl: "/serviciosImg/redNails.jpeg",
     tags: ["Técnica avanzada", "Cutículas perfectas", "Esmaltado espejo"],
     price: 250.00,
     originalPrice: 300.00,
@@ -29,6 +28,7 @@ const courses = [
     duration: "Duración: 3 horas",
   },
   {
+    id: 2,
     title: "Mentoría: Sistema Dual (Dual System)",
     description:
       "Domina la construcción de uñas esculpidas de forma rápida y precisa con la técnica de moldes duales.",
@@ -41,6 +41,7 @@ const courses = [
     duration: "Duración: 4 horas",
   },
   {
+    id: 3,
     title: "Mentoría: Marketing de Belleza",
     description:
       "Deja de cobrar barato. Aprende a crear tu marca, atraer clientas de alto valor y llenar tu agenda.",
@@ -53,6 +54,7 @@ const courses = [
     duration: "Duración: 2 sesiones",
   },
   {
+    id: 4,
     title: "Mentoría: Manicura y Pedicura Spa",
     description:
       "Eleva tu servicio básico a una experiencia de lujo. Aprende protocolos de spa, exfoliación y masajes.",
@@ -81,7 +83,6 @@ const stats = [
   },
 ];
 
-// --- Datos para la sección "Cómo Inscribirte" ---
 const steps = [
   {
     icon: PencilSquareIcon,
@@ -120,40 +121,50 @@ export default function AcademiaPage() {
   return (
     <div className="space-y-24 md:space-y-32 mb-24 md:mb-32">
 
-      {/* === Sección 1: Hero de Tienda === */}
-      <section className="relative overflow-hidden pt-24 pb-20 md:pt-32 md:pb-28">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-gray-light via-white to-brand-pink-light" />
-        <div className="absolute -top-20 -right-20 h-80 w-80 rounded-full bg-brand-pink/20 blur-3xl" />
-        <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-brand-gray/10 blur-3xl" />
+      {/* === Sección 1: Hero de Tienda (ACTUALIZADO CON RESPONSIVE Y MEJOR LEGIBILIDAD) === */}
+      <section className="relative overflow-hidden min-h-[85vh] flex items-center py-20 lg:min-h-0 lg:pt-32 lg:pb-28">
+        
+        {/* Fondos decorativos para desktop */}
+        <div className="absolute -top-20 -right-20 h-80 w-80 rounded-full bg-brand-pink/20 blur-3xl hidden lg:block" />
+        <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-brand-gray/10 blur-3xl hidden lg:block" />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-          {/* Texto del Hero */}
-          <div className="text-center lg:text-left">
-            <span className="inline-flex items-center justify-center rounded-full bg-white/70 px-5 py-2 text-sm font-semibold uppercase tracking-[0.3em] text-brand-text shadow-sm">
-              Mentorías Exclusivas
-            </span>
-            <h1 className="mt-6 text-4xl md:text-6xl font-bold text-brand-text tracking-tight">
+        {/* --- NUEVO: Imagen de Fondo para Mobile (con más opacidad) --- */}
+        <div className="absolute inset-0 lg:hidden">
+          <Image
+            src="/academiaImg/academiaHero.JPEG"
+            alt="Mentoría personalizada de uñas de lujo"
+            fill
+            priority
+            className="object-cover object-center" 
+          />
+          {/* Gradiente más oscuro para legibilidad del texto en móvil */}
+          <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-brand-black/60 to-transparent" />
+        </div>
+
+        {/* --- Contenedor Principal --- */}
+        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+          
+          {/* === Texto del Hero (con alineación y elementos responsivos) === */}
+          <div className="text-left"> {/* Texto alineado a la izquierda en móvil y desktop */}
+            <h1 className="mt-6 text-4xl md:text-6xl font-bold text-brand-white lg:text-brand-text tracking-tight">
               Eleva tu carrera con <span className="text-brand-pink">Maje Academy</span>
             </h1>
-            <p className="mt-6 text-lg md:text-xl text-brand-text-light max-w-xl mx-auto lg:mx-0">
+            <p className="mt-6 text-lg md:text-xl text-brand-gray-light lg:text-brand-text-light max-w-xl">
               Diseñamos mentorías premium para artistas de uñas que desean dominar técnicas avanzadas, crear experiencias de lujo y posicionarse como referentes de la industria.
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Link
-                href="#mentorias"
-                className="inline-flex items-center justify-center rounded-2xl bg-brand-pink px-8 py-4 text-lg font-semibold text-white shadow-xl shadow-brand-pink/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-pink/90"
-              >
-                Ver Mentorías
-              </Link>
+            <div className="mt-10 flex flex-col sm:flex-row gap-4"> {/* Botones alineados a la izquierda */}
+              {/* Este botón solo se muestra en desktop (lg:block) */}
               <Link
                 href="#proceso"
-                className="inline-flex items-center justify-center rounded-2xl border border-brand-text/20 px-8 py-4 text-lg font-semibold text-brand-text transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-text"
+                className="hidden lg:inline-flex items-center justify-center rounded-2xl border px-8 py-4 text-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 
+                        lg:border-brand-text/20 lg:text-brand-text lg:hover:border-brand-text lg:hover:bg-transparent"
               >
                 Conoce el Proceso
               </Link>
             </div>
 
-            <dl className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-8">
+            {/* --- Stats para Desktop (oculto en mobile) --- */}
+            <dl className="mt-12 hidden grid-cols-1 sm:grid-cols-3 gap-8 lg:grid">
               {stats.map((stat) => (
                 <div key={stat.label} className="border-l-2 border-brand-pink/40 pl-6 text-left">
                   <dt className="text-3xl font-bold text-brand-text">{stat.value}</dt>
@@ -165,32 +176,24 @@ export default function AcademiaPage() {
             </dl>
           </div>
 
-          {/* Imagen del Hero */}
-          <div className="relative mx-auto max-w-xs sm:max-w-sm lg:max-w-lg">
+          {/* === Imagen del Hero (Oculta en mobile) === */}
+          <div className="relative mx-auto max-w-xs sm:max-w-sm lg:max-w-lg hidden lg:block">
             <div className="absolute inset-0 -translate-x-6 translate-y-8 rounded-[2.5rem] bg-gradient-to-br from-brand-pink/50 via-white/30 to-brand-gray-light/60 blur-3xl" />
             <div className="relative overflow-hidden rounded-[2.5rem] shadow-2xl ring-1 ring-white/60">
               <Image
-                src="https://images.unsplash.com/photo-1594736797933-d0401ba2fe65?auto=format&fit=crop&w=900&q=80"
+                src="/academiaImg/academiaHero.JPEG"
                 alt="Mentoría personalizada de uñas de lujo"
                 width={900}
                 height={1100}
-                className="h-[420px] w-full object-cover"
+                className="h-[720px] w-full object-cover"
                 priority
               />
-              <div className="absolute inset-x-6 bottom-6 rounded-2xl bg-white/90 px-5 py-4 shadow-xl backdrop-blur">
-                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-brand-text-light">
-                  Experiencia VIP
-                </p>
-                <p className="mt-2 text-sm font-semibold text-brand-text">
-                  Acompañamiento personalizado y protocolos exclusivos para artistas de alto nivel.
-                </p>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* === Sección 2: Lista de Mentorías === */}
+      {/* === Sección 2: Lista de Mentorías (ACTUALIZADO CON SPLIT-LAYOUT) === */}
       <section id="mentorias" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
         <div className="text-center">
           <h2 className="text-sm font-semibold text-brand-pink uppercase tracking-widest">
@@ -201,17 +204,22 @@ export default function AcademiaPage() {
           </p>
         </div>
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-10">
+        {/* Usamos 'grid-cols-1' y un 'gap' mayor */}
+        <div className="mt-16 grid grid-cols-1 gap-12 md:gap-16">
           {courses.map((course, index) => (
             <div key={course.title} className={`group relative rounded-[2rem] bg-gradient-to-br from-brand-gray-light via-white to-brand-pink-light p-[1px] animate-fadeInUp`} style={{ animationDelay: `${index * 200}ms` }}>
-              <div className="flex h-full flex-col overflow-hidden rounded-[calc(2rem-1px)] bg-white/90 shadow-xl transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl">
-                <div className="relative overflow-hidden">
+              
+              {/* Contenedor con 'flex-col md:flex-row' */}
+              <div className="flex h-full flex-col md:flex-row overflow-hidden rounded-[calc(2rem-1px)] bg-white/90 shadow-xl transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl">
+                
+                {/* --- CONTENEDOR DE IMAGEN (IZQUIERDA) --- */}
+                <div className="relative overflow-hidden md:w-5/12">
                   <Image
                     src={course.imageUrl}
                     alt={course.title}
                     width={600}
-                    height={400}
-                    className="h-64 w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    height={600} 
+                    className="h-80 w-full object-cover transition-transform duration-500 group-hover:scale-105 md:h-full"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
                   <span className="absolute left-6 top-6 inline-flex items-center rounded-full bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-brand-text">
@@ -223,10 +231,12 @@ export default function AcademiaPage() {
                     </span>
                   )}
                 </div>
-                <div className="flex flex-grow flex-col gap-6 p-8">
+
+                {/* --- CONTENEDOR DE TEXTO (DERECHA) --- */}
+                <div className="flex flex-grow flex-col gap-6 p-8 md:p-10 md:w-7/12">
                   <div>
-                    <h3 className="text-2xl font-bold text-brand-text">{course.title}</h3>
-                    <p className="mt-4 text-base leading-relaxed text-brand-text-light">
+                    <h3 className="text-2xl lg:text-3xl font-bold text-brand-text">{course.title}</h3>
+                    <p className="mt-4 text-base lg:text-lg leading-relaxed text-brand-text-light">
                       {course.description}
                     </p>
                   </div>
@@ -244,24 +254,24 @@ export default function AcademiaPage() {
 
                   <div className="flex items-center justify-between text-sm font-medium text-brand-text-light">
                     <div className="flex items-center gap-2">
-                      <span className="text-2xl font-bold text-brand-pink">${course.price}</span>
+                      <span className="text-3xl font-bold text-brand-pink">${course.price}</span>
                       {course.originalPrice && (
-                        <span className="text-lg text-brand-text-light line-through">${course.originalPrice}</span>
+                        <span className="text-xl text-brand-text-light line-through">${course.originalPrice}</span>
                       )}
                     </div>
-                    <span>{course.duration}</span>
+                    <span className="text-base">{course.duration}</span>
                   </div>
 
-                  <div className="mt-auto flex flex-col gap-3">
+                  <div className="mt-auto flex flex-col gap-3 pt-4">
                     <button
                       onClick={() => addToCart(course)}
-                      className="inline-flex w-full items-center justify-center rounded-xl bg-brand-pink px-6 py-3 text-base font-semibold text-white shadow-lg shadow-brand-pink/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-pink/90"
+                      className="inline-flex w-full items-center justify-center rounded-xl bg-brand-pink px-6 py-3.5 text-base font-semibold text-white shadow-lg shadow-brand-pink/30 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-pink/90"
                     >
                       Inscribirme Ahora
                     </button>
                     <Link
                       href="#"
-                      className="inline-flex w-full items-center justify-center rounded-xl border border-brand-text/15 px-6 py-3 text-base font-semibold text-brand-text transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-text"
+                      className="inline-flex w-full items-center justify-center rounded-xl border border-brand-text/15 px-6 py-3.5 text-base font-semibold text-brand-text transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-text"
                     >
                       Ver temario detallado
                     </Link>
@@ -273,7 +283,7 @@ export default function AcademiaPage() {
         </div>
       </section>
 
-      {/* === Sección 3: Cómo Inscribirte === */}
+      {/* === Sección 3: Cómo Inscribirte === (Sin cambios) */}
       <section id="proceso" className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="absolute inset-x-10 -top-10 h-40 rounded-full bg-brand-gray-light/70 blur-3xl" />
         <div className="text-center">
@@ -308,7 +318,7 @@ export default function AcademiaPage() {
         </div>
       </section>
 
-      {/* === Sección 4: CTA Final === */}
+      {/* === Sección 4: CTA Final === (Sin cambios) */}
       <section className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
         <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-brand-pink via-brand-gray-light to-white p-[1px] shadow-2xl">
           <div className="relative rounded-[2.5rem] bg-white/95 px-10 py-14 text-center backdrop-blur">
@@ -354,7 +364,7 @@ export default function AcademiaPage() {
         </div>
       </section>
 
-      {/* Floating Cart Icon */}
+      {/* === Floating Cart Icon === (Sin cambios) */}
       {cart.length > 0 && (
         <div className="fixed bottom-6 right-6 z-50">
           <button className="relative flex h-14 w-14 items-center justify-center rounded-full bg-brand-pink text-white shadow-xl shadow-brand-pink/30 transition-all duration-300 hover:scale-110">
