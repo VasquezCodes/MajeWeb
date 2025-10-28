@@ -81,24 +81,24 @@ export default function HomePage() {
             <div className="max-w-3xl lg:max-w-2xl space-y-4 lg:space-y-8 text-brand-white text-left">
               {/* Espaciado reducido en móvil para comprimir el contenido */}
               <h1 className="text-3xl md:text-5xl lg:text-7xl font-serif font-bold leading-tight animate-slide-up">
-                Expertas en arte<br className="hidden lg:block" /> para tus uñas.
+                Soy María Jesús,
               </h1>
               <p className="font-crimson text-base md:text-xl lg:text-2xl text-brand-gray-light/90 leading-relaxed tracking-[0.08em] animate-fade-in delay-300">
-                Bienvenida a Maje Nail Spa. Nos especializamos en Kapping, Semipermanente y diseños de autor en un ambiente relajado, minimalista y profesional.
+                fundadora de Maje Nail Spa y Maje Nail Academy. Con más de 7 años dedicados a la estética y formación profesional, te doy la bienvenida a este espacio donde podrás reservar tus servicios y formarte con mis clases
               </p>
               {/* Botones con espaciado reducido en móvil */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4 lg:pt-6 justify-start animate-fade-in delay-500">
                 <Link
-                  href="/reservas"
+                  href="/academia"
                   className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-white text-brand-black text-sm md:text-base lg:text-lg font-crimson tracking-[0.2em] rounded-2xl shadow-lg hover:bg-brand-gray-light hover:shadow-xl hover:scale-105 transition-all duration-300"
                 >
-                  Reservar Turno
+                  Academia
                 </Link>
                 <Link
                   href="/servicios"
                   className="inline-flex items-center justify-center px-8 py-3.5 border-2 border-brand-white/70 text-brand-white text-sm md:text-base lg:text-lg font-crimson tracking-[0.2em] rounded-2xl hover:bg-brand-white/15 hover:border-brand-white transition-all duration-300"
                 >
-                  Ver Servicios
+                  Servicios
                 </Link>
               </div>
             </div>

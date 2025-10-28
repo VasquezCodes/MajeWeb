@@ -13,7 +13,7 @@ const galleryImages = [
   {
     src: '/serviciosImg/nails2.jpeg',
     alt: 'Uñas esculpidas con técnica avanzada',
-    category: 'Esculpidas'
+    category: 'Manicura'
   },
   {
     src: '/serviciosImg/nails3.jpeg',
@@ -23,12 +23,12 @@ const galleryImages = [
   {
     src: '/serviciosImg/nails4.jpeg',
     alt: 'Decoración artística personalizada',
-    category: 'Arte'
+    category: 'Manicura'
   },
   {
     src: '/serviciosImg/nails5.jpeg',
     alt: 'Sistema dual para extensiones naturales',
-    category: 'Técnicas'
+    category: 'Manicura'
   },
   {
     src: '/serviciosImg/nails6.jpeg',
@@ -38,12 +38,12 @@ const galleryImages = [
   {
     src: '/serviciosImg/nails7.jpeg',
     alt: 'Trabajo de cutículas profesional',
-    category: 'Técnicas'
+    category: 'Manicura'
   },
   {
     src: '/serviciosImg/nails8.jpeg',
     alt: 'Resultado final de manicura elegante',
-    category: 'Resultados'
+    category: 'Manicura'
   },
   {
     src: '/serviciosImg/nails9.jpeg',
@@ -53,12 +53,12 @@ const galleryImages = [
   {
     src: '/serviciosImg/redNails.jpeg',
     alt: 'Herramientas profesionales de alta calidad',
-    category: 'Herramientas'
+    category: 'Manicura'
   }
 ];
 
 // Categorías disponibles basadas en las imágenes de servicios
-const categories = ['Todos', 'Manicura', 'Pedicura', 'Esculpidas', 'Arte', 'Técnicas', 'Resultados', 'Herramientas'];
+const categories = ['Todos', 'Manicura', 'Pedicura'];
 
 export default function GaleriaPage() {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
