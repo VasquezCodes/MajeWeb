@@ -1,10 +1,11 @@
+// app/layout.jsx
 import { Inter, Playfair_Display, Crimson_Text } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 
-// Importamos los nuevos componentes
+// Componentes propios
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import BooksyGuard from "../components/BooksyGuard"; // opcional: limpia flotantes fuera de /reservas
 
 const inter = Inter({
   variable: "--font-inter",
@@ -24,34 +25,26 @@ const crimsonText = Crimson_Text({
 });
 
 export const metadata = {
-  title: 'Maje Nail Spa - Orlando, FL',
-  description: 'Expertas en arte de uñas, kapping, manicura semipermanente y más.',
-}
+  title: "Maje Nail Spa - Orlando, FL",
+  description:
+    "Expertas en arte de uñas, kapping, manicura semipermanente y más.",
+};
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="es">
-      <head>
-        {/* Script de Booksy cargado globalmente */}
-        <Script
-          id="booksy-widget"
-          src="https://booksy.com/widget/code.js?id=482147&country=us&lang=en"
-          strategy="lazyOnload"
-        />
-      </head>
+    <html lang="es" suppressHydrationWarning>
+      {/* Nada de Script de Booksy aquí; solo en /reservas */}
       <body
         className={`${inter.variable} ${playfairDisplay.variable} ${crimsonText.variable} antialiased bg-brand-white text-brand-text`}
       >
-        {/* Navbar va arriba de todo */}
         <Navbar />
-        
-        {/* El contenido de cada página irá aquí */}
-        <main className="min-h-screen">
-          {children}
-        </main>
-        
-        {/* Footer va abajo de todo */}
+
+        <main className="min-h-screen">{children}</main>
+
         <Footer />
+
+        {/* Mantiene limpio el DOM de cualquier botón flotante de Booksy fuera de /reservas */}
+        <BooksyGuard />
       </body>
     </html>
   );
