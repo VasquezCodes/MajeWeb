@@ -1,4 +1,5 @@
 import { Inter, Playfair_Display, Crimson_Text } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 // Importamos los nuevos componentes
@@ -30,6 +31,14 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="es">
+      <head>
+        {/* Script de Booksy cargado globalmente */}
+        <Script
+          id="booksy-widget"
+          src="https://booksy.com/widget/code.js?id=482147&country=us&lang=en"
+          strategy="lazyOnload"
+        />
+      </head>
       <body
         className={`${inter.variable} ${playfairDisplay.variable} ${crimsonText.variable} antialiased bg-brand-white text-brand-text`}
       >
