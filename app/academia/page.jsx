@@ -3,15 +3,40 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import getStripe from '@/lib/getStripe';
 
-// Importamos los iconos que usaremos
+// Iconos
 import {
   AcademicCapIcon,
   PencilSquareIcon,
   CalendarDaysIcon,
   ChatBubbleBottomCenterTextIcon,
-  ShoppingBagIcon
+  ShoppingBagIcon,
+  CheckCircleIcon,
+  SparklesIcon,
+  XMarkIcon,
+  TrashIcon
 } from '@heroicons/react/24/solid';
+
+// --- Helper de pago con Stripe (redirección a Checkout) ---
+async function iniciarPago(cart) {
+  try {
+    const res = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cart }),
+    });
+    const data = await res.json();
+    if (!res.ok || !data?.url) {
+      alert(data.error || 'No se pudo iniciar el pago.');
+      return;
+    }
+    window.location.assign(data.url);
+  } catch (e) {
+    console.error(e);
+    alert('Error iniciando pago.');
+  }
+}
 
 // --- Datos de Ejemplo para los Cursos ---
 const courses = [
@@ -25,7 +50,7 @@ const courses = [
     price: 250.00,
     originalPrice: 300.00,
     format: "Mentoría 1:1",
-    duration: "Duración: 3 horas",
+    duration: "3 horas",
   },
   {
     id: 2,
@@ -38,7 +63,7 @@ const courses = [
     price: 350.00,
     originalPrice: 400.00,
     format: "Mentoría híbrida",
-    duration: "Duración: 4 horas",
+    duration: "4 horas",
   },
   {
     id: 3,
@@ -51,7 +76,7 @@ const courses = [
     price: 200.00,
     originalPrice: 250.00,
     format: "Workshop VIP",
-    duration: "Duración: 2 sesiones",
+    duration: "2 sesiones",
   },
   {
     id: 4,
@@ -64,47 +89,20 @@ const courses = [
     price: 300.00,
     originalPrice: 350.00,
     format: "Práctica guiada",
-    duration: "Duración: 5 horas",
+    duration: "5 horas",
   },
 ];
 
 const stats = [
-  {
-    value: "200+",
-    label: "Alumnas certificadas",
-  },
-  {
-    value: "15+",
-    label: "Cursos disponibles",
-  },
-  {
-    value: "1:1",
-    label: "Mentoría personalizada",
-  },
-];
-
-const steps = [
-  {
-    icon: PencilSquareIcon,
-    title: "Paso 1: Elige tu Mentoría",
-    description: "Navega por nuestros cursos y selecciona la mentoría que mejor se adapte a tus objetivos. Revisa los detalles y precios."
-  },
-  {
-    icon: ChatBubbleBottomCenterTextIcon,
-    title: "Paso 2: Completa tu Inscripción",
-    description: "Llena el formulario de inscripción con tus datos. Te contactaremos para coordinar la fecha y forma de pago."
-  },
-  {
-    icon: CalendarDaysIcon,
-    title: "Paso 3: Confirma tu Fecha",
-    description: "Una vez coordinado, confirma tu participación y realiza el pago. Tu lugar queda reservado inmediatamente."
-  }
+  { value: "200+", label: "Alumnas certificadas" },
+  { value: "15+", label: "Cursos disponibles" },
+  { value: "1:1", label: "Mentoría personalizada" },
 ];
 
 // --- Componente Principal de la Página ---
-
 export default function AcademiaPage() {
   const [cart, setCart] = useState([]);
+  const [showCart, setShowCart] = useState(false);
 
   const addToCart = (product) => {
     setCart(prevCart => {
@@ -116,74 +114,97 @@ export default function AcademiaPage() {
     });
   };
 
+  const removeFromCart = (productId) => {
+    setCart(prevCart => {
+      const newCart = prevCart.filter(item => item.id !== productId);
+      if (newCart.length === 0) {
+        setShowCart(false);
+      }
+      return newCart;
+    });
+  };
+
+  const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
   return (
-    <div className="space-y-24 md:space-y-32 mb-24 md:mb-32">
+    <div className="space-y-20 md:space-y-32 mb-24 md:mb-32 font-sans">
 
-      {/* === Sección 1: Hero de Tienda (ACTUALIZADO CON RESPONSIVE Y MEJOR LEGIBILIDAD) === */}
-      <section className="relative overflow-hidden min-h-[85vh] flex items-center py-20 lg:min-h-0 lg:pt-32 lg:pb-28">
-        
-        {/* Fondos decorativos para desktop */}
-        <div className="absolute -top-20 -right-20 h-80 w-80 rounded-full bg-brand-pink/20 blur-3xl hidden lg:block" />
-        <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-brand-gray/10 blur-3xl hidden lg:block" />
+      {/* === Sección 1: Hero === */}
+      <section className="relative overflow-hidden min-h-screen flex items-center py-20 lg:min-h-0 lg:pt-32 lg:pb-28">
+        {/* Fondos decorativos */}
+        <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-brand-pink/10 blur-[100px]" />
+        <div className="absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full bg-brand-gray/5 blur-[100px]" />
 
-        {/* --- NUEVO: Imagen de Fondo para Mobile (con más opacidad) --- */}
+        {/* Imagen de fondo mobile */}
         <div className="absolute inset-0 lg:hidden">
           <Image
             src="/academiaImg/academiaHero.JPEG"
             alt="Mentoría personalizada de uñas de lujo"
             fill
             priority
-            className="object-cover object-center" 
+            className="object-cover object-center"
           />
-          {/* Gradiente más oscuro para legibilidad del texto en móvil */}
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-black/80 via-brand-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-brand-black/60 via-black/20 to-brand-black/75" />
         </div>
 
-        {/* --- Contenedor Principal --- */}
-        <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-          
-          {/* === Texto del Hero (con alineación y elementos responsivos) === */}
-          <div className="text-left"> {/* Texto alineado a la izquierda en móvil y desktop */}
-            <h1 className="mt-6 text-4xl md:text-6xl font-bold text-brand-white lg:text-brand-text tracking-tight">
-              Eleva tu carrera con <span className="text-brand-pink">Maje Academy</span>
-            </h1>
-            <p className="mt-6 text-lg md:text-xl text-brand-gray-light lg:text-brand-text-light max-w-xl">
-              Diseñamos mentorías premium para artistas de uñas que desean dominar técnicas avanzadas, crear experiencias de lujo y posicionarse como referentes de la industria.
-            </p>
-            <div className="mt-10 flex flex-col sm:flex-row gap-4"> {/* Botones alineados a la izquierda */}
-              {/* Este botón solo se muestra en desktop (lg:block) */}
-              <Link
-                href="#proceso"
-                className="hidden lg:inline-flex items-center justify-center rounded-2xl border px-8 py-4 text-lg font-semibold transition-all duration-300 hover:-translate-y-0.5 
-                        lg:border-brand-text/20 lg:text-brand-text lg:hover:border-brand-text lg:hover:bg-transparent"
-              >
-                Conoce el Proceso
-              </Link>
+        {/* Contenido */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          {/* Texto */}
+          <div className="text-left space-y-8">
+            <div className="inline-flex items-center gap-2.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 px-5 py-2.5 lg:bg-brand-pink/10 lg:border-brand-pink/20">
+              <SparklesIcon className="h-4 w-4 text-brand-pink animate-pulse" />
+              <span className="text-xs font-bold text-white lg:text-brand-pink uppercase tracking-[0.2em]">
+                Formación Premium
+              </span>
             </div>
+            
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-white lg:text-brand-text tracking-tight leading-[1.1]">
+              Transforma tu carrera con{' '}
+              <span className="text-brand-pink block mt-2 bg-gradient-to-r from-brand-pink to-pink-400 bg-clip-text text-transparent">
+                Maje Academy
+              </span>
+            </h1>
+            
+            <p className="text-lg md:text-xl text-white/80 lg:text-brand-text-light leading-relaxed max-w-xl font-light">
+              Mentorías exclusivas para artistas que desean dominar técnicas avanzadas y posicionarse como referentes de la industria del nail art.
+            </p>
 
-            {/* --- Stats para Desktop (oculto en mobile) --- */}
-            <dl className="mt-12 hidden grid-cols-1 sm:grid-cols-3 gap-8 lg:grid">
+            {/* Stats Mobile */}
+            <div className="grid grid-cols-3 gap-6 pt-6 lg:hidden">
               {stats.map((stat) => (
-                <div key={stat.label} className="border-l-2 border-brand-pink/40 pl-6 text-left">
-                  <dt className="text-3xl font-bold text-brand-text">{stat.value}</dt>
-                  <dd className="mt-2 text-sm font-semibold uppercase tracking-[0.25em] text-brand-text-light">
+                <div key={stat.label} className="text-center space-y-1">
+                  <div className="text-3xl font-black text-white">{stat.value}</div>
+                  <div className="text-[10px] font-semibold text-white/70 uppercase tracking-wider leading-tight">
                     {stat.label}
-                  </dd>
+                  </div>
                 </div>
               ))}
-            </dl>
+            </div>
+
+            {/* Stats Desktop */}
+            <div className="hidden lg:grid grid-cols-3 gap-8 pt-4">
+              {stats.map((stat) => (
+                <div key={stat.label} className="space-y-2">
+                  <div className="text-4xl font-black text-brand-text">{stat.value}</div>
+                  <div className="text-xs font-bold uppercase tracking-[0.2em] text-brand-text-light">
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* === Imagen del Hero (Oculta en mobile) === */}
-          <div className="relative mx-auto max-w-xs sm:max-w-sm lg:max-w-lg hidden lg:block">
-            <div className="absolute inset-0 -translate-x-6 translate-y-8 rounded-[2.5rem] bg-gradient-to-br from-brand-pink/50 via-white/30 to-brand-gray-light/60 blur-3xl" />
-            <div className="relative overflow-hidden rounded-[2.5rem] shadow-2xl ring-1 ring-white/60">
+          {/* Imagen Desktop */}
+          <div className="relative mx-auto max-w-lg hidden lg:block">
+            <div className="absolute inset-0 bg-gradient-to-br from-brand-pink/40 via-transparent to-brand-gray/20 blur-3xl rounded-[3rem]" />
+            <div className="relative overflow-hidden rounded-[3rem] shadow-2xl">
               <Image
                 src="/academiaImg/academiaHero.JPEG"
                 alt="Mentoría personalizada de uñas de lujo"
                 width={900}
                 height={1100}
-                className="h-[720px] w-full object-cover"
+                className="h-[700px] w-full object-cover"
                 priority
               />
             </div>
@@ -191,163 +212,348 @@ export default function AcademiaPage() {
         </div>
       </section>
 
-      {/* === Sección 2: Lista de Mentorías (ACTUALIZADO CON SPLIT-LAYOUT) === */}
-      <section id="mentorias" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 scroll-mt-20">
-        <div className="text-center">
-          <h2 className="text-sm font-semibold text-brand-pink uppercase tracking-widest">
-            Formación Profesional
+      {/* === Sección 2: Lista de Mentorías === */}
+      <section id="mentorias" className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 scroll-mt-20">
+        <div className="text-center max-w-3xl mx-auto space-y-5 mb-16">
+          <div className="inline-flex items-center gap-2.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 px-5 py-2.5">
+            <AcademicCapIcon className="h-4 w-4 text-brand-pink" />
+            <span className="text-xs font-bold text-brand-pink uppercase tracking-[0.2em]">
+              Formación Profesional
+            </span>
+          </div>
+          
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-brand-text leading-tight">
+            Mentorías VIP
           </h2>
-          <p className="mt-3 text-3xl md:text-4xl font-bold text-brand-text">
-            Nuestras Mentorías VIP
+          
+          <p className="text-lg md:text-xl text-brand-text-light font-light leading-relaxed">
+            Programas exclusivos diseñados para elevar tu técnica y transformar tu negocio
           </p>
         </div>
 
-        {/* Usamos 'grid-cols-1' y un 'gap' mayor */}
-        <div className="mt-16 grid grid-cols-1 gap-12 md:gap-16">
+        <div className="space-y-8">
           {courses.map((course, index) => {
             const isInCart = cart.some(item => item.id === course.id);
 
             return (
-            <div key={course.title} className={`group relative rounded-[2rem] bg-gradient-to-br from-brand-gray-light via-white to-brand-pink-light p-[1px] animate-fadeInUp`} style={{ animationDelay: `${index * 200}ms` }}>
-              
-              {/* Contenedor con 'flex-col md:flex-row' */}
-              <div className="flex h-full flex-col md:flex-row overflow-hidden rounded-[calc(2rem-1px)] bg-white/90 shadow-xl transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl">
-                
-                {/* --- CONTENEDOR DE IMAGEN (IZQUIERDA) --- */}
-                <div className="relative overflow-hidden md:w-5/12">
-                  <Image
-                    src={course.imageUrl}
-                    alt={course.title}
-                    width={600}
-                    height={600} 
-                    className="h-80 w-full object-cover transition-transform duration-500 group-hover:scale-105 md:h-full"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
-                  <span className="absolute left-6 top-6 inline-flex items-center rounded-full bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-brand-text">
-                    {course.format}
-                  </span>
-                  {course.originalPrice && (
-                    <span className="absolute right-6 top-6 inline-flex items-center rounded-full bg-green-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-white">
-                      Oferta
-                    </span>
-                  )}
+              <div 
+                key={course.id} 
+                className="group animate-fadeInUp" 
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                {/* Mobile Layout */}
+                <div className="md:hidden bg-white rounded-3xl overflow-hidden shadow-lg">
+                  <div className="relative h-64 overflow-hidden">
+                    <Image
+                      src={course.imageUrl}
+                      alt={course.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/80" />
+                    
+                    <div className="absolute top-4 left-4 right-4 flex justify-between items-start gap-3">
+                      <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-4 py-2 text-[11px] font-black text-brand-text uppercase tracking-wider shadow-xl">
+                        {course.format}
+                      </span>
+                    </div>
+
+                    <div className="absolute bottom-4 left-4 right-4 space-y-2">
+                      <div className="flex items-baseline gap-3">
+                        <span className="text-4xl font-black text-white drop-shadow-2xl">
+                          ${course.price}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-6 space-y-5">
+                    <div className="space-y-3">
+                      <h3 className="text-2xl font-black text-brand-text leading-tight">
+                        {course.title}
+                      </h3>
+                      <p className="text-base text-brand-text-light leading-relaxed font-light">
+                        {course.description}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2">
+                      {course.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-flex items-center rounded-full bg-brand-gray-light/50 px-3 py-1.5 text-xs font-bold text-brand-text"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-3 pt-2">
+                      {isInCart ? (
+                        <button
+                          onClick={() => removeFromCart(course.id)}
+                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-5 py-4 text-sm font-black text-red-600 transition-all duration-300 active:scale-95"
+                        >
+                          <TrashIcon className="h-5 w-5" />
+                          Quitar
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => addToCart(course)}
+                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-5 py-4 text-sm font-black text-white shadow-lg transition-all duration-300 active:scale-95"
+                        >
+                          <ShoppingBagIcon className="h-5 w-5" />
+                          Añadir
+                        </button>
+                      )}
+                      
+                      <Link
+                        href="#"
+                        className="flex-1 flex items-center justify-center rounded-2xl border-2 border-brand-text/20 px-5 py-4 text-sm font-black text-brand-text transition-all duration-300 active:scale-95"
+                      >
+                        Ver más
+                      </Link>
+                    </div>
+                  </div>
                 </div>
 
-                {/* --- CONTENEDOR DE TEXTO (DERECHA) --- */}
-                <div className="flex flex-grow flex-col gap-6 p-8 md:p-10 md:w-7/12">
-                  <div>
-                    <h3 className="text-2xl lg:text-3xl font-bold text-brand-text">{course.title}</h3>
-                    <p className="mt-4 text-base lg:text-lg leading-relaxed text-brand-text-light">
-                      {course.description}
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    {course.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center rounded-full bg-brand-gray-light/80 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand-text"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center justify-between text-sm font-medium text-brand-text-light">
-                    <div className="flex items-center gap-2">
-                      <span className="text-3xl font-bold text-brand-pink">${course.price}</span>
-                      {course.originalPrice && (
-                        <span className="text-xl text-brand-text-light line-through">${course.originalPrice}</span>
-                      )}
+                {/* Desktop Layout */}
+                <div className="hidden md:block bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
+                  <div className="flex">
+                    <div className="relative w-2/5 overflow-hidden">
+                      <Image
+                        src={course.imageUrl}
+                        alt={course.title}
+                        width={600}
+                        height={600}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-black/20 to-black/60" />
+                      
+                      <div className="absolute top-6 left-6 right-6 flex justify-between items-start">
+                        <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-5 py-2.5 text-xs font-black uppercase tracking-wider text-brand-text shadow-xl">
+                          {course.format}
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-base">{course.duration}</span>
-                  </div>
 
-                  <div className="mt-auto flex flex-col gap-3 pt-4">
-                    <button
-                      onClick={() => addToCart(course)}
-                      disabled={isInCart}
-                      className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-base font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
-                        isInCart
-                          ? 'bg-brand-gray-light text-brand-text border border-brand-gray text-brand-text font-medium cursor-not-allowed shadow-inner'
-                          : 'bg-brand-black text-brand-white shadow-lg shadow-brand-black/25 hover:-translate-y-0.5 hover:bg-brand-charcoal'
-                      }`}
-                    >
-                      <ShoppingBagIcon className={`h-5 w-5 ${isInCart ? 'text-brand-text' : 'text-brand-white'}`} />
-                      {isInCart ? 'Inscripción añadida' : 'Añadir al carrito'}
-                    </button>
-                    <Link
-                      href="#"
-                      className="inline-flex w-full items-center justify-center rounded-xl border border-brand-text/15 px-6 py-3.5 text-base font-semibold text-brand-text transition-all duration-300 hover:-translate-y-0.5 hover:border-brand-text"
-                    >
-                      Ver temario detallado
-                    </Link>
+                    <div className="flex-1 flex flex-col p-10 space-y-6">
+                      <div className="space-y-4">
+                        <h3 className="text-3xl lg:text-4xl font-black text-brand-text leading-tight">
+                          {course.title}
+                        </h3>
+                        <p className="text-lg leading-relaxed text-brand-text-light font-light">
+                          {course.description}
+                        </p>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        {course.tags.map((tag) => (
+                          <span
+                            key={tag}
+                            className="inline-flex items-center rounded-full bg-brand-gray-light/60 px-4 py-2 text-xs font-bold uppercase tracking-wider text-brand-text"
+                          >
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center justify-between pt-4">
+                        <div className="flex items-baseline gap-3">
+                          <span className="text-5xl font-black text-brand-pink">
+                            ${course.price}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-4 pt-4">
+                        {isInCart ? (
+                          <button
+                            onClick={() => removeFromCart(course.id)}
+                            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-6 py-4 text-base font-black text-red-600 transition-all duration-300 hover:bg-red-100"
+                          >
+                            <TrashIcon className="h-5 w-5" />
+                            Quitar del carrito
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => addToCart(course)}
+                            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-6 py-4 text-base font-black text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                          >
+                            <ShoppingBagIcon className="h-5 w-5" />
+                            Añadir al carrito
+                          </button>
+                        )}
+                        
+                        <Link
+                          href="#"
+                          className="flex-1 flex items-center justify-center rounded-2xl border-2 border-brand-text/20 px-6 py-4 text-base font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30"
+                        >
+                          Ver temario completo
+                        </Link>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );})}
+            );
+          })}
         </div>
       </section>
 
-      {/* === Sección 4: CTA Final === (Sin cambios) */}
-      <section className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-brand-pink via-brand-gray-light to-white p-[1px] shadow-2xl">
-          <div className="relative rounded-[2.5rem] bg-white/95 px-10 py-14 text-center backdrop-blur">
-            <div className="absolute -right-20 -top-10 h-44 w-44 rounded-full bg-brand-pink/20 blur-3xl" />
-            <div className="absolute -left-24 -bottom-12 h-52 w-52 rounded-full bg-brand-gray/10 blur-3xl" />
-            <span className="inline-flex items-center justify-center rounded-full border border-brand-text/15 px-5 py-2 text-xs font-semibold uppercase tracking-[0.3em] text-brand-text">
-              Agenda Exclusiva
-            </span>
-            <h2 className="mt-6 text-3xl md:text-4xl font-bold text-brand-text">
-              ¿Lista para dar el siguiente paso en tu carrera?
-            </h2>
-            <p className="mt-4 text-lg text-brand-text-light">
-              Reserva tu llamada de descubrimiento y te ayudamos a elegir la mentoría ideal para tus objetivos. Nuestro equipo te acompaña en cada detalle.
-            </p>
-            <div className="mt-6 text-center">
-              <p className="text-sm text-brand-text-light">
-                Inscripciones en carrito: <span className="font-semibold text-brand-pink">{cart.reduce((sum, item) => sum + item.quantity, 0)}</span>
+      {/* === CTA Final === */}
+      <section className="relative mx-auto max-w-5xl px-6 sm:px-8 lg:px-12">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-pink/5 via-white to-brand-gray-light/30 p-[2px]">
+          <div className="relative rounded-[calc(1.5rem-2px)] bg-white px-8 py-12 sm:px-12 sm:py-16 text-center">
+            <div className="absolute -right-32 -top-20 h-64 w-64 rounded-full bg-brand-pink/10 blur-3xl" />
+            <div className="absolute -left-32 -bottom-20 h-64 w-64 rounded-full bg-brand-gray/5 blur-3xl" />
+            
+            <div className="relative space-y-6">
+              <div className="inline-flex items-center gap-2.5 rounded-full border-2 border-brand-pink/20 bg-brand-pink/5 px-5 py-2.5">
+                <SparklesIcon className="h-4 w-4 text-brand-pink animate-pulse" />
+                <span className="text-xs font-black uppercase tracking-[0.2em] text-brand-pink">
+                  Agenda Exclusiva
+                </span>
+              </div>
+              
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-brand-text leading-tight max-w-2xl mx-auto">
+                ¿Lista para transformar tu carrera?
+              </h2>
+              
+              <p className="text-lg sm:text-xl text-brand-text-light font-light max-w-2xl mx-auto leading-relaxed">
+                Reserva tu llamada de descubrimiento y te ayudamos a elegir la mentoría perfecta para tus objetivos.
               </p>
-              <p className="text-lg font-bold text-brand-text">
-                Total: ${cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2)}
-              </p>
-            </div>
-            <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
-              <Link
-                href="#mentorias"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-8 py-4 text-lg font-semibold text-brand-white shadow-lg shadow-brand-black/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-brand-charcoal"
-              >
-                <AcademicCapIcon className="h-6 w-6" />
-                Revisar Mentorías
-              </Link>
-              <button
-                onClick={() => alert('Proceso de inscripción próximamente con Stripe')}
-                disabled={cart.length === 0}
-                className={`inline-flex items-center justify-center gap-2 rounded-2xl px-8 py-4 text-lg font-semibold transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-pink focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
-                  cart.length > 0
-                    ? 'bg-brand-black text-brand-white shadow-lg shadow-brand-black/25 hover:-translate-y-0.5 hover:bg-brand-charcoal'
-                    : 'bg-brand-gray/10 text-brand-gray cursor-not-allowed border border-brand-gray/40 shadow-inside'
-                }`}
-              >
-                <ShoppingBagIcon className={`h-6 w-6 ${cart.length > 0 ? 'text-brand-white' : 'text-brand-gray'}`} />
-                Completar Inscripción
-              </button>
+
+              {cart.length > 0 && (
+                <div className="inline-flex items-center gap-6 rounded-2xl bg-brand-pink/10 border-2 border-brand-pink/20 px-8 py-4">
+                  <div className="text-left">
+                    <div className="text-xs font-bold text-brand-text-light uppercase tracking-wide">
+                      En tu carrito
+                    </div>
+                    <div className="text-base font-black text-brand-text">
+                      {totalItems} {totalItems === 1 ? 'mentoría' : 'mentorías'}
+                    </div>
+                  </div>
+                  <div className="h-10 w-px bg-brand-text/10" />
+                  <div className="text-left">
+                    <div className="text-xs font-bold text-brand-text-light uppercase tracking-wide">
+                      Total
+                    </div>
+                    <div className="text-2xl font-black text-brand-pink">
+                      ${totalPrice.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                <Link
+                  href="#mentorias"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-brand-text/20 bg-white px-8 py-4 text-base font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:shadow-lg"
+                >
+                  <AcademicCapIcon className="h-6 w-6" />
+                  Ver Mentorías
+                </Link>
+                
+                <button
+                  onClick={() => iniciarPago(cart)}
+                  disabled={cart.length === 0}
+                  className={`inline-flex items-center justify-center gap-2 rounded-2xl px-8 py-4 text-base font-black transition-all duration-300 ${
+                    cart.length > 0
+                      ? 'bg-brand-black text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
+                      : 'bg-brand-gray-light/50 text-brand-text/40 cursor-not-allowed'
+                  }`}
+                >
+                  <ShoppingBagIcon className="h-6 w-6" />
+                  Completar Inscripción
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* === Floating Cart Icon === (Sin cambios) */}
+      {/* === Floating Cart Widget === */}
       {cart.length > 0 && (
-        <div className="fixed bottom-6 right-6 z-50">
-          <button className="relative flex h-14 w-14 items-center justify-center rounded-full bg-brand-pink text-white shadow-xl shadow-brand-pink/30 transition-all duration-300 hover:scale-110">
-            <ShoppingBagIcon className="h-6 w-6" />
-            <span className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-brand-text text-xs font-bold text-white">
-              {cart.reduce((sum, item) => sum + item.quantity, 0)}
+        <>
+          <button
+            onClick={() => setShowCart(!showCart)}
+            className="fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-brand-black text-white shadow-2xl shadow-black/40 border-4 border-white transition-all duration-300 hover:scale-110 hover:shadow-black/60 active:scale-95"
+          >
+            <ShoppingBagIcon className="h-7 w-7" />
+            <span className="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-green-500 border-4 border-white text-xs font-black text-white shadow-xl">
+              {totalItems}
             </span>
           </button>
-        </div>
+
+          {/* Cart Dropdown */}
+          {showCart && (
+            <div className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border-2 border-brand-gray-light/20 overflow-hidden animate-fadeInUp">
+              <div className="bg-gradient-to-r from-brand-pink to-pink-400 px-6 py-4 flex items-center justify-between">
+                <h3 className="text-lg font-black text-white">Tu Carrito</h3>
+                <button
+                  onClick={() => setShowCart(false)}
+                  className="p-1 rounded-full hover:bg-white/20 transition-colors"
+                >
+                  <XMarkIcon className="h-6 w-6 text-white" />
+                </button>
+              </div>
+
+              <div className="max-h-96 overflow-y-auto p-4 space-y-3">
+                {cart.map((item) => (
+                  <div key={item.id} className="flex gap-3 bg-brand-gray-light/30 rounded-xl p-3">
+                    <div className="relative h-16 w-16 flex-shrink-0 rounded-lg overflow-hidden">
+                      <Image
+                        src={item.imageUrl}
+                        alt={item.title}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-black text-sm text-brand-text truncate">
+                        {item.title}
+                      </h4>
+                      <p className="text-xs text-brand-text-light font-medium mt-0.5">
+                        {item.format}
+                      </p>
+                      <p className="text-base font-black text-brand-pink mt-1">
+                        ${item.price}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => removeFromCart(item.id)}
+                      className="flex-shrink-0 self-start p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors"
+                    >
+                      <TrashIcon className="h-5 w-5" />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="border-t-2 border-brand-gray-light/20 p-4 space-y-3 bg-brand-gray-light/10">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-brand-text uppercase tracking-wide">
+                    Total
+                  </span>
+                  <span className="text-2xl font-black text-brand-pink">
+                    ${totalPrice.toFixed(2)}
+                  </span>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowCart(false);
+                    iniciarPago(cart);
+                  }}
+                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-black px-6 py-4 text-base font-black text-white shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95"
+                >
+                  <ShoppingBagIcon className="h-5 w-5" />
+                  Completar Inscripción
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
     </div>

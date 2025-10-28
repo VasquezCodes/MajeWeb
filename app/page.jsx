@@ -81,10 +81,10 @@ export default function HomePage() {
             <div className="max-w-3xl lg:max-w-2xl space-y-4 lg:space-y-8 text-brand-white text-left">
               {/* Espaciado reducido en móvil para comprimir el contenido */}
               <h1 className="text-3xl md:text-5xl lg:text-7xl font-serif font-bold leading-tight animate-slide-up">
-                Soy María Jesús,
+                Hola, soy María Jesús,
               </h1>
               <p className="font-crimson text-base md:text-xl lg:text-2xl text-brand-gray-light/90 leading-relaxed tracking-[0.08em] animate-fade-in delay-300">
-                fundadora de Maje Nail Spa y Maje Nail Academy. Con más de 7 años dedicados a la estética y formación profesional, te doy la bienvenida a este espacio donde podrás reservar tus servicios y formarte con mis clases
+                fundadora de Maje Nail Spa y Maje Nail Academy. Con más de 7 años de trayectoria en el mundo de las uñas y en la formación de profesionales del ramo, te doy la bienvenida a este espacio, donde podrás reservar tus servicios y formarte como profesional si así lo deseas.
               </p>
               {/* Botones con espaciado reducido en móvil */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4 lg:pt-6 justify-start animate-fade-in delay-500">
