@@ -356,11 +356,10 @@ export default function AcademiaPage() {
           {/* Columna de Imagen */}
           <div className="relative order-first lg:order-last">
             <div className="relative overflow-hidden rounded-[2rem] shadow-2xl aspect-[4/5]">
-              <Image
+              <img
                 src="/academiaImg/quelogran.png"
                 alt="Maje, mentora de Maje Nails Academy"
-                fill
-                className="object-cover w-full h-full"
+                className="w-full h-full object-cover"
               />
             </div>
             <div className="absolute -bottom-12 -right-12 h-40 w-40 rounded-full bg-brand-pink/10 blur-3xl -z-10" />
