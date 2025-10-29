@@ -5,69 +5,113 @@ import { db } from '@/lib/firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Resend } from 'resend';
 
-// --- Configuración de Resend ---
+// ===== Configuración Resend =====
+const EMAIL_FROM = process.env.EMAIL_FROM || 'Maje Nail Spa <onboarding@resend.dev>';
+const OWNER_EMAIL = process.env.OWNER_EMAIL || '';
 let resend = null;
 if (process.env.RESEND_API_KEY) {
   resend = new Resend(process.env.RESEND_API_KEY);
-  console.log('✅ Resend inicializado correctamente.');
+  console.log('✅ Resend inicializado.');
 } else {
   console.warn('⚠️ RESEND_API_KEY no configurado. No se enviarán correos.');
 }
 
-const OWNER_EMAIL = process.env.OWNER_EMAIL; // correo de tu hermana
-const EMAIL_FROM = process.env.EMAIL_FROM || 'Maje Nail Spa <onboarding@resend.dev>';
+// ====== Helper emails (comprador + dueña) ======
+async function enviarEmails({ comprador, items, totalCents, currency, orderId }) {
+  if (!resend) {
+    console.warn('⚠️ Resend no inicializado; se omiten emails.');
+    return;
+  }
 
-// --- Webhook principal ---
+  // 1) Email al comprador (si tenemos email)
+  if (comprador?.email) {
+    try {
+      const resp = await resend.emails.send({
+        from: EMAIL_FROM,
+        to: comprador.email,
+        subject: 'Confirmación de compra - Mentorías Maje Nail Spa',
+        html: htmlComprador({ comprador, items, totalCents, currency }),
+      });
+      console.log('📤 Email COMPRADOR enviado:', comprador.email, resp?.id || '');
+    } catch (e) {
+      console.error('❌ Error email COMPRADOR:', e);
+    }
+  } else {
+    console.warn('⚠️ Sin email de comprador; no se envía confirmación al cliente.');
+  }
+
+  // 2) Email a la dueña (si está configurado)
+  if (OWNER_EMAIL) {
+    try {
+      const resp = await resend.emails.send({
+        from: EMAIL_FROM,
+        to: OWNER_EMAIL,
+        subject: '💅 Nueva venta confirmada',
+        html: htmlDueno({ comprador, items, totalCents, currency, orderId }),
+      });
+      console.log('📤 Email OWNER enviado a:', OWNER_EMAIL, resp?.id || '');
+    } catch (e) {
+      console.error('❌ Error email OWNER:', e);
+    }
+  } else {
+    console.warn('⚠️ OWNER_EMAIL no configurado; no se envía correo a la dueña.');
+  }
+}
+
+// ====== Webhook principal ======
 export async function POST(req) {
-  const firma = req.headers.get('stripe-signature');
-  const secreto = process.env.STRIPE_WEBHOOK_SECRET;
+  const signature = req.headers.get('stripe-signature');
+  const secret = process.env.STRIPE_WEBHOOK_SECRET;
 
-  if (!secreto) {
+  if (!secret) {
     console.error('❌ Falta STRIPE_WEBHOOK_SECRET');
     return new NextResponse('Falta STRIPE_WEBHOOK_SECRET', { status: 500 });
   }
 
-  let evento;
+  let event;
   try {
-    const cuerpoCrudo = await req.text(); // obligatorio para verificar firma
-    evento = stripe.webhooks.constructEvent(cuerpoCrudo, firma, secreto);
+    const raw = await req.text(); // necesario para verificar firma
+    event = stripe.webhooks.constructEvent(raw, signature, secret);
   } catch (err) {
-    console.error('⚠️ Fallo verificación de firma Stripe:', err.message);
+    console.error('⚠️ Verificación de firma falló:', err.message);
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
   try {
-    console.log(`📩 Evento recibido: ${evento.type}`);
+    console.log(`📩 Evento recibido: ${event.type}`);
 
-    // --- Solo procesamos los eventos relevantes ---
     if (
-      evento.type === 'checkout.session.completed' ||
-      evento.type === 'payment_intent.succeeded'
+      event.type === 'checkout.session.completed' ||
+      event.type === 'payment_intent.succeeded'
     ) {
-      const data = evento.data.object;
+      const data = event.data.object;
 
-      // --- ID del documento (session o payment_intent) ---
-      const orderId = data.id || data.payment_intent || data.client_secret;
+      // ID estable para evitar duplicados
+      const orderId =
+        data.id ||
+        data.payment_intent ||
+        data.client_secret ||
+        `evt_${event.id}`;
+
       const refOrden = doc(db, 'orders', orderId);
-      const yaExiste = await getDoc(refOrden);
-
-      if (yaExiste.exists()) {
-        console.log('⚠️ Orden duplicada, se ignora:', orderId);
+      const ya = await getDoc(refOrden);
+      if (ya.exists()) {
+        console.log('↩️ Orden ya registrada, se ignora:', orderId);
         return NextResponse.json({ ok: true, duplicated: true });
       }
 
-      const isSession = evento.type === 'checkout.session.completed';
+      const isSession = event.type === 'checkout.session.completed';
       let comprador = {};
       let items = [];
       let total = 0;
       let currency = 'usd';
       let carrito = null;
 
-      // --- Si viene de checkout.session.completed ---
       if (isSession) {
+        // ----- checkout.session.completed -----
         const session = data;
-        currency = session.currency;
-        total = session.amount_total;
+        total = session.amount_total || 0;
+        currency = session.currency || 'usd';
 
         comprador = {
           email: session.customer_details?.email || session.customer_email || '',
@@ -76,21 +120,20 @@ export async function POST(req) {
 
         carrito = parseSeguro(session.metadata?.cart_json);
 
-        // --- Obtener line items ---
         const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 });
         items = lineItems.data.map((li) => ({
           name: li.description,
           quantity: li.quantity,
           amount_total: li.amount_total,
-          currency: session.currency,
+          currency,
         }));
       } else {
-        // --- Si viene de payment_intent.succeeded ---
+        // ----- payment_intent.succeeded -----
         const pi = data;
         total = pi.amount || pi.amount_received || 0;
         currency = pi.currency || 'usd';
 
-        // Intentamos obtener datos del cargo asociado
+        // Intentar enriquecer con cargo
         let charge = null;
         try {
           const charges = await stripe.charges.list({ payment_intent: pi.id, limit: 1 });
@@ -114,10 +157,10 @@ export async function POST(req) {
         ];
       }
 
-      // --- Guardar en Firestore ---
+      // Guardar orden en Firestore
       await setDoc(refOrden, {
         stripe_id: orderId,
-        type: evento.type,
+        type: event.type,
         amount_total: total,
         currency,
         buyer: comprador,
@@ -127,48 +170,16 @@ export async function POST(req) {
         createdAt: serverTimestamp(),
         source: 'stripe-webhook',
       });
-
       console.log('✅ Orden registrada en Firestore:', orderId);
 
-      // --- Enviar correos (comprador + dueña) ---
-      if (resend) {
-        try {
-          if (comprador.email) {
-            await resend.emails.send({
-              from: EMAIL_FROM,
-              to: comprador.email,
-              subject: 'Confirmación de compra - Mentorías Maje Nail Spa',
-              html: htmlComprador({
-                comprador,
-                items,
-                totalCents: total,
-                currency,
-              }),
-            });
-            console.log('📤 Email enviado al comprador:', comprador.email);
-          }
-
-          if (OWNER_EMAIL) {
-            await resend.emails.send({
-              from: EMAIL_FROM,
-              to: OWNER_EMAIL,
-              subject: '💅 Nueva venta confirmada',
-              html: htmlDueno({
-                comprador,
-                items,
-                totalCents: total,
-                currency,
-                orderId,
-              }),
-            });
-            console.log('📤 Email enviado a la dueña:', OWNER_EMAIL);
-          }
-        } catch (err) {
-          console.error('⚠️ Error enviando email:', err);
-        }
-      } else {
-        console.warn('⚠️ Resend no inicializado, no se enviaron correos.');
-      }
+      // Envío de emails (comprador + dueña)
+      await enviarEmails({
+        comprador,
+        items,
+        totalCents: total,
+        currency,
+        orderId,
+      });
     }
 
     return NextResponse.json({ ok: true });
@@ -178,7 +189,7 @@ export async function POST(req) {
   }
 }
 
-// --- Helpers ---
+// ===== Helpers =====
 function parseSeguro(s) {
   try {
     return s ? JSON.parse(s) : null;
