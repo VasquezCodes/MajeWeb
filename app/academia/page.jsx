@@ -357,7 +357,7 @@ export default function AcademiaPage() {
           <div className="relative order-first lg:order-last">
             <div className="relative overflow-hidden rounded-[2rem] shadow-2xl aspect-[4/5]">
               <img
-                src="/academiaImg/quelogran.png"
+                src="/academiaImg/queLogran.png"
                 alt="Maje, mentora de Maje Nails Academy"
                 className="w-full h-full object-cover"
               />
