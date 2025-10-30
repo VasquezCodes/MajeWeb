@@ -55,15 +55,30 @@ export async function POST(req) {
     const success_url = `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
     const cancel_url = `${origin}/checkout/cancel`;
 
-    // Preparar metadata con información de reserva
+    // ⭐ SOLUCIÓN: Metadata simplificado (solo datos esenciales, sin cart completo)
+    // Guardaremos solo IDs y precios, no objetos completos
+    const cartSimplificado = cart.map(item => ({
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      qty: item.quantity || 1
+    }));
+
     const metadata = {
       cart_count: String(cart.length),
       item_ids: cart.map((i) => i.id).join(","),
-      cart_json: JSON.stringify(cart), // Para recuperar detalles completos
+      // ⭐ Guardamos versión simplificada (mucho más corta)
+      cart_summary: JSON.stringify(cartSimplificado),
       booking_date: bookingDetails.date, // YYYY-MM-DD
       booking_time: bookingDetails.time, // HH:MM
-      booking_datetime: `${bookingDetails.date} ${bookingDetails.time}`, // Formato legible
+      booking_datetime: `${bookingDetails.date} ${bookingDetails.time}`,
     };
+
+    // ⚠️ Verificación de seguridad (opcional pero recomendado)
+    const metadataString = JSON.stringify(metadata);
+    if (metadataString.length > 4500) { // Stripe permite 5000 chars total
+      console.warn('⚠️ Metadata muy grande, considere reducir más');
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -77,11 +92,14 @@ export async function POST(req) {
     return NextResponse.json({ url: session.url, sessionId: session.id });
   } catch (err) {
     console.error("Error creando sesión de checkout:", err);
-    return NextResponse.json({ error: "No se pudo crear la sesión" }, { status: 500 });
+    return NextResponse.json({ 
+      error: "No se pudo crear la sesión",
+      details: err.message 
+    }, { status: 500 });
   }
 }
 
-// Handler para verificar sesión (si lo necesitas)
+// Handler para verificar sesión
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
@@ -99,6 +117,7 @@ export async function GET(req) {
       payment_status: session.payment_status,
       booking_date: session.metadata?.booking_date,
       booking_time: session.metadata?.booking_time,
+      cart_summary: session.metadata?.cart_summary ? JSON.parse(session.metadata.cart_summary) : null,
     });
   } catch (err) {
     console.error("Error recuperando sesión:", err);

@@ -117,7 +117,7 @@ export async function POST(req) {
           name: session.customer_details?.name || '',
         };
 
-        carrito = parseSeguro(session.metadata?.cart_json);
+        carrito = parseSeguro(session.metadata?.cart_summary);
 
         // Extraer información de reserva desde metadata
         bookingDetails = {
