@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import getStripe from '@/lib/getStripe';
@@ -19,15 +19,21 @@ import {
   BookOpenIcon,
   LifebuoyIcon,
   ListBulletIcon,
+  ClockIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
 } from '@heroicons/react/24/solid';
 
 // --- Helper de pago con Stripe ---
-async function iniciarPago(cart) {
+async function iniciarPago(cart, bookingDetails) {
   try {
     const res = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cart }),
+      body: JSON.stringify({ 
+        cart,
+        bookingDetails // { date: 'YYYY-MM-DD', time: 'HH:MM' }
+      }),
     });
     const data = await res.json();
     if (!res.ok || !data?.url) {
@@ -193,12 +199,240 @@ const achievements = [
   }
 ];
 
+// --- Horarios disponibles (definir después según reglas) ---
+const AVAILABLE_TIMES = [
+  "09:00",
+  "10:00",
+  "14:00",
+  "15:00",
+];
+
+// --- Helper: Verificar si un día es disponible (Lunes=1, Martes=2, Sábado=6) ---
+function isDayAvailable(date) {
+  const day = date.getDay();
+  return day === 1 || day === 2 || day === 6;
+}
+
+// --- Componente de Calendario ---
+function CalendarPicker({ selectedDate, onSelectDate }) {
+  const [currentMonth, setCurrentMonth] = useState(() => {
+    const today = new Date();
+    today.setDate(today.getDate() + 14); // Empezar 14 días adelante
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  });
+
+  const daysInMonth = useMemo(() => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const daysCount = lastDay.getDate();
+    const startingDayOfWeek = firstDay.getDay();
+
+    const days = [];
+    
+    // Días vacíos al inicio
+    for (let i = 0; i < startingDayOfWeek; i++) {
+      days.push(null);
+    }
+    
+    // Días del mes
+    const minDate = new Date();
+    minDate.setDate(minDate.getDate() + 14); // Mínimo 14 días adelante
+    minDate.setHours(0, 0, 0, 0);
+
+    for (let day = 1; day <= daysCount; day++) {
+      const date = new Date(year, month, day);
+      const isPast = date < minDate;
+      const isAvailable = isDayAvailable(date) && !isPast;
+      
+      days.push({
+        date,
+        day,
+        isAvailable,
+        isPast,
+      });
+    }
+
+    return days;
+  }, [currentMonth]);
+
+  const monthNames = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+  ];
+
+  const weekDays = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+
+  const goToPreviousMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
+  };
+
+  const goToNextMonth = () => {
+    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
+  };
+
+  const isSelectedDate = (date) => {
+    if (!selectedDate || !date) return false;
+    return (
+      selectedDate.getDate() === date.getDate() &&
+      selectedDate.getMonth() === date.getMonth() &&
+      selectedDate.getFullYear() === date.getFullYear()
+    );
+  };
+
+  return (
+    <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-brand-gray-light/30">
+      {/* Header del calendario */}
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <button
+          onClick={goToPreviousMonth}
+          className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl hover:bg-brand-pink/10 transition-colors group"
+          aria-label="Mes anterior"
+        >
+          <ChevronLeftIcon className="h-5 w-5 text-brand-text group-hover:text-brand-pink transition-colors" />
+        </button>
+        
+        <h3 className="text-base sm:text-lg lg:text-xl font-black text-brand-text">
+          {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+        </h3>
+        
+        <button
+          onClick={goToNextMonth}
+          className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl hover:bg-brand-pink/10 transition-colors group"
+          aria-label="Mes siguiente"
+        >
+          <ChevronRightIcon className="h-5 w-5 text-brand-text group-hover:text-brand-pink transition-colors" />
+        </button>
+      </div>
+
+      {/* Días de la semana */}
+      <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2 sm:mb-3">
+        {weekDays.map((day) => (
+          <div
+            key={day}
+            className="text-center text-[10px] sm:text-xs lg:text-sm font-black text-brand-text uppercase py-2 sm:py-2.5 bg-brand-gray-light/20 rounded-md sm:rounded-lg"
+          >
+            {day}
+          </div>
+        ))}
+      </div>
+
+      {/* Días del mes */}
+      <div className="grid grid-cols-7 gap-1 sm:gap-2">
+        {daysInMonth.map((dayInfo, index) => {
+          if (!dayInfo) {
+            return <div key={`empty-${index}`} className="aspect-square" />;
+          }
+
+          const { date, day, isAvailable, isPast } = dayInfo;
+          const isSelected = isSelectedDate(date);
+
+          return (
+            <button
+              key={day}
+              onClick={() => isAvailable && onSelectDate(date)}
+              disabled={!isAvailable}
+              className={`
+                aspect-square rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-bold transition-all duration-200 flex items-center justify-center
+                ${isSelected 
+                  ? 'bg-emerald-500 text-white shadow-xl scale-110 ring-4 ring-emerald-200' 
+                  : isAvailable
+                  ? 'bg-brand-gray-light/40 text-brand-text hover:bg-emerald-50 hover:ring-2 hover:ring-emerald-200 active:scale-95 sm:hover:scale-105 sm:hover:shadow-md'
+                  : 'bg-transparent text-brand-text-light/30 cursor-not-allowed line-through'
+                }
+              `}
+            >
+              {day}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Leyenda mejorada */}
+      <div className="mt-4 sm:mt-6 pt-3 sm:pt-5 border-t-2 border-brand-gray-light/30">
+        <div className="flex flex-wrap gap-2 sm:gap-4 text-[10px] sm:text-xs lg:text-sm justify-center sm:justify-center">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="h-3 w-3 sm:h-4 sm:w-4 rounded-md sm:rounded-lg bg-emerald-500 shadow-sm" />
+            <span className="text-brand-text font-bold">Seleccionado</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="h-3 w-3 sm:h-4 sm:w-4 rounded-md sm:rounded-lg bg-brand-gray-light/40" />
+            <span className="text-brand-text font-bold">Disponible</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="h-3 w-3 sm:h-4 sm:w-4 rounded-md sm:rounded-lg bg-transparent border-2 border-brand-text-light/30" />
+            <span className="text-brand-text font-bold">No disponible</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- Componente de Selección de Hora ---
+function TimePicker({ selectedTime, onSelectTime, selectedDate }) {
+  if (!selectedDate) {
+    return (
+      <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 lg:p-8 text-center shadow-lg border border-brand-gray-light/30 flex flex-col items-center justify-center min-h-[200px] sm:min-h-[300px]">
+        <ClockIcon className="h-12 w-12 sm:h-16 sm:w-16 text-brand-text-light/40 mx-auto mb-3 sm:mb-4" />
+        <p className="text-sm sm:text-base lg:text-lg text-brand-text font-bold mb-1 sm:mb-2">
+          Selecciona una fecha primero
+        </p>
+        <p className="text-xs sm:text-sm text-brand-text-light">
+          Elige un día disponible en el calendario
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-brand-gray-light/30">
+      <h3 className="text-base sm:text-lg lg:text-xl font-black text-brand-text mb-4 sm:mb-6 flex items-center gap-2">
+        <ClockIcon className="h-5 w-5 sm:h-6 sm:w-6 text-brand-pink" />
+        Selecciona la hora
+      </h3>
+
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:gap-4">
+        {AVAILABLE_TIMES.map((time) => {
+          const isSelected = selectedTime === time;
+          
+          return (
+            <button
+              key={time}
+              onClick={() => onSelectTime(time)}
+              className={`
+                py-3 sm:py-4 lg:py-5 px-4 sm:px-6 rounded-xl text-sm sm:text-base lg:text-lg font-black transition-all duration-200 shadow-sm
+                ${isSelected
+                  ? 'bg-emerald-500 text-white shadow-xl scale-110 ring-4 ring-emerald-200'
+                  : 'bg-brand-gray-light/40 text-brand-text hover:bg-emerald-50 hover:ring-2 hover:ring-emerald-200 active:scale-95 sm:hover:scale-105 sm:hover:shadow-md'
+                }
+              `}
+            >
+              {time}
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-4 sm:mt-6 pt-3 sm:pt-5 border-t-2 border-brand-gray-light/30">
+        <p className="text-[10px] sm:text-xs lg:text-sm text-brand-text-light text-center font-medium">
+          ⏰ Horarios en zona horaria de Orlando, FL (EST)
+        </p>
+      </div>
+    </div>
+  );
+}
+
 // --- Componente Principal ---
 export default function AcademiaPage() {
   const [cart, setCart] = useState([]);
   const [showCart, setShowCart] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
 
   const addToCart = (product) => {
     setCart(prevCart => {
@@ -218,6 +452,31 @@ export default function AcademiaPage() {
       }
       return newCart;
     });
+  };
+
+  const handleCheckout = () => {
+    if (cart.length === 0) return;
+    setShowBookingModal(true);
+  };
+
+  const handleConfirmBooking = () => {
+    if (!selectedDate || !selectedTime) {
+      alert('Por favor selecciona una fecha y hora para tu mentoría.');
+      return;
+    }
+
+    const bookingDetails = {
+      date: selectedDate.toISOString().split('T')[0], // YYYY-MM-DD
+      time: selectedTime,
+    };
+
+    iniciarPago(cart, bookingDetails);
+  };
+
+  const formatSelectedDate = () => {
+    if (!selectedDate) return '';
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    return selectedDate.toLocaleDateString('es-ES', options);
   };
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -637,7 +896,7 @@ export default function AcademiaPage() {
                 </Link>
           
                 <button
-                  onClick={() => iniciarPago(cart)}
+                  onClick={handleCheckout}
                   disabled={cart.length === 0}
                   className={`inline-flex items-center justify-center gap-2 rounded-2xl px-8 py-4 text-base font-black transition-all duration-300 ${
                     cart.length > 0
@@ -645,8 +904,8 @@ export default function AcademiaPage() {
                       : 'bg-brand-gray-light/50 text-brand-text/40 cursor-not-allowed'
                   }`}
                 >
-                  <ShoppingBagIcon className="h-6 w-6" />
-                  Completar Inscripción
+                  <CalendarDaysIcon className="h-6 w-6" />
+                  Seleccionar Fecha y Hora
                 </button>
               </div>
             </div>
@@ -654,87 +913,199 @@ export default function AcademiaPage() {
         </div>
       </section>
 
-      {/* === Modal de Detalles del Curso === */}
-      {showModal && selectedCourse && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-2xl">
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-6 right-6 z-10 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-            >
-              <XMarkIcon className="h-6 w-6 text-brand-text" />
-            </button>
+      {/* === Modal de Reserva (Calendario + Hora) === */}
+      {showBookingModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-md">
+          <div className="flex min-h-full items-center justify-center p-4 sm:p-6">
+            <div className="relative w-full max-w-6xl">
+              <div className="bg-white rounded-none sm:rounded-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
+                <button
+                  onClick={() => setShowBookingModal(false)}
+                  className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 p-2.5 rounded-full bg-white sm:bg-brand-gray-light/80 hover:bg-brand-gray-light transition-colors shadow-lg"
+                >
+                  <XMarkIcon className="h-6 w-6 text-brand-text" />
+                </button>
 
-            <div className="flex flex-col lg:flex-row">
-              <div className="relative w-full lg:w-1/2 h-64 lg:h-auto overflow-hidden rounded-t-3xl lg:rounded-l-3xl lg:rounded-t-none">
-                <Image
-                  src={selectedCourse.imageUrl}
-                  alt={selectedCourse.title}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black/60 via-transparent to-transparent" />
-                <div className="absolute bottom-6 left-6 right-6 lg:top-6 lg:left-6 lg:bottom-auto">
-                  <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-4 py-2 text-xs font-black text-brand-text uppercase tracking-wider shadow-xl">
-                    {selectedCourse.format}
-                  </span>
+                <div className="p-4 pt-16 sm:p-8 sm:pt-12 lg:p-10">
+                  {/* Header */}
+                  <div className="text-center mb-6 sm:mb-8 lg:mb-10">
+                    <div className="inline-flex items-center gap-2.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 px-4 sm:px-5 py-2 sm:py-2.5 mb-3 sm:mb-4">
+                      <CalendarDaysIcon className="h-4 w-4 text-brand-pink" />
+                      <span className="text-[10px] sm:text-xs font-bold text-brand-pink uppercase tracking-[0.2em]">
+                        Paso Final
+                      </span>
+                    </div>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-brand-text mb-2 sm:mb-3 px-4">
+                      Selecciona tu fecha y hora
+                    </h2>
+                    <p className="text-sm sm:text-base lg:text-lg text-brand-text-light font-light max-w-2xl mx-auto px-4">
+                      Las mentorías están disponibles los lunes, martes y sábados. Reserva con mínimo 14 días de anticipación.
+                    </p>
+                  </div>
+
+                  {/* Grid: Calendario + Hora */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                    <CalendarPicker
+                      selectedDate={selectedDate}
+                      onSelectDate={setSelectedDate}
+                    />
+                    <TimePicker
+                      selectedDate={selectedDate}
+                      selectedTime={selectedTime}
+                      onSelectTime={setSelectedTime}
+                    />
+                  </div>
+
+                  {/* Resumen de la reserva */}
+                  {selectedDate && selectedTime && (
+                    <div className="bg-white rounded-2xl p-4 sm:p-6 mb-6 border-2 border-brand-pink/20 shadow-lg">
+                      <h3 className="text-base sm:text-lg font-black text-brand-text mb-3 sm:mb-4 flex items-center gap-2">
+                        <CheckCircleIcon className="h-5 w-5 sm:h-6 sm:w-6 text-brand-pink" />
+                        Resumen de tu reserva
+                      </h3>
+                      <div className="space-y-3">
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pb-3 border-b border-brand-gray-light/20 gap-1 sm:gap-0">
+                          <span className="text-xs sm:text-sm font-bold text-brand-text-light uppercase tracking-wide">
+                            Fecha seleccionada
+                          </span>
+                          <span className="text-sm sm:text-base font-black text-brand-text capitalize">
+                            {formatSelectedDate()}
+                          </span>
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center pb-3 border-b border-brand-gray-light/20 gap-1 sm:gap-0">
+                          <span className="text-xs sm:text-sm font-bold text-brand-text-light uppercase tracking-wide">
+                            Hora
+                          </span>
+                          <span className="text-sm sm:text-base font-black text-brand-text">
+                            {selectedTime} EST
+                          </span>
+                        </div>
+                        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-0">
+                          <span className="text-xs sm:text-sm font-bold text-brand-text-light uppercase tracking-wide">
+                            Total a pagar
+                          </span>
+                          <span className="text-xl sm:text-2xl font-black text-brand-pink">
+                            ${totalPrice.toFixed(2)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Botones de acción */}
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-4 sm:p-0 border-t sm:border-t-0 border-brand-gray-light/20">
+                    <button
+                      onClick={() => setShowBookingModal(false)}
+                      className="flex-1 flex items-center justify-center gap-2 rounded-2xl border-2 border-brand-text/20 bg-white px-6 py-4 text-base font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30 order-2 sm:order-1"
+                    >
+                      Volver
+                    </button>
+
+                    <button
+                      onClick={handleConfirmBooking}
+                      disabled={!selectedDate || !selectedTime}
+                      className={`flex-1 flex items-center justify-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all duration-300 order-1 sm:order-2 ${
+                        selectedDate && selectedTime
+                          ? 'bg-brand-black text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
+                          : 'bg-brand-gray-light/50 text-brand-text/40 cursor-not-allowed'
+                      }`}
+                    >
+                      <ShoppingBagIcon className="h-6 w-6" />
+                      Confirmar y Pagar
+                    </button>
+                  </div>
+
+                  <div className="h-4 sm:hidden" />
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
 
-              <div className="flex-1 p-8 space-y-6">
-                <div>
-                  <h2 className="text-3xl lg:text-4xl font-black text-brand-text leading-tight mb-4">
-                    {selectedCourse.title}
-                  </h2>
-                  <p className="text-lg text-brand-text-light leading-relaxed font-light">
-                    {selectedCourse.description}
-                  </p>
-                </div>
+      {/* === Modal de Detalles del Curso === */}
+      {showModal && selectedCourse && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm">
+          <div className="flex min-h-full items-center justify-center p-4">
+            <div className="relative w-full max-w-4xl rounded-3xl bg-white shadow-2xl max-h-[90vh] overflow-y-auto">
+              <button
+                onClick={() => setShowModal(false)}
+                className="absolute top-6 right-6 z-10 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
+              >
+                <XMarkIcon className="h-6 w-6 text-brand-text" />
+              </button>
 
-                <div className="flex flex-wrap gap-2">
-                  {selectedCourse.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="inline-flex items-center rounded-full bg-brand-gray-light/60 px-4 py-2 text-sm font-bold uppercase tracking-wider text-brand-text"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="pt-4 border-t border-brand-gray-light/20">
-                  <div className="flex items-baseline gap-4 mb-6">
-                    <span className="text-4xl font-black text-[#32CD32]">
-                      ${selectedCourse.price}
-                    </span>
-                    <span className="text-xl font-medium text-brand-text-light/70 line-through">
-                      ${selectedCourse.originalPrice}
+              <div className="flex flex-col lg:flex-row">
+                <div className="relative w-full lg:w-1/2 h-64 lg:h-auto overflow-hidden">
+                  <Image
+                    src={selectedCourse.imageUrl}
+                    alt={selectedCourse.title}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black/60 via-transparent to-transparent" />
+                  <div className="absolute bottom-6 left-6 right-6 lg:top-6 lg:left-6 lg:bottom-auto">
+                    <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-4 py-2 text-xs font-black text-brand-text uppercase tracking-wider shadow-xl">
+                      {selectedCourse.format}
                     </span>
                   </div>
+                </div>
 
-                  <div className="space-y-3">
-                    <p className="text-sm font-bold text-brand-text uppercase tracking-wide">Duración</p>
-                    <p className="text-base text-brand-text-light">{selectedCourse.duration}</p>
+                <div className="flex-1 p-8 space-y-6">
+                  <div>
+                    <h2 className="text-3xl lg:text-4xl font-black text-brand-text leading-tight mb-4">
+                      {selectedCourse.title}
+                    </h2>
+                    <p className="text-lg text-brand-text-light leading-relaxed font-light">
+                      {selectedCourse.description}
+                    </p>
                   </div>
 
-                  <div className="flex gap-4 pt-6">
-                    {cart.some(item => item.id === selectedCourse.id) ? (
-                      <button
-                        onClick={() => removeFromCart(selectedCourse.id)}
-                        className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-6 py-4 text-base font-black text-red-600 transition-all duration-300 hover:bg-red-100"
+                  <div className="flex flex-wrap gap-2">
+                    {selectedCourse.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center rounded-full bg-brand-gray-light/60 px-4 py-2 text-sm font-bold uppercase tracking-wider text-brand-text"
                       >
-                        <TrashIcon className="h-5 w-5" />
-                        Quitar del carrito
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => addToCart(selectedCourse)}
-                        className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-6 py-4 text-base font-black text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                      >
-                        <ShoppingBagIcon className="h-5 w-5" />
-                        Añadir al carrito
-                      </button>
-                    )}
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="pt-4 border-t border-brand-gray-light/20">
+                    <div className="flex items-baseline gap-4 mb-6">
+                      <span className="text-4xl font-black text-[#32CD32]">
+                        ${selectedCourse.price}
+                      </span>
+                      <span className="text-xl font-medium text-brand-text-light/70 line-through">
+                        ${selectedCourse.originalPrice}
+                      </span>
+                    </div>
+
+                    <div className="space-y-3">
+                      <p className="text-sm font-bold text-brand-text uppercase tracking-wide">Duración</p>
+                      <p className="text-base text-brand-text-light">{selectedCourse.duration}</p>
+                    </div>
+
+                    <div className="flex gap-4 pt-6">
+                      {cart.some((item) => item.id === selectedCourse.id) ? (
+                        <button
+                          onClick={() => removeFromCart(selectedCourse.id)}
+                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-6 py-4 text-base font-black text-red-600 transition-all duration-300 hover:bg-red-100"
+                        >
+                          <TrashIcon className="h-5 w-5" />
+                          Quitar del carrito
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => addToCart(selectedCourse)}
+                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-6 py-4 text-base font-black text-white shadow-lg hover:shadow-xl transition-all duración-300"
+                        >
+                          <ShoppingBagIcon className="h-5 w-5" />
+                          Añadir al carrito
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -813,12 +1184,12 @@ export default function AcademiaPage() {
                 <button
                   onClick={() => {
                     setShowCart(false);
-                    iniciarPago(cart);
+                    handleCheckout();
                   }}
                   className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-black px-6 py-4 text-base font-black text-white shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95"
                 >
-                  <ShoppingBagIcon className="h-5 w-5" />
-                  Completar Inscripción
+                  <CalendarDaysIcon className="h-5 w-5" />
+                  Seleccionar Fecha y Hora
                 </button>
               </div>
             </div>
