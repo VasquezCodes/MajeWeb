@@ -103,10 +103,24 @@ export async function POST(req) {
       success_url,
       cancel_url,
       metadata,
+      payment_method_types: [
+        'card',              // tarjetas + Apple Pay / Google Pay en Checkout
+        'cashapp',           // Cash App Pay (USD, cuenta elegible US)
+        'affirm',            // BNPL US/CA
+        'afterpay_clearpay', // BNPL AU/NZ/CA/US/UK (moneda doméstica)
+        'klarna'             // BNPL Europa/US (según elegibilidad)
+      ],
       phone_number_collection: {
         enabled: true,
       },
       billing_address_collection: 'required',
+      locale: 'auto',
+      payment_method_options: {
+        afterpay_clearpay: { setup_future_usage: 'none' },
+        klarna: { capture_method: 'automatic' },
+        affirm: {},
+        cashapp: {}
+      },
     });
 
     return NextResponse.json({ url: session.url, sessionId: session.id });
