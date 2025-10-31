@@ -116,7 +116,6 @@ export async function POST(req) {
       locale: 'auto',
       payment_method_options: {
         afterpay_clearpay: { setup_future_usage: 'none' },
-        klarna: { capture_method: 'automatic' },
         affirm: {},
         cashapp: {}
       },
