@@ -5,6 +5,10 @@ import { adminDb } from '@/lib/firebaseAdmin';
 // GET: Obtener todos los días bloqueados
 export async function GET(req) {
   try {
+    if (!adminDb) {
+      return NextResponse.json({ error: 'Firebase Admin no está configurado' }, { status: 500 });
+    }
+    
     const blockedSnapshot = await adminDb.collection('blockedDays').get();
     
     const blockedDays = [];
@@ -27,6 +31,10 @@ export async function GET(req) {
 // POST: Bloquear un día (vacaciones)
 export async function POST(req) {
   try {
+    if (!adminDb) {
+      return NextResponse.json({ error: 'Firebase Admin no está configurado' }, { status: 500 });
+    }
+    
     const { date, reason } = await req.json();
 
     if (!date) {
@@ -74,6 +82,10 @@ export async function POST(req) {
 // DELETE: Desbloquear un día
 export async function DELETE(req) {
   try {
+    if (!adminDb) {
+      return NextResponse.json({ error: 'Firebase Admin no está configurado' }, { status: 500 });
+    }
+    
     const { searchParams } = new URL(req.url);
     const date = searchParams.get('date');
 

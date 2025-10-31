@@ -5,6 +5,10 @@ import { adminDb } from '@/lib/firebaseAdmin';
 // GET: Obtener todas las reservas
 export async function GET(req) {
   try {
+    if (!adminDb) {
+      return NextResponse.json({ error: 'Firebase Admin no está configurado' }, { status: 500 });
+    }
+    
     const bookingsSnapshot = await adminDb.collection('bookings').orderBy('bookingDate', 'asc').get();
     
     const bookings = [];
@@ -26,6 +30,10 @@ export async function GET(req) {
 // DELETE: Cancelar una reserva
 export async function DELETE(req) {
   try {
+    if (!adminDb) {
+      return NextResponse.json({ error: 'Firebase Admin no está configurado' }, { status: 500 });
+    }
+    
     const { searchParams } = new URL(req.url);
     const bookingId = searchParams.get('id');
 

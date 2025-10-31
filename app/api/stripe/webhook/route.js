@@ -132,6 +132,11 @@ export async function POST(req) {
     return new NextResponse('Falta STRIPE_WEBHOOK_SECRET', { status: 500 });
   }
 
+  if (!adminDb) {
+    console.error('❌ Firebase Admin no está configurado');
+    return new NextResponse('Firebase Admin no configurado', { status: 500 });
+  }
+
   let event;
   try {
     const raw = await req.text(); // necesario para verificar firma
