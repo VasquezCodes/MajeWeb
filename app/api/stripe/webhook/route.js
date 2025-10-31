@@ -1,13 +1,15 @@
-// --- app/api/stripe/webhook/route.js ---
+// app/api/stripe/webhook/route.js
+export const runtime = 'nodejs'; // Stripe webhooks requieren node runtime
+
 import { NextResponse } from 'next/server';
 import stripe from '@/lib/stripe';
-import { db } from '@/lib/firebase';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { adminDb } from '@/lib/firebaseAdmin';
 import { Resend } from 'resend';
 
 // ===== Configuración Resend =====
 const EMAIL_FROM = process.env.EMAIL_FROM || 'Maje Nail Spa <onboarding@resend.dev>';
 const OWNER_EMAIL = process.env.OWNER_EMAIL || '';
+
 let resend = null;
 if (process.env.RESEND_API_KEY) {
   resend = new Resend(process.env.RESEND_API_KEY);
@@ -16,49 +18,111 @@ if (process.env.RESEND_API_KEY) {
   console.warn('⚠️ RESEND_API_KEY no configurado. No se enviarán correos.');
 }
 
-// ====== Helper emails (comprador + dueña) ======
-async function enviarEmails({ comprador, items, totalCents, currency, orderId, bookingDetails }) {
-  if (!resend) {
-    console.warn('⚠️ Resend no inicializado; se omiten emails.');
-    return;
-  }
+// ========== Helpers ==========
+function parseSeguro(s) {
+  try { return s ? JSON.parse(s) : null; } catch { return null; }
+}
+function money(cents, currency) {
+  const value = (Number(cents || 0) / 100).toFixed(2);
+  return `${value} ${String(currency || 'usd').toUpperCase()}`;
+}
+function formatearFecha(dateStr) {
+  if (!dateStr) return '';
+  try {
+    const [y, m, d] = dateStr.split('-');
+    const f = new Date(y, m - 1, d);
+    return f.toLocaleDateString('es-ES', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  } catch { return dateStr; }
+}
 
-  // 1) Email al comprador (si tenemos email)
+async function enviarEmails({ comprador, items, totalCents, currency, orderId, cartSummary, bookingDates }) {
+  if (!resend) return;
+
+  // Cliente
   if (comprador?.email) {
     try {
-      const resp = await resend.emails.send({
+      await resend.emails.send({
         from: EMAIL_FROM,
         to: comprador.email,
         subject: 'Confirmación de compra - Mentorías Maje Nail Spa',
-        html: htmlComprador({ comprador, items, totalCents, currency, bookingDetails }),
+        html: htmlComprador({ comprador, items, totalCents, currency, cartSummary, bookingDates }),
       });
-      console.log('📤 Email COMPRADOR enviado:', comprador.email, resp?.id || '');
+      console.log('📤 Email cliente:', comprador.email);
     } catch (e) {
-      console.error('❌ Error email COMPRADOR:', e);
+      console.error('❌ Email cliente:', e);
     }
-  } else {
-    console.warn('⚠️ Sin email de comprador; no se envía confirmación al cliente.');
   }
 
-  // 2) Email a la dueña (si está configurado)
-  if (OWNER_EMAIL) {
+  // Dueña
+  if ( OWNER_EMAIL ) {
     try {
-      const resp = await resend.emails.send({
+      await resend.emails.send({
         from: EMAIL_FROM,
         to: OWNER_EMAIL,
         subject: '💅 Nueva venta confirmada',
-        html: htmlDueno({ comprador, items, totalCents, currency, orderId, bookingDetails }),
+        html: htmlDueno({ comprador, items, totalCents, currency, orderId, cartSummary, bookingDates }),
       });
-      console.log('📤 Email OWNER enviado a:', OWNER_EMAIL, resp?.id || '');
+      console.log('📤 Email owner:', OWNER_EMAIL);
     } catch (e) {
-      console.error('❌ Error email OWNER:', e);
+      console.error('❌ Email owner:', e);
     }
-  } else {
-    console.warn('⚠️ OWNER_EMAIL no configurado; no se envía correo a la dueña.');
   }
 }
 
-// ====== Webhook principal ======
+function htmlComprador({ comprador, items, totalCents, currency, cartSummary = [], bookingDates = {} }) {
+  return `
+  <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+    <h2 style="color:#E91E63">¡Gracias por tu compra${comprador?.name ? ', ' + comprador.name : ''}!</h2>
+    <p>Tu inscripción para las siguientes mentorías fue confirmada:</p>
+    ${comprador?.phone ? `<p style="margin:8px 0"><strong>Teléfono de contacto:</strong> ${comprador.phone}</p>` : ''}
+    
+    <div style="background:#f8f9fa;padding:16px;border-radius:10px;margin:12px 0">
+      <h3 style="margin:0 0 8px;color:#E91E63">📅 Tus Fechas</h3>
+      ${cartSummary.map(item => {
+        const fecha = bookingDates?.[item.id] ? formatearFecha(bookingDates[item.id]) : 'Fecha pendiente';
+        const precio = item.price === 0 ? ' (GRATIS)' : '';
+        return `<p style="margin:4px 0"><strong>${item.title}${precio}:</strong> ${fecha}</p>`;
+      }).join('')}
+      <p style="margin:12px 0 4px; font-size:12px; color:#555">Horario a confirmar. (Todas las clases inician aprox. 9:00 AM EST)</p>
+    </div>
+    
+    <h3>Resumen</h3>
+    <ul style="list-style:none;padding:0;margin:0">
+      ${items.map(i => `<li style="padding:8px 0;border-bottom:1px solid #eee"><strong>${i.name}</strong> × ${i.quantity} — ${money(i.amount_total, currency)}</li>`).join('')}
+    </ul>
+    <p style="font-size:18px;margin-top:12px"><strong>Total Pagado:</strong> ${money(totalCents, currency)}</p>
+    <p style="margin-top:18px">En breve te contactaremos para coordinar detalles. 💅</p>
+  </div>`;
+}
+
+function htmlDueno({ comprador, items, totalCents, currency, orderId, cartSummary = [], bookingDates = {} }) {
+  return `
+  <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
+    <h2 style="color:#E91E63">💅 Nueva venta confirmada</h2>
+    <div style="background:#f8f9fa;padding:12px;border-radius:8px;margin:10px 0">
+      <p style="margin:4px 0"><strong>Orden:</strong> ${orderId}</p>
+      <p style="margin:4px 0"><strong>Cliente:</strong> ${comprador?.name || '-'}</p>
+      <p style="margin:4px 0"><strong>Email:</strong> ${comprador?.email || '-'}</p>
+      <p style="margin:4px 0"><strong>Teléfono:</strong> ${comprador?.phone || '-'}</p>
+    </div>
+    <div style="background:#fff3e0;padding:12px;border-radius:8px;margin:10px 0">
+      <h3 style="margin:0 0 8px;color:#E91E63">Calendario</h3>
+      ${cartSummary.map(item => {
+        const fecha = bookingDates?.[item.id] ? formatearFecha(bookingDates[item.id]) : 'Fecha pendiente';
+        const precio = item.price === 0 ? ' (GRATIS)' : '';
+        return `<p style="margin:4px 0"><strong>${item.title}${precio}:</strong> ${fecha}</p>`;
+      }).join('')}
+    </div>
+    <h3>Items</h3>
+    <ul style="list-style:none;padding:0;margin:0">
+      ${items.map(i => `<li style="padding:8px 0;border-bottom:1px solid #eee"><strong>${i.name}</strong> × ${i.quantity} — ${money(i.amount_total, currency)}</li>`).join('')}
+    </ul>
+    <p style="font-size:18px;margin-top:12px"><strong>Total:</strong> ${money(totalCents, currency)}</p>
+    <p style="margin-top:16px;color:#666">Revisá Firestore o Stripe para más info.</p>
+  </div>`;
+}
+
+// ========== Webhook ==========
 export async function POST(req) {
   const signature = req.headers.get('stripe-signature');
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -73,236 +137,128 @@ export async function POST(req) {
     const raw = await req.text(); // necesario para verificar firma
     event = stripe.webhooks.constructEvent(raw, signature, secret);
   } catch (err) {
-    console.error('⚠️ Verificación de firma falló:', err.message);
+    console.error('⚠️ Firma inválida:', err.message);
     return new NextResponse(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
   try {
-    console.log(`📩 Evento recibido: ${event.type}`);
+    console.log(`📩 Evento: ${event.type}`);
 
-    // IMPORTANTE: Solo procesar checkout.session.completed para tener metadata completo
-    if (event.type === 'checkout.session.completed') {
-      const data = event.data.object;
+    if (event.type !== 'checkout.session.completed') {
+      // Nos enfocamos en session.completed para tener metadata completa
+      return NextResponse.json({ ok: true, ignored: true });
+    }
 
-      // ID estable para evitar duplicados
-      const orderId =
-        data.id ||
-        data.payment_intent ||
-        data.client_secret ||
-        `evt_${event.id}`;
+    const session = event.data.object;
 
-      const refOrden = doc(db, 'orders', orderId);
-      const ya = await getDoc(refOrden);
-      if (ya.exists()) {
-        console.log('↩️ Orden ya registrada, se ignora:', orderId);
-        return NextResponse.json({ ok: true, duplicated: true });
-      }
+    // ID estable
+    const orderId = session.id || session.payment_intent || session.client_secret || `evt_${event.id}`;
 
-      const isSession = event.type === 'checkout.session.completed';
-      let comprador = {};
-      let items = [];
-      let total = 0;
-      let currency = 'usd';
-      let carrito = null;
-      let bookingDetails = null;
+    // Evitar duplicados
+    const orderRef = adminDb.collection('orders').doc(orderId);
+    const exists = await orderRef.get();
+    if (exists.exists) {
+      console.log('↩️ Orden ya registrada:', orderId);
+      return NextResponse.json({ ok: true, duplicated: true });
+    }
 
-      if (isSession) {
-        // ----- checkout.session.completed -----
-        const session = data;
-        total = session.amount_total || 0;
-        currency = session.currency || 'usd';
+    // Datos base
+    const total = session.amount_total || 0;
+    const currency = session.currency || 'usd';
+    const comprador = {
+      email: session.customer_details?.email || session.customer_email || '',
+      name: session.customer_details?.name || '',
+      phone: session.customer_details?.phone || '',
+    };
 
-        comprador = {
-          email: session.customer_details?.email || session.customer_email || '',
-          name: session.customer_details?.name || '',
-        };
+    // Items (line items)
+    const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 });
+    const items = lineItems.data.map(li => ({
+      name: li.description,
+      quantity: li.quantity,
+      amount_total: li.amount_total,
+      currency,
+    }));
 
-        carrito = parseSeguro(session.metadata?.cart_summary);
+    const bookingDates = parseSeguro(session.metadata?.booking_dates);
+    const cartSummary = parseSeguro(session.metadata?.cart_summary);
 
-        // Extraer información de reserva desde metadata
-        bookingDetails = {
-          date: session.metadata?.booking_date || null,
-          time: session.metadata?.booking_time || null,
-          datetime: session.metadata?.booking_datetime || null,
-        };
+    // ======= Guardar ORDEN
+    await orderRef.set({
+      stripe_id: orderId,
+      type: event.type,
+      amount_total: total,
+      currency,
+      buyer: comprador,
+      items,
+      cart_summary: cartSummary,
+      booking_dates: bookingDates,
+      status: 'paid',
+      createdAt: new Date(), // admin SDK server timestamp alternativo
+      source: 'stripe-webhook',
+    });
 
-        const lineItems = await stripe.checkout.sessions.listLineItems(session.id, { limit: 100 });
-        items = lineItems.data.map((li) => ({
-          name: li.description,
-          quantity: li.quantity,
-          amount_total: li.amount_total,
-          currency,
-        }));
-      } else {
-        // ----- payment_intent.succeeded -----
-        const pi = data;
-        total = pi.amount || pi.amount_received || 0;
-        currency = pi.currency || 'usd';
+    if (bookingDates && cartSummary) {
+      console.log('Iniciando transacción de reserva para', orderId);
 
-        // Intentar enriquecer con cargo
-        let charge = null;
-        try {
-          const charges = await stripe.charges.list({ payment_intent: pi.id, limit: 1 });
-          charge = charges.data[0] || null;
-        } catch (e) {
-          console.warn('⚠️ No se pudo obtener charge:', e.message);
+      await adminDb.runTransaction(async (transaction) => {
+        const bookingsCol = adminDb.collection('bookings');
+        const publicBookingsCol = adminDb.collection('publicBookedDays');
+        const datesToBook = Object.values(bookingDates);
+
+        if (datesToBook.length > 0) {
+          const conflictRefs = datesToBook.map(date => publicBookingsCol.doc(date));
+          const conflictSnapshot = await transaction.getAll(...conflictRefs);
+          const conflictedDocs = conflictSnapshot.filter(doc => doc.exists);
+
+          if (conflictedDocs.length > 0) {
+            const conflictedDates = conflictedDocs.map(d => d.id).join(', ');
+            console.error(`FALLO Transacción: Conflicto en fechas ${conflictedDates}`);
+            throw new Error(`Conflicto de reserva: Las fechas ${conflictedDates} ya están ocupadas.`);
+          }
         }
 
-        comprador = {
-          email: charge?.billing_details?.email || pi.receipt_email || '',
-          name: charge?.billing_details?.name || '',
-        };
+        for (const item of cartSummary) {
+          const courseId = item.id;
+          const bookingDate = bookingDates[courseId];
 
-        items = [
-          {
-            name: charge?.description || pi.description || 'Pago individual',
-            quantity: 1,
-            amount_total: total,
+          if (!bookingDate) continue;
+
+          const newBookingRef = bookingsCol.doc();
+
+          transaction.set(newBookingRef, {
+            orderId,
+            serviceId: courseId,
+            serviceName: item.title,
+            bookingDate,
+            pricePaid: (item.price || 0) * 100,
             currency,
-          },
-        ];
+            isPartOfOffer: item.price === 0 && item.isMarketingCourse,
+            buyer: comprador,
+            status: 'paid',
+            createdAt: new Date(),
+          });
 
-        // Para payment_intent, no tenemos metadata directamente disponible
-        // pero puedes extraerlo del charge si lo guardaste allí
-        bookingDetails = {
-          date: pi.metadata?.booking_date || null,
-          time: pi.metadata?.booking_time || null,
-          datetime: pi.metadata?.booking_datetime || null,
-        };
-      }
-
-      // Guardar orden en Firestore
-      await setDoc(refOrden, {
-        stripe_id: orderId,
-        type: event.type,
-        amount_total: total,
-        currency,
-        buyer: comprador,
-        items,
-        raw_cart: carrito,
-        booking: bookingDetails, // ⭐ Información de reserva
-        status: 'paid',
-        createdAt: serverTimestamp(),
-        source: 'stripe-webhook',
+          const publicDocRef = publicBookingsCol.doc(bookingDate);
+          transaction.set(publicDocRef, {
+            orderId,
+            bookedAt: new Date(),
+          });
+        }
       });
-      console.log('✅ Orden registrada en Firestore:', orderId);
 
-      // Envío de emails (comprador + dueña)
-      await enviarEmails({
-        comprador,
-        items,
-        totalCents: total,
-        currency,
-        orderId,
-        bookingDetails, // ⭐ Pasar datos de reserva a los emails
-      });
+      console.log('✅ Transacción completada. Creados', cartSummary.length, 'bookings para order', orderId);
+    } else {
+      console.warn('⚠️ Orden sin bookingDates, solo se guardó la orden.');
     }
+
+    console.log('✅ Guardado en Firestore (orders & bookings):', orderId);
+
+    await enviarEmails({ comprador, items, totalCents: total, currency, orderId, cartSummary, bookingDates });
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error('💥 Error procesando webhook:', err);
+    console.error('💥 Error webhook:', err);
     return new NextResponse('Webhook handler failed', { status: 500 });
   }
-}
-
-// ===== Helpers =====
-function parseSeguro(s) {
-  try {
-    return s ? JSON.parse(s) : null;
-  } catch {
-    return null;
-  }
-}
-
-function money(cents, currency) {
-  const value = (Number(cents || 0) / 100).toFixed(2);
-  return `${value} ${String(currency || 'usd').toUpperCase()}`;
-}
-
-// Formatear fecha legible en español
-function formatearFecha(dateStr) {
-  if (!dateStr) return '';
-  try {
-    const [year, month, day] = dateStr.split('-');
-    const fecha = new Date(year, month - 1, day);
-    const opciones = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-    return fecha.toLocaleDateString('es-ES', opciones);
-  } catch {
-    return dateStr;
-  }
-}
-
-function htmlComprador({ comprador, items, totalCents, currency, bookingDetails }) {
-  const fechaFormateada = bookingDetails?.date ? formatearFecha(bookingDetails.date) : '';
-  const hora = bookingDetails?.time || '';
-  
-  return `
-    <div style="font-family:Arial,sans-serif; max-width:600px; margin:0 auto;">
-      <h2 style="color:#E91E63;">¡Gracias por tu compra${comprador?.name ? ', ' + comprador.name : ''}!</h2>
-      <p>Tu inscripción a las mentorías fue confirmada exitosamente.</p>
-      
-      ${fechaFormateada && hora ? `
-        <div style="background:#f8f9fa; padding:20px; border-radius:10px; margin:20px 0;">
-          <h3 style="margin-top:0; color:#E91E63;">📅 Tu cita programada:</h3>
-          <p style="font-size:18px; margin:10px 0;"><strong>Fecha:</strong> ${fechaFormateada}</p>
-          <p style="font-size:18px; margin:10px 0;"><strong>Hora:</strong> ${hora} EST</p>
-        </div>
-      ` : ''}
-      
-      <h3>Resumen de tu compra:</h3>
-      <ul style="list-style:none; padding:0;">
-        ${items.map(i => `
-          <li style="padding:10px 0; border-bottom:1px solid #eee;">
-            <strong>${i.name}</strong> × ${i.quantity} — ${money(i.amount_total, currency)}
-          </li>
-        `).join('')}
-      </ul>
-      <p style="font-size:20px; margin-top:20px;"><strong>Total pagado:</strong> ${money(totalCents, currency)}</p>
-      
-      <div style="margin-top:30px; padding:20px; background:#fff3e0; border-radius:10px;">
-        <p style="margin:0;">Nos pondremos en contacto contigo próximamente para confirmar todos los detalles de tu mentoría. 💅</p>
-      </div>
-      
-      <p style="margin-top:30px; color:#666;">Si tienes alguna pregunta, no dudes en contactarnos.</p>
-      <p style="margin-top:30px; font-weight:bold;">— Maje Nail Spa</p>
-    </div>
-  `;
-}
-
-function htmlDueno({ comprador, items, totalCents, currency, orderId, bookingDetails }) {
-  const fechaFormateada = bookingDetails?.date ? formatearFecha(bookingDetails.date) : '-';
-  const hora = bookingDetails?.time || '-';
-  
-  return `
-    <div style="font-family:Arial,sans-serif; max-width:600px; margin:0 auto;">
-      <h2 style="color:#E91E63;">💅 Nueva venta confirmada</h2>
-      
-      <div style="background:#f8f9fa; padding:15px; border-radius:8px; margin:20px 0;">
-        <p style="margin:5px 0;"><strong>ID de orden:</strong> ${orderId}</p>
-        <p style="margin:5px 0;"><strong>Cliente:</strong> ${comprador?.name || '-'}</p>
-        <p style="margin:5px 0;"><strong>Email:</strong> ${comprador?.email || '-'}</p>
-      </div>
-      
-      ${bookingDetails?.date ? `
-        <div style="background:#fff3e0; padding:15px; border-radius:8px; margin:20px 0;">
-          <h3 style="margin-top:0; color:#E91E63;">📅 Fecha de cita:</h3>
-          <p style="margin:5px 0; font-size:16px;"><strong>Fecha:</strong> ${fechaFormateada}</p>
-          <p style="margin:5px 0; font-size:16px;"><strong>Hora:</strong> ${hora} EST</p>
-        </div>
-      ` : ''}
-      
-      <h3>Productos comprados:</h3>
-      <ul style="list-style:none; padding:0;">
-        ${items.map(i => `
-          <li style="padding:10px 0; border-bottom:1px solid #eee;">
-            <strong>${i.name}</strong> × ${i.quantity} — ${money(i.amount_total, currency)}
-          </li>
-        `).join('')}
-      </ul>
-      
-      <p style="font-size:20px; margin-top:20px;"><strong>Total:</strong> ${money(totalCents, currency)}</p>
-      
-      <p style="margin-top:30px; color:#666;">🕓 Revisá Firestore o Stripe Dashboard para más detalles.</p>
-    </div>
-  `;
 }

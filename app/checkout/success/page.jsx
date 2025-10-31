@@ -1,10 +1,38 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CheckCircleIcon, SparklesIcon, AcademicCapIcon, HomeIcon } from '@heroicons/react/24/solid';
+import { useSearchParams } from 'next/navigation';
+import { CheckCircleIcon, SparklesIcon, AcademicCapIcon, HomeIcon, CreditCardIcon, CalendarDaysIcon } from '@heroicons/react/24/solid';
 
 export default function SuccessPage() {
+  const searchParams = useSearchParams();
+  const [sessionData, setSessionData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const sessionId = searchParams.get('session_id');
+    if (sessionId) {
+      fetch(`/api/checkout?session_id=${sessionId}`)
+        .then(res => res.json())
+        .then(data => {
+          console.log('Session data:', data);
+          setSessionData(data);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error('Error obteniendo datos de sesión:', err);
+          setLoading(false);
+        });
+    } else {
+      setLoading(false);
+    }
+  }, [searchParams]);
+
+  const isReservation = sessionData?.payment_type === 'reservation';
+  const cartSummary = sessionData?.cart_summary || [];
+  const bookingDates = sessionData?.booking_dates || {};
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6 py-20 font-sans bg-gradient-to-br from-green-50 via-white to-brand-pink-light/20">
       <div className="max-w-2xl w-full">
@@ -34,9 +62,54 @@ export default function SuccessPage() {
 
           <div className="p-8 md:p-12 space-y-6 text-center">
             <p className="text-xl md:text-2xl text-brand-text font-light leading-relaxed">
-              Tu pago se ha procesado correctamente. 
-              <span className="font-bold text-brand-pink"> ¡Bienvenida a Maje Academy!</span>
+              {isReservation ? (
+                <>
+                  Tu reserva se ha procesado correctamente.
+                  <span className="font-bold text-brand-pink"> ¡Tu cupo está asegurado!</span>
+                </>
+              ) : (
+                <>
+                  Tu pago se ha procesado correctamente.
+                  <span className="font-bold text-brand-pink"> ¡Bienvenida a Maje Academy!</span>
+                </>
+              )}
             </p>
+
+            {/* Información del tipo de pago */}
+            {!loading && sessionData && (
+              <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-2xl p-6 space-y-3">
+                <div className="flex items-center justify-center gap-2 text-blue-700 mb-3">
+                  <CreditCardIcon className="h-5 w-5" />
+                  <span className="text-sm font-black uppercase tracking-wide">
+                    {isReservation ? 'Pago de Reserva' : 'Pago Completo'}
+                  </span>
+                </div>
+                
+                {isReservation ? (
+                  <div className="space-y-3">
+                    <p className="text-base text-brand-text font-medium">
+                      Has pagado <strong className="text-blue-600">${cartSummary.reduce((sum, item) => sum + 250 * (item.qty || 1), 0).toFixed(2)}</strong> para asegurar tu cupo.
+                    </p>
+                    <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4">
+                      <p className="text-sm text-brand-text font-bold flex items-start gap-2">
+                        <span className="text-xl">💰</span>
+                        <span>
+                          <strong>Saldo pendiente:</strong> ${cartSummary.reduce((sum, item) => sum + (item.remaining_balance || 0) * (item.qty || 1), 0).toFixed(2)}
+                          <br />
+                          <span className="text-xs text-brand-text-light mt-1 block">
+                            Este monto se paga el día de la clase presencialmente con María Jesús.
+                          </span>
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-base text-brand-text font-medium">
+                    Has completado el pago total de tu mentoría. <strong>¡Todo listo para comenzar!</strong>
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-6 space-y-3">
               <div className="flex items-center justify-center gap-2 text-green-700">
@@ -59,7 +132,9 @@ export default function SuccessPage() {
                     2
                   </span>
                   <span className="font-medium">
-                    Nuestro equipo te contactará en las próximas 24-48 horas para coordinar fechas
+                    {isReservation 
+                      ? 'Nuestro equipo te contactará en las próximas 24-48 horas para confirmar los detalles y recordarte el saldo pendiente'
+                      : 'Nuestro equipo te contactará en las próximas 24-48 horas para confirmar los detalles de tu mentoría'}
                   </span>
                 </li>
                 <li className="flex items-start gap-3">

@@ -10,8 +10,18 @@ import { XCircleIcon, ArrowLeftIcon, ShoppingBagIcon, HomeIcon, ExclamationTrian
 export default function CancelPage() {
   const [showContent, setShowContent] = useState(false);
   const [showIcon, setShowIcon] = useState(false);
+  const [particles, setParticles] = useState([]);
 
   useEffect(() => {
+    // Generar partículas solo en el cliente para evitar hydration error
+    const newParticles = [...Array(15)].map(() => ({
+      left: Math.random() * 100,
+      top: Math.random() * 100,
+      delay: Math.random() * 3,
+      duration: 5 + Math.random() * 3,
+    }));
+    setParticles(newParticles);
+
     // Animación de aparición progresiva
     const timer1 = setTimeout(() => setShowIcon(true), 300);
     const timer2 = setTimeout(() => setShowContent(true), 800);
@@ -26,15 +36,15 @@ export default function CancelPage() {
     <div className="min-h-screen flex items-center justify-center px-6 py-20 font-sans bg-gradient-to-br from-red-50 via-white to-orange-50 relative overflow-hidden">
       {/* Partículas flotantes de fondo */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(15)].map((_, i) => (
+        {particles.map((particle, i) => (
           <div
             key={i}
             className="absolute animate-float-slow opacity-20"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 3}s`,
-              animationDuration: `${5 + Math.random() * 3}s`,
+              left: `${particle.left}%`,
+              top: `${particle.top}%`,
+              animationDelay: `${particle.delay}s`,
+              animationDuration: `${particle.duration}s`,
             }}
           >
             <div
@@ -115,10 +125,10 @@ export default function CancelPage() {
                 </div>
               </div>
 
-              {/* Tip sobre el carrito */}
+              {/* Mensaje motivacional */}
               <div className="bg-brand-pink/5 border-2 border-brand-pink/20 rounded-2xl p-6">
                 <p className="text-base text-brand-text font-medium">
-                  💡 <span className="font-bold">Tip:</span> Tu carrito se mantiene guardado. Podés volver y completar tu inscripción cuando estés lista.
+                  💡 <span className="font-bold">Recordá:</span> Podés volver cuando quieras y elegir las mentorías que más te interesen. ¡Estamos aquí para ayudarte!
                 </p>
               </div>
 
