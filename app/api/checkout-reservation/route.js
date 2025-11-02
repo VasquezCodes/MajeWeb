@@ -17,7 +17,7 @@ function toHttpsAbsolute(url) {
 // Handler para crear sesión de checkout con pago de reserva
 export async function POST(req) {
   try {
-    const { cart, bookingDates } = await req.json();
+    const { cart, bookingDates, packageInfo } = await req.json();
     
     if (!Array.isArray(cart) || cart.length === 0) {
       return NextResponse.json({ error: "El carrito está vacío." }, { status: 400 });
@@ -31,18 +31,19 @@ export async function POST(req) {
     }
 
     const currency = process.env.STRIPE_CURRENCY || "usd";
-    const RESERVATION_AMOUNT = 250; // Monto de reserva fijo
+    const RESERVATION_PERCENT = 0.30; // 30% del total
 
-    // Crear line items con el monto de reserva
+    // Crear line items con el 30% de cada item
     const line_items = cart.map((item) => {
       const image = toHttpsAbsolute(item.imageUrl);
-      
+      const reservationAmount = item.price * RESERVATION_PERCENT; // 30% del precio del item
+
       return {
         price_data: {
           currency,
           product_data: {
             name: `Reserva: ${item.title}`,
-            description: `Pago de reserva de $${RESERVATION_AMOUNT}. El saldo restante se paga el día de la clase.`,
+            description: `Pago de reserva del 30% ($${reservationAmount.toFixed(2)}). El saldo restante se paga el día de la clase.`,
             images: image ? [image] : undefined,
             metadata: {
               id: String(item.id),
@@ -51,7 +52,7 @@ export async function POST(req) {
               full_price: String(item.price),
             },
           },
-          unit_amount: RESERVATION_AMOUNT * 100, // $250 en centavos
+          unit_amount: Math.round(reservationAmount * 100), // 30% en centavos
         },
         quantity: item.quantity || 1,
       };
@@ -64,16 +65,17 @@ export async function POST(req) {
     // Optimizar metadata para cumplir con límite de 500 caracteres por campo
     const metadata = {
       payment_type: "reservation",
-      reservation_amount: String(RESERVATION_AMOUNT),
+      reservation_percent: String(RESERVATION_PERCENT * 100), // Guardar como porcentaje (30)
       total_items: String(cart.length),
     };
 
     // Guardar IDs de cursos (compacto)
     metadata.course_ids = cart.map(item => item.id).join(',');
-    
+
     // Guardar precios completos y saldos restantes
     metadata.full_prices = cart.map(item => item.price).join(',');
-    metadata.remaining = cart.map(item => item.price - RESERVATION_AMOUNT).join(',');
+    metadata.reservation_amounts = cart.map(item => (item.price * RESERVATION_PERCENT).toFixed(2)).join(',');
+    metadata.remaining = cart.map(item => (item.price * (1 - RESERVATION_PERCENT)).toFixed(2)).join(',');
     
     // Guardar fechas de reserva de forma compacta
     const datesCompact = Object.entries(bookingDates)
@@ -94,6 +96,11 @@ export async function POST(req) {
     const titlesCompact = cart.map(item => item.title.substring(0, 30)).join('|');
     if (titlesCompact.length <= 500) {
       metadata.course_titles = titlesCompact;
+    }
+
+    // Guardar info del paquete si existe (muy compacto: "GOLD|15|presencial")
+    if (packageInfo) {
+      metadata.package = `${packageInfo.type}|${packageInfo.discount}|${packageInfo.marketingFormat || 'none'}`;
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -145,8 +152,8 @@ export async function GET(req) {
 
     // Reconstruir datos desde metadata optimizada
     const paymentType = session.metadata?.payment_type || "reservation";
-    const reservationAmount = parseFloat(session.metadata?.reservation_amount || 250);
-    
+    const reservationPercent = parseFloat(session.metadata?.reservation_percent || 30) / 100;
+
     // Reconstruir fechas de reserva
     let bookingDates = null;
     if (session.metadata?.booking_dates) {
@@ -172,19 +179,20 @@ export async function GET(req) {
         });
       }
     }
-    
+
     // Reconstruir resumen del carrito
     let cartSummary = null;
     if (session.metadata?.course_ids) {
       const ids = session.metadata.course_ids.split(',');
       const fullPrices = session.metadata.full_prices?.split(',') || [];
+      const reservationAmounts = session.metadata.reservation_amounts?.split(',') || [];
       const remaining = session.metadata.remaining?.split(',') || [];
       const titles = session.metadata.course_titles?.split('|') || [];
-      
+
       cartSummary = ids.map((id, index) => ({
         id,
         full_price: parseFloat(fullPrices[index] || 0),
-        reservation_paid: reservationAmount,
+        reservation_paid: parseFloat(reservationAmounts[index] || fullPrices[index] * reservationPercent),
         remaining_balance: parseFloat(remaining[index] || 0),
         title: titles[index] || 'Mentoría',
         qty: 1

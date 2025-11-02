@@ -35,7 +35,7 @@ function formatearFecha(dateStr) {
   } catch { return dateStr; }
 }
 
-async function enviarEmails({ comprador, items, totalCents, currency, orderId, cartSummary, bookingDates }) {
+async function enviarEmails({ comprador, items, totalCents, currency, orderId, cartSummary, bookingDates, packageInfo, paymentType }) {
   if (!resend) return;
 
   // Cliente
@@ -45,7 +45,7 @@ async function enviarEmails({ comprador, items, totalCents, currency, orderId, c
         from: EMAIL_FROM,
         to: comprador.email,
         subject: 'Confirmación de compra - Mentorías Maje Nail Spa',
-        html: htmlComprador({ comprador, items, totalCents, currency, cartSummary, bookingDates }),
+        html: htmlComprador({ comprador, items, totalCents, currency, cartSummary, bookingDates, packageInfo, paymentType }),
       });
       console.log('📤 Email cliente:', comprador.email);
     } catch (e) {
@@ -60,7 +60,7 @@ async function enviarEmails({ comprador, items, totalCents, currency, orderId, c
         from: EMAIL_FROM,
         to: OWNER_EMAIL,
         subject: '💅 Nueva venta confirmada',
-        html: htmlDueno({ comprador, items, totalCents, currency, orderId, cartSummary, bookingDates }),
+        html: htmlDueno({ comprador, items, totalCents, currency, orderId, cartSummary, bookingDates, packageInfo, paymentType }),
       });
       console.log('📤 Email owner:', OWNER_EMAIL);
     } catch (e) {
@@ -69,13 +69,24 @@ async function enviarEmails({ comprador, items, totalCents, currency, orderId, c
   }
 }
 
-function htmlComprador({ comprador, items, totalCents, currency, cartSummary = [], bookingDates = {} }) {
+function htmlComprador({ comprador, items, totalCents, currency, cartSummary = [], bookingDates = {}, packageInfo = null, paymentType = 'full' }) {
   return `
   <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
     <h2 style="color:#E91E63">¡Gracias por tu compra${comprador?.name ? ', ' + comprador.name : ''}!</h2>
     <p>Tu inscripción para las siguientes mentorías fue confirmada:</p>
     ${comprador?.phone ? `<p style="margin:8px 0"><strong>Teléfono de contacto:</strong> ${comprador.phone}</p>` : ''}
-    
+
+    ${packageInfo ? `
+    <div style="background:linear-gradient(135deg, #FFC107 0%, #FF9800 100%);padding:12px;border-radius:10px;margin:12px 0">
+      <p style="margin:0;color:#fff;font-weight:bold;text-align:center">
+        ✨ Paquete ${packageInfo.type} - ${packageInfo.discount}% de descuento aplicado
+      </p>
+      ${packageInfo.marketingFormat ? `<p style="margin:4px 0 0;color:#fff;font-size:13px;text-align:center">
+        Incluye curso de Marketing ${packageInfo.marketingFormat === 'presencial' ? 'Presencial (3er día)' : 'Online (vía Zoom)'}
+      </p>` : ''}
+    </div>
+    ` : ''}
+
     <div style="background:#f8f9fa;padding:16px;border-radius:10px;margin:12px 0">
       <h3 style="margin:0 0 8px;color:#E91E63">📅 Tus Fechas</h3>
       ${cartSummary.map(item => {
@@ -85,17 +96,18 @@ function htmlComprador({ comprador, items, totalCents, currency, cartSummary = [
       }).join('')}
       <p style="margin:12px 0 4px; font-size:12px; color:#555">Horario a confirmar. (Todas las clases inician aprox. 9:00 AM EST)</p>
     </div>
-    
+
     <h3>Resumen</h3>
     <ul style="list-style:none;padding:0;margin:0">
       ${items.map(i => `<li style="padding:8px 0;border-bottom:1px solid #eee"><strong>${i.name}</strong> × ${i.quantity} — ${money(i.amount_total, currency)}</li>`).join('')}
     </ul>
-    <p style="font-size:18px;margin-top:12px"><strong>Total Pagado:</strong> ${money(totalCents, currency)}</p>
+    <p style="font-size:18px;margin-top:12px"><strong>${paymentType === 'reservation' ? 'Reserva Pagada (30%):' : 'Total Pagado:'}</strong> ${money(totalCents, currency)}</p>
+    ${paymentType === 'reservation' && cartSummary.length > 0 ? `<p style="font-size:14px;color:#666;margin:8px 0">El saldo restante se paga presencialmente el día de la clase.</p>` : ''}
     <p style="margin-top:18px">En breve te contactaremos para coordinar detalles. 💅</p>
   </div>`;
 }
 
-function htmlDueno({ comprador, items, totalCents, currency, orderId, cartSummary = [], bookingDates = {} }) {
+function htmlDueno({ comprador, items, totalCents, currency, orderId, cartSummary = [], bookingDates = {}, packageInfo = null, paymentType = 'full' }) {
   return `
   <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
     <h2 style="color:#E91E63">💅 Nueva venta confirmada</h2>
@@ -104,6 +116,8 @@ function htmlDueno({ comprador, items, totalCents, currency, orderId, cartSummar
       <p style="margin:4px 0"><strong>Cliente:</strong> ${comprador?.name || '-'}</p>
       <p style="margin:4px 0"><strong>Email:</strong> ${comprador?.email || '-'}</p>
       <p style="margin:4px 0"><strong>Teléfono:</strong> ${comprador?.phone || '-'}</p>
+      ${packageInfo ? `<p style="margin:4px 0"><strong>Paquete:</strong> ${packageInfo.type} (${packageInfo.discount}% OFF)${packageInfo.marketingFormat ? ` + Marketing ${packageInfo.marketingFormat}` : ''}</p>` : ''}
+      ${paymentType === 'reservation' ? `<p style="margin:4px 0;color:#ff6600"><strong>Tipo de pago:</strong> RESERVA 30% - Saldo pendiente presencial</p>` : ''}
     </div>
     <div style="background:#fff3e0;padding:12px;border-radius:8px;margin:10px 0">
       <h3 style="margin:0 0 8px;color:#E91E63">Calendario</h3>
@@ -117,7 +131,7 @@ function htmlDueno({ comprador, items, totalCents, currency, orderId, cartSummar
     <ul style="list-style:none;padding:0;margin:0">
       ${items.map(i => `<li style="padding:8px 0;border-bottom:1px solid #eee"><strong>${i.name}</strong> × ${i.quantity} — ${money(i.amount_total, currency)}</li>`).join('')}
     </ul>
-    <p style="font-size:18px;margin-top:12px"><strong>Total:</strong> ${money(totalCents, currency)}</p>
+    <p style="font-size:18px;margin-top:12px"><strong>${paymentType === 'reservation' ? 'Reserva (30%):' : 'Total:'}</strong> ${money(totalCents, currency)}</p>
     <p style="margin-top:16px;color:#666">Revisá Firestore o Stripe para más info.</p>
   </div>`;
 }
@@ -185,8 +199,77 @@ export async function POST(req) {
       currency,
     }));
 
-    const bookingDates = parseSeguro(session.metadata?.booking_dates);
-    const cartSummary = parseSeguro(session.metadata?.cart_summary);
+    // Reconstruir booking dates desde formato compacto
+    let bookingDates = null;
+    if (session.metadata?.booking_dates) {
+      // Formato compacto: "id1:date1|id2:date2"
+      const entries = session.metadata.booking_dates.split('|');
+      bookingDates = {};
+      entries.forEach(entry => {
+        const [id, date] = entry.split(':');
+        if (id && date) bookingDates[id] = date;
+      });
+    } else {
+      // Reconstruir desde múltiples campos si fue dividido
+      let datesStr = '';
+      let i = 0;
+      while (session.metadata?.[`dates_${i}`]) {
+        datesStr += session.metadata[`dates_${i}`];
+        i++;
+      }
+      if (datesStr) {
+        const entries = datesStr.split('|');
+        bookingDates = {};
+        entries.forEach(entry => {
+          const [id, date] = entry.split(':');
+          if (id && date) bookingDates[id] = date;
+        });
+      }
+    }
+
+    // Reconstruir cart summary desde formato compacto
+    let cartSummary = null;
+    const paymentType = session.metadata?.payment_type || 'full';
+
+    if (session.metadata?.course_ids) {
+      const ids = session.metadata.course_ids.split(',');
+      const titles = session.metadata.course_titles?.split('|') || [];
+
+      if (paymentType === 'reservation') {
+        const fullPrices = session.metadata.full_prices?.split(',') || [];
+        const reservationAmounts = session.metadata.reservation_amounts?.split(',') || [];
+        const remaining = session.metadata.remaining?.split(',') || [];
+
+        cartSummary = ids.map((id, index) => ({
+          id,
+          title: titles[index] || 'Mentoría',
+          price: parseFloat(fullPrices[index] || 0),
+          reservation_paid: parseFloat(reservationAmounts[index] || 0),
+          remaining_balance: parseFloat(remaining[index] || 0),
+          isMarketingCourse: id === 'marketing',
+        }));
+      } else {
+        const prices = session.metadata.prices?.split(',') || [];
+
+        cartSummary = ids.map((id, index) => ({
+          id,
+          title: titles[index] || 'Mentoría',
+          price: parseFloat(prices[index] || 0),
+          isMarketingCourse: id === 'marketing',
+        }));
+      }
+    }
+
+    // Parsear info del paquete si existe (formato: "GOLD|15|presencial")
+    let packageInfo = null;
+    if (session.metadata?.package) {
+      const [type, discount, marketingFormat] = session.metadata.package.split('|');
+      packageInfo = {
+        type,
+        discount: parseInt(discount) || 0,
+        marketingFormat: marketingFormat !== 'none' ? marketingFormat : null,
+      };
+    }
 
     // ======= Guardar ORDEN
     await orderRef.set({
@@ -198,6 +281,8 @@ export async function POST(req) {
       items,
       cart_summary: cartSummary,
       booking_dates: bookingDates,
+      package_info: packageInfo,
+      payment_type: paymentType,
       status: 'paid',
       createdAt: new Date(), // admin SDK server timestamp alternativo
       source: 'stripe-webhook',
@@ -259,7 +344,7 @@ export async function POST(req) {
 
     console.log('✅ Guardado en Firestore (orders & bookings):', orderId);
 
-    await enviarEmails({ comprador, items, totalCents: total, currency, orderId, cartSummary, bookingDates });
+    await enviarEmails({ comprador, items, totalCents: total, currency, orderId, cartSummary, bookingDates, packageInfo, paymentType });
 
     return NextResponse.json({ ok: true });
   } catch (err) {

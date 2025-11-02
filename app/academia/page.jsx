@@ -23,7 +23,6 @@ import {
   AcademicCapIcon,
   PencilSquareIcon,
   CalendarDaysIcon,
-  ChatBubbleBottomCenterTextIcon,
   ShoppingBagIcon,
   CheckCircleIcon,
   SparklesIcon,
@@ -34,17 +33,19 @@ import {
   ListBulletIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  StarIcon,
 } from '@heroicons/react/24/solid';
 
 // --- Helper de pago con Stripe (Pago Completo) ---
-async function iniciarPago(cart, bookingDates) {
+async function iniciarPago(cart, bookingDates, packageInfo = null) {
   try {
     const res = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         cart,
-        bookingDates
+        bookingDates,
+        packageInfo
       }),
     });
     const data = await res.json();
@@ -60,14 +61,15 @@ async function iniciarPago(cart, bookingDates) {
 }
 
 // --- Helper de pago con Stripe (Pago de Reserva) ---
-async function iniciarPagoReserva(cart, bookingDates) {
+async function iniciarPagoReserva(cart, bookingDates, packageInfo = null) {
   try {
     const res = await fetch('/api/checkout-reservation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         cart,
-        bookingDates
+        bookingDates,
+        packageInfo
       }),
     });
     const data = await res.json();
@@ -92,7 +94,7 @@ const courses = [
     imageUrl: "/academiaImg/manicuraRusa.png",
     tags: ["Técnica Rusa", "Builder Gel", "Nivelación Perfecta"],
     price: 850.00,
-    originalPrice: 950.00,
+    originalPrice: 850.00,
     format: "Mentoría VIP Presencial",
     duration: "6-8 horas",
     isMarketingCourse: false,
@@ -105,7 +107,7 @@ const courses = [
     imageUrl: "/academiaImg/sistemaDual.png",
     tags: ["Dual System", "Builder Gel", "Estructura Rápida"],
     price: 850.00,
-    originalPrice: 950.00,
+    originalPrice: 850.00,
     format: "Mentoría VIP Presencial",
     duration: "6-8 horas",
     isMarketingCourse: false,
@@ -118,7 +120,7 @@ const courses = [
     imageUrl: "/academiaImg/polyGel.png",
     tags: ["Poly Gel", "Técnicas Híbridas", "Esculpidas"],
     price: 850.00,
-    originalPrice: 950.00,
+    originalPrice: 850.00,
     format: "Mentoría VIP Presencial",
     duration: "6-8 horas",
     isMarketingCourse: false,
@@ -131,7 +133,7 @@ const courses = [
     imageUrl: "/academiaImg/pedicura.png",
     tags: ["Pedicura Pro", "Servicio Spa", "Técnica Avanzada"],
     price: 850.00,
-    originalPrice: 950.00,
+    originalPrice: 850.00,
     format: "Mentoría VIP Presencial",
     duration: "6-8 horas",
     isMarketingCourse: false,
@@ -140,13 +142,13 @@ const courses = [
     id: "marketing",
     title: "MARKETING PARA MANICURISTAS",
     description:
-      "Aprende a vender sin miedo y atraer clientas premium. Presencial en Orlando, FL. (Puedes obtenerlo GRATIS en un tercer día si reservas 2 mentorías VIP)",
+      "Aprende a vender sin miedo y atraer clientas premium. Formato presencial u online según el paquete seleccionado.",
     imageUrl:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=960&q=80",
     tags: ["Marketing", "Clientes Premium", "Redes Sociales"],
     price: 497.00,
-    originalPrice: 600.00,
-    format: "Módulo Presencial",
+    originalPrice: 497.00,
+    format: "Módulo Bonus",
     duration: "1 Día",
     isMarketingCourse: true,
   },
@@ -211,7 +213,7 @@ const testimonials = [
 const faqs = [
   {
     question: "COMO SERA LA MODALIDAD DE PAGO ?",
-    answer: "Ofrecemos dos opciones: 1) Pago Completo: Paga el total de la mentoría con tarjeta (aceptamos pagos en cuotas con Afterpay y Klarna). 2) Pago de Reserva: Asegura tu cupo con $250 y el saldo restante se paga el día de la clase presencialmente con María Jesús."
+    answer: "Ofrecemos dos opciones: 1) Pago Completo: Paga el total de la mentoría con tarjeta (aceptamos pagos en cuotas con Afterpay y Klarna). 2) Pago de Reserva: Asegura tu cupo con el 30% del total y el saldo restante se paga el día de la clase presencialmente con María Jesús."
   },
   {
     question: "EL CERTIFICADO ME SIRVE PARA TRABAJAR EN LOS ESTADOS UNIDOS ?",
@@ -222,20 +224,24 @@ const faqs = [
 // --- Logros de las alumnas ---
 const achievements = [
   {
-    title: "Lanzan servicios premium en menos de 30 días",
-    desc: "Implementan rutinas exclusivas y diferenciales que las posicionan sobre la competencia desde el primer mes."
+    title: "Perfeccionan su técnica según su nivel actual",
+    desc: "Si comienzan desde cero, aprenden una base sólida y segura. Si ya tienen experiencia, pulen detalles y alcanzan un acabado realmente premium."
   },
   {
-    title: "Duplican la frecuencia de clientas",
-    desc: "Aprenden protocolos de fidelización y marketing que generan clientas recurrentes y listas de espera."
+    title: "Aprenden mi método profesional y mis secretos de acabado",
+    desc: "Domina una estructura más fina, duradera y estética que les permite cobrar lo que su trabajo realmente vale."
   },
   {
-    title: "Profesionalizan su marca personal",
-    desc: "Construyen una imagen sólida en redes, con contenidos estratégicos que atraen a clientas dispuestas a pagar más."
+    title: "Aplican con confianza en clientas reales",
+    desc: "Con guía personalizada, convierten lo aprendido en resultados visibles y consistentes."
   },
   {
-    title: "Escalan sus ingresos",
-    desc: "Crean paquetes VIP, suben tarifas y gestionan finanzas del negocio para vivir 100% de la belleza de lujo."
+    title: "Se posicionan como manicuristas de alto valor",
+    desc: "Gracias al módulo de marketing, optimizan sus redes, muestran su diferencia y atraen clientas con alto poder de inversión."
+  },
+  {
+    title: "Construyen una marca respetada y rentable",
+    desc: "Mejoran su imagen, suben precios con respaldo y se convierten en profesionales visibles en su ciudad."
   }
 ];
 
@@ -421,24 +427,64 @@ export default function AcademiaPage() {
   const [bookedDates, setBookedDates] = useState(new Set());
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
 
-  const { eligibleForOffer, offerApplied, finalCart, totalPrice } = useMemo(() => {
+  const { eligibleForOffer, offerApplied, finalCart, totalPrice, packageType, discount, marketingFormat, marketingIncluded } = useMemo(() => {
     const nonMarketingCourses = cart.filter(c => !c.isMarketingCourse);
     const hasMarketingCourse = cart.some(c => c.isMarketingCourse);
+    const mentoriaCount = nonMarketingCourses.length;
 
-    const isEligible = nonMarketingCourses.length >= 2 && !hasMarketingCourse;
-    const isApplied = nonMarketingCourses.length >= 2 && hasMarketingCourse;
+    // Verificar si la promoción de marketing gratis aún está vigente
+    const today = new Date();
+    const promoEndDate = new Date('2025-12-15T23:59:59');
+    const isMarketingPromoActive = today <= promoEndDate;
+
+    // Determinar el tipo de paquete y descuento
+    let packageName = null;
+    let discountPercent = 0;
+    let marketingDelivery = null;
+
+    if (mentoriaCount === 2) {
+      packageName = 'GOLD';
+      discountPercent = 15;
+      marketingDelivery = 'presencial';
+    } else if (mentoriaCount === 3) {
+      packageName = 'PLATINUM';
+      discountPercent = 20;
+      marketingDelivery = 'online';
+    } else if (mentoriaCount >= 4) {
+      packageName = 'DIAMOND';
+      discountPercent = 25;
+      marketingDelivery = 'online';
+    }
+
+    const isEligible = mentoriaCount >= 2 && !hasMarketingCourse && isMarketingPromoActive;
+    const isApplied = mentoriaCount >= 2 && hasMarketingCourse && isMarketingPromoActive;
 
     let tempFinalCart = [...cart];
     const marketingBasePrice = courses.find(c => c.id === 'marketing')?.price ?? 497;
 
-    tempFinalCart = tempFinalCart.map(item => {
-      if (!item.isMarketingCourse) return item;
+    // Calcular precio base de las mentorías (sin descuento)
+    const mentoriasBasePrice = nonMarketingCourses.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-      if (isApplied) {
-        return { ...item, price: 0, originalPrice: 497.00 };
+    // Aplicar descuento si hay paquete
+    const mentoriasWithDiscount = packageName
+      ? mentoriasBasePrice * (1 - discountPercent / 100)
+      : mentoriasBasePrice;
+
+    // Actualizar precios de las mentorías con descuento aplicado
+    tempFinalCart = tempFinalCart.map(item => {
+      if (!item.isMarketingCourse && packageName) {
+        const discountedPrice = item.price * (1 - discountPercent / 100);
+        return { ...item, price: discountedPrice, originalPrice: item.price };
       }
 
-      return { ...item, price: marketingBasePrice };
+      if (item.isMarketingCourse) {
+        if (isApplied) {
+          return { ...item, price: 0, originalPrice: 497.00 };
+        }
+        return { ...item, price: marketingBasePrice };
+      }
+
+      return item;
     });
 
     const finalPrice = tempFinalCart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -448,6 +494,10 @@ export default function AcademiaPage() {
       offerApplied: isApplied,
       finalCart: tempFinalCart,
       totalPrice: finalPrice,
+      packageType: packageName,
+      discount: discountPercent,
+      marketingFormat: marketingDelivery,
+      marketingIncluded: isMarketingPromoActive,
     };
   }, [cart]);
 
@@ -545,10 +595,16 @@ export default function AcademiaPage() {
   };
 
   const handlePaymentChoice = (paymentType) => {
+    const packageInfo = packageType ? {
+      type: packageType,
+      discount: discount,
+      marketingFormat: marketingFormat
+    } : null;
+
     if (paymentType === 'full') {
-      iniciarPago(finalCart, bookingPayload);
+      iniciarPago(finalCart, bookingPayload, packageInfo);
     } else if (paymentType === 'reservation') {
-      iniciarPagoReserva(finalCart, bookingPayload);
+      iniciarPagoReserva(finalCart, bookingPayload, packageInfo);
     }
   };
 
@@ -660,38 +716,98 @@ export default function AcademiaPage() {
       </section>
 
       {/* === Sección 2.5: Qué logran las alumnas === */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-          {/* Columna de Texto */}
-          <div className="space-y-8">
-            <h2 className="text-4xl md:text-5xl font-black text-brand-text leading-tight">
-              ¿Qué logran las alumnas en esta mentoría VIP?
-            </h2>
-            <div className="space-y-6">
-              {achievements.map((item) => (
-                <div key={item.title} className="flex gap-4">
-                  <div className="flex-shrink-0 pt-1">
-                    <CheckCircleIcon className="h-6 w-6 text-brand-pink" />
+      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+
+            {/* Columna de Contenido - Izquierda */}
+            <div className="space-y-8 md:space-y-10 order-2 lg:order-1">
+              <div className="space-y-4">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-white leading-tight">
+                  ¿Qué logran mis alumnas?
+                </h2>
+                <p className="text-2xl md:text-3xl">👇🏻</p>
+              </div>
+
+              <div className="space-y-6 md:space-y-7">
+                {achievements.map((item, index) => (
+                  <div
+                    key={item.title}
+                    className="flex gap-4 group"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <div className="flex-shrink-0 pt-1">
+                      <div className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-emerald-500/20 flex items-center justify-center group-hover:bg-emerald-500/30 transition-colors duration-300">
+                        <CheckCircleIcon className="h-5 w-5 md:h-6 md:w-6 text-emerald-400" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-lg md:text-xl font-black text-white mb-2 leading-tight">
+                        {item.title}
+                      </h3>
+                      <p className="text-sm md:text-base text-slate-300 font-light leading-relaxed">
+                        {item.desc}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-black text-brand-text">{item.title}</h3>
-                    <p className="text-base text-brand-text-light font-light leading-relaxed mt-1">{item.desc}</p>
+                ))}
+              </div>
+            </div>
+
+            {/* Columna de Collage - Derecha */}
+            <div className="relative order-1 lg:order-2">
+              {/* Grid de collage */}
+              <div className="grid grid-cols-2 gap-3 md:gap-4">
+
+                {/* Imagen grande - ocupa 2 filas */}
+                <div className="relative row-span-2 overflow-hidden rounded-2xl md:rounded-3xl shadow-xl">
+                  <div className="relative h-full min-h-[400px] md:min-h-[500px]">
+                    <Image
+                      src="/queAprenderan/queAprenderan.jpg"
+                      alt="Alumna de Maje Nails Academy trabajando"
+                      fill
+                      className="object-cover object-center"
+                      priority={false}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent" />
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
 
-          {/* Columna de Imagen */}
-          <div className="relative order-first lg:order-last">
-            <div className="relative overflow-hidden rounded-[2rem] shadow-2xl aspect-[4/5]">
-              <img
-                src="/academiaImg/queLogran.png"
-                alt="Maje, mentora de Maje Nails Academy"
-                className="w-full h-full object-cover"
-              />
+                {/* Imagen superior derecha */}
+                <div className="relative overflow-hidden rounded-2xl md:rounded-3xl shadow-xl">
+                  <div className="relative h-full min-h-[190px] md:min-h-[240px]">
+                    <Image
+                      src="/queAprenderan/IMG_5957.jpg"
+                      alt="Resultados de alumnas"
+                      fill
+                      className="object-cover object-center"
+                      priority={false}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent" />
+                  </div>
+                </div>
+
+                {/* Imagen inferior derecha */}
+                <div className="relative overflow-hidden rounded-2xl md:rounded-3xl shadow-xl">
+                  <div className="relative h-full min-h-[190px] md:min-h-[240px]">
+                    <Image
+                      src="/queAprenderan/IMG_7539.jpg"
+                      alt="Técnicas aprendidas"
+                      fill
+                      className="object-cover object-center"
+                      priority={false}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent" />
+                  </div>
+                </div>
+
+              </div>
+
+              {/* Elementos decorativos */}
+              <div className="absolute -bottom-6 -right-6 h-40 w-40 rounded-full bg-emerald-500/20 blur-3xl -z-10" />
+              <div className="absolute -top-6 -left-6 h-32 w-32 rounded-full bg-brand-pink/20 blur-3xl -z-10" />
             </div>
-            <div className="absolute -bottom-12 -right-12 h-40 w-40 rounded-full bg-brand-pink/10 blur-3xl -z-10" />
+
           </div>
         </div>
       </section>
@@ -711,6 +827,141 @@ export default function AcademiaPage() {
         </div>
       </section>
 
+      {/* === Sección de Paquetes === */}
+      <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="text-center max-w-3xl mx-auto space-y-5 mb-12">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-brand-text leading-tight">
+            Paquetes Exclusivos
+          </h2>
+          <p className="text-lg md:text-xl text-brand-text-light font-light leading-relaxed">
+            Obtén descuentos increíbles al reservar múltiples mentorías. {marketingIncluded && '¡Curso de Marketing GRATIS incluido!'}
+          </p>
+          {marketingIncluded && (
+            <div className="inline-flex items-center gap-2 rounded-full bg-red-500 px-4 py-2 shadow-lg">
+              <span className="text-sm font-black text-white">
+                ⏰ Oferta de Marketing GRATIS válida hasta el 15 de Diciembre
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+          {/* Paquete GOLD */}
+          <div className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-yellow-400 shadow-xl hover:shadow-2xl transition-all duration-300 md:hover:scale-105">
+            <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-yellow-400/20 to-amber-400/20 rounded-full blur-3xl" />
+            <div className="relative p-5 md:p-8 space-y-4 md:space-y-6">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-1.5 md:gap-2 rounded-full bg-gradient-to-r from-yellow-400 to-amber-500 px-3 md:px-4 py-1.5 md:py-2 shadow-lg">
+                  <SparklesIcon className="h-4 md:h-5 w-4 md:w-5 text-white" />
+                  <span className="text-xs md:text-sm font-black text-white uppercase tracking-wider">
+                    Paquete Gold
+                  </span>
+                </div>
+                <h3 className="text-2xl md:text-3xl font-black text-brand-text">15% OFF</h3>
+              </div>
+
+              <div className="space-y-2.5 md:space-y-3">
+                <div className="flex items-start gap-2 md:gap-3">
+                  <CheckCircleIcon className="h-5 md:h-6 w-5 md:w-6 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm md:text-base text-brand-text font-medium leading-snug">
+                    Elige <strong>2 mentorías</strong> y ahorra 15%
+                  </p>
+                </div>
+                {marketingIncluded && (
+                  <div className="flex items-start gap-2 md:gap-3">
+                    <CheckCircleIcon className="h-5 md:h-6 w-5 md:w-6 text-yellow-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm md:text-base text-brand-text font-medium leading-snug">
+                      Curso de Marketing <strong>GRATIS Presencial</strong> en un 3er día
+                    </p>
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </div>
+
+          {/* Paquete PLATINUM */}
+          <div className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-400 shadow-xl hover:shadow-2xl transition-all duration-300 md:hover:scale-105">
+            <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-cyan-400/20 to-blue-400/20 rounded-full blur-3xl" />
+            <div className="relative p-5 md:p-8 space-y-4 md:space-y-6">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-1.5 md:gap-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 px-3 md:px-4 py-1.5 md:py-2 shadow-lg">
+                  <SparklesIcon className="h-4 md:h-5 w-4 md:w-5 text-white" />
+                  <span className="text-xs md:text-sm font-black text-white uppercase tracking-wider">
+                    Paquete Platinum
+                  </span>
+                </div>
+                <h3 className="text-2xl md:text-3xl font-black text-brand-text">20% OFF</h3>
+              </div>
+
+              <div className="space-y-2.5 md:space-y-3">
+                <div className="flex items-start gap-2 md:gap-3">
+                  <CheckCircleIcon className="h-5 md:h-6 w-5 md:w-6 text-cyan-600 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm md:text-base text-brand-text font-medium leading-snug">
+                    Elige <strong>3 mentorías</strong> y ahorra 20%
+                  </p>
+                </div>
+                {marketingIncluded && (
+                  <div className="flex items-start gap-2 md:gap-3">
+                    <CheckCircleIcon className="h-5 md:h-6 w-5 md:w-6 text-cyan-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm md:text-base text-brand-text font-medium leading-snug">
+                      Curso de Marketing <strong>GRATIS Online</strong> vía Zoom
+                    </p>
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </div>
+
+          {/* Paquete DIAMOND */}
+          <div className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-gradient-to-br from-gray-900 to-black border-2 border-gray-700 shadow-xl hover:shadow-2xl transition-all duration-300 md:hover:scale-105">
+            <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-gray-600/20 to-gray-800/20 rounded-full blur-3xl" />
+            <div className="relative p-5 md:p-8 space-y-4 md:space-y-6">
+              <div className="space-y-2">
+                <div className="inline-flex items-center gap-1.5 md:gap-2 rounded-full bg-gradient-to-r from-gray-700 to-gray-900 px-3 md:px-4 py-1.5 md:py-2 shadow-lg ring-2 ring-gray-500/50">
+                  <SparklesIcon className="h-4 md:h-5 w-4 md:w-5 text-yellow-400" />
+                  <span className="text-xs md:text-sm font-black text-white uppercase tracking-wider">
+                    Paquete Diamond
+                  </span>
+                </div>
+                <h3 className="text-2xl md:text-3xl font-black text-white">25% OFF</h3>
+              </div>
+
+              <div className="space-y-2.5 md:space-y-3">
+                <div className="flex items-start gap-2 md:gap-3">
+                  <CheckCircleIcon className="h-5 md:h-6 w-5 md:w-6 text-yellow-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm md:text-base text-white font-medium leading-snug">
+                    Elige <strong>4+ mentorías</strong> y ahorra 25%
+                  </p>
+                </div>
+                {marketingIncluded && (
+                  <div className="flex items-start gap-2 md:gap-3">
+                    <CheckCircleIcon className="h-5 md:h-6 w-5 md:w-6 text-yellow-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm md:text-base text-white font-medium leading-snug">
+                      Curso de Marketing <strong>GRATIS Online</strong> vía Zoom
+                    </p>
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-12 text-center max-w-2xl mx-auto">
+          {marketingIncluded ? (
+            <p className="text-base text-brand-text-light italic">
+              💡 <strong>Nota:</strong> El curso de Marketing se añade automáticamente a tu carrito cuando seleccionas 2 o más mentorías. ¡No tienes que hacer nada adicional! <span className="text-red-600 font-bold">Oferta válida hasta el 15 de Diciembre.</span>
+            </p>
+          ) : (
+            <p className="text-base text-brand-text-light italic">
+              💡 <strong>Nota:</strong> Los descuentos se aplican automáticamente al seleccionar 2 o más mentorías.
+            </p>
+          )}
+        </div>
+      </section>
+
       {/* === Sección 3: Lista de Mentorías === */}
       <section id="mentorias" className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 scroll-mt-20">
         <div className="text-center max-w-3xl mx-auto space-y-5 mb-16">
@@ -720,11 +971,11 @@ export default function AcademiaPage() {
               Formación Profesional
             </span>
           </div>
-          
+
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-brand-text leading-tight">
             Módulos Disponibles a Elegir
           </h2>
-          
+
           <p className="text-lg md:text-xl text-brand-text-light font-light leading-relaxed">
             Elige la capacitación intensiva (6-8 horas) que transformará tu carrera. Todos los módulos incluyen el kit completo y soporte post-curso.
           </p>
@@ -864,30 +1115,65 @@ export default function AcademiaPage() {
       </section>
 
       {/* === Sección 4: Testimonios === */}
-      <section className="relative bg-brand-gray-light/30 py-20 md:py-32">
+      <section className="relative py-20 md:py-32 bg-gradient-to-b from-white via-brand-pink/5 to-white">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
           <div className="text-center max-w-3xl mx-auto space-y-5 mb-16">
+            <div className="inline-flex items-center gap-2.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 px-5 py-2.5">
+              <StarIcon className="h-4 w-4 text-brand-pink" />
+              <span className="text-xs font-bold text-brand-pink uppercase tracking-[0.2em]">
+                Testimonios
+              </span>
+            </div>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-brand-text leading-tight">
-              Lo que dicen mis alumnas
+              Historias de Éxito Reales
             </h2>
             <p className="text-lg md:text-xl text-brand-text-light font-light leading-relaxed">
-              Más de 100 alumnas han probado este método y han duplicado sus ingresos.
+              Más de 100 alumnas han transformado su negocio y duplicado sus ingresos.
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
             {testimonials.map((t) => (
-              <div key={t.author} className="relative bg-white p-8 rounded-3xl shadow-xl border border-brand-gray-light/20">
-                <ChatBubbleBottomCenterTextIcon className="h-16 w-16 text-brand-pink/20 absolute -top-6 -left-4" />
-                <div className="relative space-y-5">
-                  <p className="text-xl font-light text-brand-text-light italic leading-relaxed">
-                    "{t.quote}"
-                  </p>
-                  <div>
-                    <div className="font-black text-lg text-brand-text">{t.author}</div>
-                    <div className="text-sm font-bold text-brand-pink uppercase tracking-wider">{t.role}</div>
+              <div
+                key={t.author}
+                className="group relative h-full bg-white rounded-3xl p-8 md:p-10 shadow-lg hover:shadow-2xl transition-all duration-500 border-2 border-transparent hover:border-brand-pink/20"
+              >
+                {/* Estrellas de rating */}
+                <div className="flex gap-1 mb-6">
+                    {[...Array(5)].map((_, i) => (
+                      <StarIcon key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                    ))}
                   </div>
-                </div>
+
+                  {/* Quote */}
+                  <div className="space-y-6">
+                    <p className="text-lg md:text-xl text-brand-text leading-relaxed font-light">
+                      {t.quote}
+                    </p>
+
+                    {/* Divider */}
+                    <div className="h-px bg-gradient-to-r from-transparent via-brand-pink/30 to-transparent" />
+
+                    {/* Author info */}
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="font-black text-lg text-brand-text">
+                          {t.author}
+                        </div>
+                        <div className="text-sm font-semibold text-brand-pink">
+                          {t.role}
+                        </div>
+                      </div>
+
+                      {/* Badge verificado */}
+                      <div className="flex-shrink-0">
+                        <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1">
+                          <CheckCircleIcon className="h-4 w-4 text-emerald-600" />
+                          <span className="text-xs font-bold text-emerald-600">Verificado</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
               </div>
             ))}
           </div>
@@ -936,6 +1222,15 @@ export default function AcademiaPage() {
 
               {finalCart.length > 0 && (
                 <div className="inline-flex flex-col gap-3 items-center">
+                  {packageType && (
+                    <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 px-6 py-2 shadow-lg">
+                      <SparklesIcon className="h-5 w-5 text-white" />
+                      <span className="text-sm font-black text-white uppercase tracking-wider">
+                        Paquete {packageType} - {discount}% OFF
+                      </span>
+                    </div>
+                  )}
+
                   <div className="inline-flex items-center gap-6 rounded-2xl bg-brand-pink/10 border-2 border-brand-pink/20 px-8 py-4">
                     <div className="text-left">
                       <div className="text-xs font-bold text-brand-text-light uppercase tracking-wide">
@@ -957,13 +1252,13 @@ export default function AcademiaPage() {
                   </div>
 
                   {offerApplied && (
-                    <p className="text-sm font-semibold text-emerald-600">
-                      🎉 Oferta 2+1 aplicada: Marketing para Manicuristas va GRATIS en tu reserva.
+                    <p className="text-sm font-semibold text-emerald-600 text-center max-w-md">
+                      🎉 Curso de Marketing GRATIS incluido ({marketingFormat === 'presencial' ? 'Presencial en 3er día' : 'Online vía Zoom'})
                     </p>
                   )}
                   {eligibleForOffer && !offerApplied && (
-                    <p className="text-xs font-semibold text-brand-pink">
-                      Añade Marketing para Manicuristas para activar tu oferta 2+1.
+                    <p className="text-xs font-semibold text-brand-pink text-center max-w-md">
+                      ✨ Añade el curso de Marketing para activar tu paquete {packageType} completo
                     </p>
                   )}
                 </div>
@@ -1169,10 +1464,10 @@ export default function AcademiaPage() {
                               🎯 Reserva tu Cupo
                             </h4>
                             <p className="text-sm text-brand-text-light mb-3">
-                              Asegura tu lugar con <strong>$250</strong>. El saldo restante <strong>(${(totalPrice - 250 * finalCart.length).toFixed(2)})</strong> se paga el día de la clase presencialmente.
+                              Asegura tu lugar con el <strong>30% del total</strong>. El saldo restante <strong>(${(totalPrice * 0.7).toFixed(2)})</strong> se paga el día de la clase presencialmente.
                             </p>
                             <div className="text-2xl font-black text-blue-600">
-                              ${(250 * finalCart.length).toFixed(2)}
+                              ${(totalPrice * 0.3).toFixed(2)}
                             </div>
                             <p className="text-xs text-brand-text-light mt-2 italic">
                               * El cobro presencial lo gestiona María Jesús el día de la mentoría
@@ -1184,7 +1479,7 @@ export default function AcademiaPage() {
                           className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 text-base font-black text-white shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-300 active:scale-95"
                         >
                           <CalendarDaysIcon className="h-5 w-5" />
-                          Reservar con $250
+                          Reservar con 30%
                         </button>
                       </div>
 
@@ -1261,7 +1556,7 @@ export default function AcademiaPage() {
                         ${selectedCourse.price}
                       </span>
                       <span className="text-xl font-medium text-brand-text-light/70 line-through">
-                        ${selectedCourse.originalPrice}
+                        $1,197
                       </span>
                     </div>
 
@@ -1356,10 +1651,18 @@ export default function AcademiaPage() {
               </div>
 
               <div className="border-t-2 border-brand-gray-light/20 p-4 space-y-3 bg-brand-gray-light/10">
+                {packageType && (
+                  <div className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-400 px-4 py-2">
+                    <SparklesIcon className="h-4 w-4 text-white" />
+                    <span className="text-xs font-black text-white uppercase tracking-wider">
+                      {packageType} - {discount}% OFF
+                    </span>
+                  </div>
+                )}
                 {offerApplied && (
-                  <div className="flex items-center gap-2 text-sm font-semibold text-emerald-600">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600">
                     <SparklesIcon className="h-4 w-4" />
-                    Oferta 2+1 activa: Marketing sin costo.
+                    Marketing GRATIS ({marketingFormat === 'presencial' ? 'Presencial' : 'Online'})
                   </div>
                 )}
                 <div className="flex items-center justify-between">

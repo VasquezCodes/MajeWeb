@@ -18,7 +18,7 @@ function toHttpsAbsolute(url) {
 // Handler para crear sesión de checkout
 export async function POST(req) {
   try {
-    const { cart, bookingDates } = await req.json(); // <-- MODIFICADO
+    const { cart, bookingDates, packageInfo } = await req.json(); // <-- MODIFICADO
     
     if (!Array.isArray(cart) || cart.length === 0) {
       return NextResponse.json({ error: "El carrito está vacío." }, { status: 400 });
@@ -95,6 +95,11 @@ export async function POST(req) {
     const titlesCompact = cart.map(item => item.title.substring(0, 30)).join('|');
     if (titlesCompact.length <= 500) {
       metadata.course_titles = titlesCompact;
+    }
+
+    // Guardar info del paquete si existe (muy compacto: "GOLD|15|presencial")
+    if (packageInfo) {
+      metadata.package = `${packageInfo.type}|${packageInfo.discount}|${packageInfo.marketingFormat || 'none'}`;
     }
 
      const session = await stripe.checkout.sessions.create({
