@@ -19,7 +19,7 @@ const featuredServices = [
     shortLabel: "Servicios",
     description: "Conoce todos los servicios de spa y belleza que ofrecemos para ti.",
     imageUrl: "/portadaParaServicios.jpg",
-    link: "/reserva",
+    link: "/reservas",
   },
   {
     name: "Productos Digitales",
@@ -74,7 +74,7 @@ export default function HomePage() {
                   Academia
                 </Link>
                 <Link
-                  href="/servicios"
+                  href="/reservas"
                   className="inline-flex items-center justify-center px-8 py-3.5 border-2 border-brand-white/70 text-brand-white text-sm md:text-base lg:text-lg font-crimson tracking-[0.2em] rounded-2xl hover:bg-brand-white/15 hover:border-brand-white transition-all duration-300"
                 >
                   Servicios
