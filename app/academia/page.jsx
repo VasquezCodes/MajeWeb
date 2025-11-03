@@ -91,7 +91,7 @@ const courses = [
     title: "MANICURA RUSA & BUILDER GEL",
     description:
       "Capacitación intensiva de 6-8 horas. Perfecciona la limpieza profunda de cutícula y la nivelación con builder gel para un acabado impecable.",
-    imageUrl: "/academiaImg/manicuraRusa.png",
+    imageUrl: "/mentoriasVIP/rusa.png",
     tags: ["Técnica Rusa", "Builder Gel", "Nivelación Perfecta"],
     price: 850.00,
     originalPrice: 850.00,
@@ -104,7 +104,7 @@ const courses = [
     title: "SISTEMA DUAL & BUILDER GEL",
     description:
       "Capacitación intensiva de 6-8 horas. Domina la construcción rápida y estructural con moldes dual system y la versatilidad del builder gel.",
-    imageUrl: "/academiaImg/sistemaDual.png",
+    imageUrl: "/mentoriasVIP/dual.png",
     tags: ["Dual System", "Builder Gel", "Estructura Rápida"],
     price: 850.00,
     originalPrice: 850.00,
@@ -117,7 +117,7 @@ const courses = [
     title: "POLY GEL TÉCNICAS HÍBRIDAS",
     description:
       "Capacitación intensiva de 6-8 horas. Aprende a combinar Poly Gel con otras técnicas para crear estructuras complejas y diseños innovadores.",
-    imageUrl: "/academiaImg/polyGel.png",
+    imageUrl: "/mentoriasVIP/polygel.png",
     tags: ["Poly Gel", "Técnicas Híbridas", "Esculpidas"],
     price: 850.00,
     originalPrice: 850.00,
@@ -130,7 +130,7 @@ const courses = [
     title: "PEDICURA PRO",
     description:
       "Capacitación intensiva de 6-8 horas. Eleva tu servicio de pedicura a un nivel profesional, enfocándote en técnicas avanzadas, higiene y spa.",
-    imageUrl: "/academiaImg/pedicura.png",
+    imageUrl: "/mentoriasVIP/pedicura.png",
     tags: ["Pedicura Pro", "Servicio Spa", "Técnica Avanzada"],
     price: 850.00,
     originalPrice: 850.00,
@@ -143,8 +143,7 @@ const courses = [
     title: "MARKETING PARA MANICURISTAS",
     description:
       "Aprende a vender sin miedo y atraer clientas premium. Formato presencial u online según el paquete seleccionado.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=960&q=80",
+    imageUrl: "/mentoriasVIP/marketin.png",
     tags: ["Marketing", "Clientes Premium", "Redes Sociales"],
     price: 497.00,
     originalPrice: 497.00,
