@@ -34,6 +34,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   StarIcon,
+  DocumentTextIcon,
 } from '@heroicons/react/24/solid';
 
 // --- Helper de pago con Stripe (Pago Completo) ---
@@ -244,6 +245,170 @@ const achievements = [
   }
 ];
 
+// --- Temarios de los cursos ---
+const courseTemarios = {
+  "dual-system": {
+    title: "MÓDULO — Sistema Dual & Builder Gel",
+    subtitle: "Dominio de estructuras modernas sin limado excesivo",
+    sections: [
+      {
+        title: "Fundamentos técnicos",
+        items: [
+          "Morfología y anatomía de la uña natural",
+          "Preparación profunda de la lámina ungueal",
+          "Protocolos de seguridad e higiene",
+          "Uso profesional de brocas según área de trabajo",
+          "Manicura express segura para colocar cápsulas"
+        ]
+      },
+      {
+        title: "Aplicación con Sistema Dual",
+        items: [
+          "Selección de cápsulas según tipo de uña y estructura deseada",
+          "Control de producto para evitar burbujas",
+          "Adherencia perfecta y sellado seguro",
+          "Construcción de extensiones sin sobrecarga de producto"
+        ]
+      },
+      {
+        title: "Nivelación & Builder Gel",
+        items: [
+          "Técnica de nivelación para fortalecer uñas débiles",
+          "Corrección de curvaturas",
+          "Acabado de alto nivel con mínimo limado"
+        ]
+      },
+      {
+        title: "Esmaltado & Estilización Comercial",
+        items: [
+          "Pulido espejo y efecto premium",
+          "Técnica de encapsulado",
+          "Degradado moderno y armonías de color",
+          "Estructuras comerciales: Cuadrada • Almendra • Coffin • Stiletto"
+        ]
+      },
+      {
+        title: "BONUS Profesional",
+        items: [
+          "Fotografía de uñas para venta en redes: iluminación, ángulos, nitidez"
+        ]
+      }
+    ]
+  },
+  "poly-gel": {
+    title: "MÓDULO — PolyGel & Técnicas Híbridas",
+    subtitle: "Combinación inteligente de productos para durabilidad extrema",
+    sections: [
+      {
+        title: "Fundamentos",
+        items: [
+          "Principios del PolyGel y compatibilidades químicas",
+          "Preparación avanzada para máxima adherencia",
+          "Brocas: tipos, funciones y control del fresado"
+        ]
+      },
+      {
+        title: "Construcción y Diseño de Estructuras",
+        items: [
+          "Extensión con moldes y cápsulas duales",
+          "Construcción limpia con técnica \"one bead\"",
+          "Técnica híbrida: builder + polygel para uñas más resistentes",
+          "Efecto nude natural con acabado profesional"
+        ]
+      },
+      {
+        title: "Acabado Premium",
+        items: [
+          "Esmaltado en gel sin bordes visibles",
+          "Encapsulados limpios y sin burbujas",
+          "Técnicas de degradado comercial"
+        ]
+      },
+      {
+        title: "BONUS Profesional",
+        items: [
+          "Fotografía para realzar color y forma (ideal para marketing)"
+        ]
+      }
+    ]
+  },
+  "builder-gel": {
+    title: "MÓDULO — Manicura Rusa & Builder Gel",
+    subtitle: "Cutículas impecables + estructura natural de alto valor",
+    sections: [
+      {
+        title: "Preparación Profesional",
+        items: [
+          "Anatomía aplicada a la manicura rusa",
+          "Eliminación de tejido no vivo con precisión",
+          "Uso profesional de preparadores químicos"
+        ]
+      },
+      {
+        title: "Cutícula de Lujo",
+        items: [
+          "Creación de bolsillo perfecto (efecto salón top)",
+          "Perfeccionamiento con corta cutícula y tijera",
+          "Pulido espejo: \"efecto Photoshop\" real en la piel"
+        ]
+      },
+      {
+        title: "Nivelación & Estética Final",
+        items: [
+          "Capa base: elección y técnica",
+          "Nivelación con Builder Gel según estructura",
+          "Acabado invisible sin bordes",
+          "Presentación comercial para clientas reales"
+        ]
+      },
+      {
+        title: "BONUS Profesional",
+        items: [
+          "Fotografía para elevar el valor percibido de tus servicios"
+        ]
+      }
+    ]
+  },
+  "pedicura-pro": {
+    title: "MÓDULO — Pedicura PRO",
+    subtitle: "Bienestar + técnica avanzada para pies saludables y bellos",
+    sections: [
+      {
+        title: "Bases Técnicas",
+        items: [
+          "Anatomía y necesidades de la uña del pie",
+          "Protocolos de higiene, desinfección y esterilización",
+          "Identificación temprana de afecciones comunes",
+          "Técnicas segura con broca"
+        ]
+      },
+      {
+        title: "Técnicas de Corte & Limpieza Profunda",
+        items: [
+          "Corte anatómico y seguro",
+          "Limpieza de laterales y surcos sin invasión",
+          "Eliminación de callosidades con control del fresado"
+        ]
+      },
+      {
+        title: "Bienestar & Experiencia Premium",
+        items: [
+          "Pedicura Spa con protocolo de relajación",
+          "Reflexología podal básica (concepto + aplicación)",
+          "Estética final con enfoque profesional",
+          "Esmaltado en gel duradero y perfecto"
+        ]
+      },
+      {
+        title: "BONUS Profesional",
+        items: [
+          "Tips para fotografiar resultados premium"
+        ]
+      }
+    ]
+  }
+};
+
 // --- Horarios disponibles (definir después según reglas) ---
 // --- Helper: Verificar si un día es disponible (Lunes=1, Martes=2, Sábado=6) ---
 function isDayAvailable(date) {
@@ -425,6 +590,8 @@ export default function AcademiaPage() {
   const [bookingDates, setBookingDates] = useState({});
   const [bookedDates, setBookedDates] = useState(new Set());
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+  const [showTemarioModal, setShowTemarioModal] = useState(false);
+  const [selectedTemario, setSelectedTemario] = useState(null);
 
   const { eligibleForOffer, offerApplied, finalCart, totalPrice, packageType, discount, marketingFormat, marketingIncluded } = useMemo(() => {
     const nonMarketingCourses = cart.filter(c => !c.isMarketingCourse);
@@ -881,11 +1048,11 @@ export default function AcademiaPage() {
           </div>
 
           {/* Paquete PLATINUM */}
-          <div className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-gradient-to-br from-cyan-50 to-blue-50 border-2 border-cyan-400 shadow-xl hover:shadow-2xl transition-all duration-300 md:hover:scale-105">
-            <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-cyan-400/20 to-blue-400/20 rounded-full blur-3xl" />
+          <div className="relative overflow-hidden rounded-2xl md:rounded-3xl bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-400 shadow-xl hover:shadow-2xl transition-all duration-300 md:hover:scale-105">
+            <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-gray-300/30 to-gray-400/30 rounded-full blur-3xl" />
             <div className="relative p-5 md:p-8 space-y-4 md:space-y-6">
               <div className="space-y-2">
-                <div className="inline-flex items-center gap-1.5 md:gap-2 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 px-3 md:px-4 py-1.5 md:py-2 shadow-lg">
+                <div className="inline-flex items-center gap-1.5 md:gap-2 rounded-full bg-gradient-to-r from-gray-300 to-gray-400 px-3 md:px-4 py-1.5 md:py-2 shadow-lg">
                   <SparklesIcon className="h-4 md:h-5 w-4 md:w-5 text-white" />
                   <span className="text-xs md:text-sm font-black text-white uppercase tracking-wider">
                     Paquete Platinum
@@ -896,14 +1063,14 @@ export default function AcademiaPage() {
 
               <div className="space-y-2.5 md:space-y-3">
                 <div className="flex items-start gap-2 md:gap-3">
-                  <CheckCircleIcon className="h-5 md:h-6 w-5 md:w-6 text-cyan-600 flex-shrink-0 mt-0.5" />
+                  <CheckCircleIcon className="h-5 md:h-6 w-5 md:w-6 text-gray-600 flex-shrink-0 mt-0.5" />
                   <p className="text-sm md:text-base text-brand-text font-medium leading-snug">
                     Elige <strong>3 mentorías</strong> y ahorra 20%
                   </p>
                 </div>
                 {marketingIncluded && (
                   <div className="flex items-start gap-2 md:gap-3">
-                    <CheckCircleIcon className="h-5 md:h-6 w-5 md:w-6 text-cyan-600 flex-shrink-0 mt-0.5" />
+                    <CheckCircleIcon className="h-5 md:h-6 w-5 md:w-6 text-gray-600 flex-shrink-0 mt-0.5" />
                     <p className="text-sm md:text-base text-brand-text font-medium leading-snug">
                       Curso de Marketing <strong>GRATIS Online</strong> vía Zoom
                     </p>
@@ -977,7 +1144,7 @@ export default function AcademiaPage() {
           </h2>
 
           <p className="text-lg md:text-xl text-brand-text-light font-light leading-relaxed">
-            Elige la capacitación intensiva (6-8 horas) que transformará tu carrera. Todos los módulos incluyen el kit completo y soporte post-curso.
+            Elige la capacitación intensiva (8 horas) que transformará tu carrera. Todos los módulos incluyen el kit completo y soporte post-curso.
           </p>
         </div>
 
@@ -1018,34 +1185,34 @@ export default function AcademiaPage() {
                     </div>
 
                     <div className="flex gap-3 pt-2">
-                      {isInCart ? (
+                        {isInCart ? (
+                          <button
+                            onClick={() => removeFromCart(course.id)}
+                            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-5 py-4 text-sm font-black text-red-600 transition-all duration-300 active:scale-95"
+                          >
+                            <TrashIcon className="h-5 w-5" />
+                            Quitar
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => addToCart(course)}
+                            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-5 py-4 text-sm font-black text-white shadow-lg transition-all duration-300 active:scale-95"
+                          >
+                            <ShoppingBagIcon className="h-5 w-5" />
+                            Añadir
+                          </button>
+                        )}
+
                         <button
-                          onClick={() => removeFromCart(course.id)}
-                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-5 py-4 text-sm font-black text-red-600 transition-all duration-300 active:scale-95"
+                          onClick={() => {
+                            setSelectedCourse(course);
+                            setShowModal(true);
+                          }}
+                          className="flex-1 flex items-center justify-center rounded-2xl border-2 border-brand-text/20 px-5 py-4 text-sm font-black text-brand-text transition-all duration-300 active:scale-95"
                         >
-                          <TrashIcon className="h-5 w-5" />
-                          Quitar
+                          Ver detalle
                         </button>
-                      ) : (
-                        <button
-                          onClick={() => addToCart(course)}
-                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-5 py-4 text-sm font-black text-white shadow-lg transition-all duration-300 active:scale-95"
-                        >
-                          <ShoppingBagIcon className="h-5 w-5" />
-                          Añadir
-                        </button>
-                      )}
-          
-                      <button
-                        onClick={() => {
-                          setSelectedCourse(course);
-                          setShowModal(true);
-                        }}
-                        className="flex-1 flex items-center justify-center rounded-2xl border-2 border-brand-text/20 px-5 py-4 text-sm font-black text-brand-text transition-all duration-300 active:scale-95"
-                      >
-                        Ver detalle
-                      </button>
-                    </div>
+                      </div>
                   </div>
                 </div>
 
@@ -1076,34 +1243,36 @@ export default function AcademiaPage() {
                         </h3>
                       </div>
 
-                      <div className="flex gap-4 pt-4">
-                        {isInCart ? (
+                      <div className="space-y-4 pt-4">
+                        <div className="flex gap-4">
+                          {isInCart ? (
+                            <button
+                              onClick={() => removeFromCart(course.id)}
+                              className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-6 py-4 text-base font-black text-red-600 transition-all duration-300 hover:bg-red-100"
+                            >
+                              <TrashIcon className="h-5 w-5" />
+                              Quitar del carrito
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => addToCart(course)}
+                              className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-6 py-4 text-base font-black text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                            >
+                              <ShoppingBagIcon className="h-5 w-5" />
+                              Añadir al carrito
+                            </button>
+                          )}
+
                           <button
-                            onClick={() => removeFromCart(course.id)}
-                            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-6 py-4 text-base font-black text-red-600 transition-all duration-300 hover:bg-red-100"
+                            onClick={() => {
+                              setSelectedCourse(course);
+                              setShowModal(true);
+                            }}
+                            className="flex-1 flex items-center justify-center rounded-2xl border-2 border-brand-text/20 px-6 py-4 text-base font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30"
                           >
-                            <TrashIcon className="h-5 w-5" />
-                            Quitar del carrito
+                            Ver detalle
                           </button>
-                        ) : (
-                          <button
-                            onClick={() => addToCart(course)}
-                            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-6 py-4 text-base font-black text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                          >
-                            <ShoppingBagIcon className="h-5 w-5" />
-                            Añadir al carrito
-                          </button>
-                        )}
-          
-                        <button
-                          onClick={() => {
-                            setSelectedCourse(course);
-                            setShowModal(true);
-                          }}
-                          className="flex-1 flex items-center justify-center rounded-2xl border-2 border-brand-text/20 px-6 py-4 text-base font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30"
-                        >
-                          Ver detalle
-                        </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1553,12 +1722,12 @@ export default function AcademiaPage() {
                   </div>
                 </div>
 
-                <div className="flex-1 p-8 space-y-6">
+                <div className="flex-1 p-6 md:p-8 space-y-4 md:space-y-5">
                   <div>
-                    <h2 className="text-3xl lg:text-4xl font-black text-brand-text leading-tight mb-4">
+                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-brand-text leading-tight mb-3">
                       {selectedCourse.title}
                     </h2>
-                    <p className="text-lg text-brand-text-light leading-relaxed font-light">
+                    <p className="text-base md:text-lg text-brand-text-light leading-relaxed font-light">
                       {selectedCourse.description}
                     </p>
                   </div>
@@ -1567,43 +1736,56 @@ export default function AcademiaPage() {
                     {selectedCourse.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="inline-flex items-center rounded-full bg-brand-gray-light/60 px-4 py-2 text-sm font-bold uppercase tracking-wider text-brand-text"
+                        className="inline-flex items-center rounded-full bg-brand-gray-light/60 px-3 py-1.5 text-xs md:text-sm font-bold uppercase tracking-wider text-brand-text"
                       >
                         {tag}
                       </span>
                     ))}
                   </div>
 
-                  <div className="pt-4 border-t border-brand-gray-light/20">
-                    <div className="flex items-baseline gap-4 mb-6">
-                      <span className="text-4xl font-black text-[#32CD32]">
+                  <div className="pt-3 border-t border-brand-gray-light/20">
+                    <div className="flex items-baseline gap-3 mb-4">
+                      <span className="text-3xl md:text-4xl font-black text-[#32CD32]">
                         ${selectedCourse.price}
                       </span>
-                      <span className="text-xl font-medium text-brand-text-light/70 line-through">
+                      <span className="text-lg md:text-xl font-medium text-brand-text-light/70 line-through">
                         $1,197
                       </span>
                     </div>
 
-                    <div className="space-y-3">
-                      <p className="text-sm font-bold text-brand-text uppercase tracking-wide">Duración</p>
-                      <p className="text-base text-brand-text-light">{selectedCourse.duration}</p>
+                    <div className="space-y-2 mb-4">
+                      <p className="text-xs md:text-sm font-bold text-brand-text uppercase tracking-wide">Duración</p>
+                      <p className="text-sm md:text-base text-brand-text-light">{selectedCourse.duration}</p>
                     </div>
 
-                    <div className="flex gap-4 pt-6">
+                    {!selectedCourse.isMarketingCourse && courseTemarios[selectedCourse.id] && (
+                      <button
+                        onClick={() => {
+                          setSelectedTemario(courseTemarios[selectedCourse.id]);
+                          setShowTemarioModal(true);
+                        }}
+                        className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-blue-500 px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-black text-blue-600 transition-all duration-300 hover:bg-blue-50 mb-3"
+                      >
+                        <DocumentTextIcon className="h-4 md:h-5 w-4 md:w-5" />
+                        Ver Temario
+                      </button>
+                    )}
+
+                    <div className="flex gap-3 md:gap-4 pb-8 md:pb-12">
                       {cart.some((item) => item.id === selectedCourse.id) ? (
                         <button
                           onClick={() => removeFromCart(selectedCourse.id)}
-                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-6 py-4 text-base font-black text-red-600 transition-all duration-300 hover:bg-red-100"
+                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-black text-red-600 transition-all duration-300 hover:bg-red-100"
                         >
-                          <TrashIcon className="h-5 w-5" />
-                          Quitar del carrito
+                          <TrashIcon className="h-4 md:h-5 w-4 md:w-5" />
+                          Quitar
                         </button>
                       ) : (
                         <button
                           onClick={() => addToCart(selectedCourse)}
-                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-6 py-4 text-base font-black text-white shadow-lg hover:shadow-xl transition-all duración-300"
+                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-black text-white shadow-lg hover:shadow-xl transition-all duration-300"
                         >
-                          <ShoppingBagIcon className="h-5 w-5" />
+                          <ShoppingBagIcon className="h-4 md:h-5 w-4 md:w-5" />
                           Añadir al carrito
                         </button>
                       )}
@@ -1676,10 +1858,16 @@ export default function AcademiaPage() {
 
               <div className="border-t-2 border-brand-gray-light/20 p-4 space-y-3 bg-brand-gray-light/10">
                 {packageType && (
-                  <div className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-yellow-400 to-orange-400 px-4 py-2">
+                  <div className={`flex items-center justify-center gap-2 rounded-lg px-4 py-2 ${
+                    packageType === 'GOLD'
+                      ? 'bg-gradient-to-r from-yellow-400 to-yellow-500'
+                      : packageType === 'PLATINUM'
+                      ? 'bg-gradient-to-r from-gray-300 to-gray-400'
+                      : 'bg-gradient-to-r from-black to-gray-800'
+                  }`}>
                     <SparklesIcon className="h-4 w-4 text-white" />
                     <span className="text-xs font-black text-white uppercase tracking-wider">
-                      {packageType} - {discount}% OFF
+                      {packageType === 'DIAMOND' ? `${packageType} VIP` : packageType} - {discount}% OFF
                     </span>
                   </div>
                 )}
@@ -1711,6 +1899,50 @@ export default function AcademiaPage() {
             </div>
           )}
         </>
+      )}
+
+      {/* Modal de Temario */}
+      {showTemarioModal && selectedTemario && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-3 md:p-4 animate-fadeIn">
+          <div className="relative max-w-4xl w-full max-h-[85vh] md:max-h-[90vh] overflow-y-auto bg-white rounded-2xl md:rounded-3xl shadow-2xl animate-scaleIn">
+            <div className="sticky top-0 z-10 flex items-center justify-between p-4 md:p-6 bg-gradient-to-r from-blue-900 to-blue-800 text-white rounded-t-2xl md:rounded-t-3xl">
+              <div className="flex-1 pr-2">
+                <h2 className="text-lg md:text-2xl lg:text-3xl font-black leading-tight">{selectedTemario.title}</h2>
+                <p className="text-xs md:text-sm lg:text-base font-light mt-1">{selectedTemario.subtitle}</p>
+              </div>
+              <button
+                onClick={() => {
+                  setShowTemarioModal(false);
+                  setSelectedTemario(null);
+                }}
+                className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all duration-300 hover:rotate-90"
+              >
+                <XMarkIcon className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7" />
+              </button>
+            </div>
+
+            <div className="p-4 md:p-6 lg:p-8 pb-16 md:pb-24 space-y-8 md:space-y-12">
+              {selectedTemario.sections.map((section, idx) => (
+                <div key={idx} className="space-y-5">
+                  <div className="bg-gradient-to-r from-brand-black to-gray-800 rounded-2xl p-4 md:p-5 border-l-4 border-brand-pink shadow-lg">
+                    <h3 className="text-lg md:text-xl font-black text-white flex items-center gap-2">
+                      <SparklesIcon className="h-5 w-5 text-brand-pink" />
+                      {section.title}
+                    </h3>
+                  </div>
+                  <ul className="space-y-4 md:space-y-5 ml-2 md:ml-4 pb-4 md:pb-6">
+                    {section.items.map((item, itemIdx) => (
+                      <li key={itemIdx} className="flex items-start gap-3">
+                        <CheckCircleIcon className="h-5 w-5 text-brand-pink flex-shrink-0 mt-0.5" />
+                        <span className="text-sm md:text-base text-brand-text font-medium leading-relaxed">{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       )}
 
     </div>
