@@ -164,6 +164,20 @@ function DashboardContent() {
     return `$${value} ${currency?.toUpperCase() || 'USD'}`;
   };
 
+  const getPaymentStatus = (booking) => {
+    const totalPrice = booking.price || 0; // Precio total del servicio
+    const paidAmount = booking.pricePaid || 0; // Monto pagado (reserva)
+    const remaining = totalPrice - paidAmount; // Pendiente de pago
+
+    return {
+      total: totalPrice,
+      paid: paidAmount,
+      remaining: remaining,
+      isPaidFull: remaining <= 0,
+      isReserved: paidAmount > 0 && remaining > 0,
+    };
+  };
+
   // Agrupar reservas por fecha
   const bookingsByDate = bookings.reduce((acc, booking) => {
     const date = booking.bookingDate;
@@ -194,24 +208,30 @@ function DashboardContent() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Panel de Administración</h1>
-              <p className="text-sm text-gray-600 mt-1">Maje Nail Spa & Academy</p>
+      <header className="bg-white shadow-sm border-b-2 border-gray-200 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+            <div className="flex-1">
+              <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-gray-900 leading-tight">
+                Panel de Administración
+              </h1>
+              <p className="text-xs md:text-sm text-gray-600 mt-0.5 md:mt-1 font-medium">
+                Maje Nail Spa & Academy
+              </p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm font-medium text-gray-900">{user?.email}</p>
-                <p className="text-xs text-gray-500">Administrador</p>
+            <div className="flex items-center justify-between sm:justify-end gap-3 md:gap-4">
+              <div className="text-left sm:text-right">
+                <p className="text-xs md:text-sm font-bold text-gray-900 truncate max-w-[150px] sm:max-w-none">
+                  {user?.email}
+                </p>
+                <p className="text-xs text-gray-500 font-medium">Administrador</p>
               </div>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+                className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors font-semibold text-sm md:text-base"
               >
-                <ArrowRightOnRectangleIcon className="h-5 w-5" />
-                <span className="hidden sm:inline">Cerrar Sesión</span>
+                <ArrowRightOnRectangleIcon className="h-4 w-4 md:h-5 md:w-5" />
+                <span className="hidden sm:inline">Cerrar</span>
               </button>
             </div>
           </div>
@@ -221,43 +241,43 @@ function DashboardContent() {
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md p-4 md:p-6 border-2 border-blue-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Total Reservas</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{bookings.length}</p>
+                <p className="text-xs md:text-sm font-bold text-blue-700 uppercase tracking-wide">Total Reservas</p>
+                <p className="text-3xl md:text-4xl font-black text-blue-900 mt-1 md:mt-2">{bookings.length}</p>
               </div>
-              <CalendarDaysIcon className="h-12 w-12 text-blue-500" />
+              <CalendarDaysIcon className="h-10 w-10 md:h-12 md:w-12 text-blue-600" />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-md p-4 md:p-6 border-2 border-orange-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Días Bloqueados</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{blockedDays.length}</p>
+                <p className="text-xs md:text-sm font-bold text-orange-700 uppercase tracking-wide">Días Bloqueados</p>
+                <p className="text-3xl md:text-4xl font-black text-orange-900 mt-1 md:mt-2">{blockedDays.length}</p>
               </div>
-              <ExclamationTriangleIcon className="h-12 w-12 text-orange-500" />
+              <ExclamationTriangleIcon className="h-10 w-10 md:h-12 md:w-12 text-orange-600" />
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-200">
+          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md p-4 md:p-6 border-2 border-green-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Fechas Ocupadas</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{uniqueDates.length}</p>
+                <p className="text-xs md:text-sm font-bold text-green-700 uppercase tracking-wide">Fechas Ocupadas</p>
+                <p className="text-3xl md:text-4xl font-black text-green-900 mt-1 md:mt-2">{uniqueDates.length}</p>
               </div>
-              <CheckCircleIcon className="h-12 w-12 text-green-500" />
+              <CheckCircleIcon className="h-10 w-10 md:h-12 md:w-12 text-green-600" />
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="mb-6">
+        <div className="mb-4 md:mb-6">
           <button
             onClick={() => setShowBlockModal(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 md:px-6 py-3 md:py-3.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-bold text-sm md:text-base shadow-md"
           >
             <PlusIcon className="h-5 w-5" />
             Bloquear Día (Vacaciones)
@@ -265,10 +285,10 @@ function DashboardContent() {
         </div>
 
         {/* Calendar View */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <h2 className="text-lg font-semibold text-gray-900">Calendario Maestro</h2>
-            <p className="text-sm text-gray-600 mt-1">Todas las reservas y días bloqueados</p>
+        <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 overflow-hidden">
+          <div className="px-4 md:px-6 py-4 md:py-5 border-b-2 border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
+            <h2 className="text-lg md:text-xl font-black text-gray-900">Calendario Maestro</h2>
+            <p className="text-xs md:text-sm text-gray-600 mt-1 font-medium">Todas las reservas y días bloqueados</p>
           </div>
 
           <div className="divide-y divide-gray-200">
@@ -282,16 +302,18 @@ function DashboardContent() {
                 const blocked = blockedDays.find(b => b.date === date);
 
                 return (
-                  <div key={date} className="px-6 py-4 hover:bg-gray-50 transition-colors">
-                    <div className="flex items-start justify-between">
+                  <div key={date} className="px-4 md:px-6 py-4 md:py-5 hover:bg-gray-50 transition-colors">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-3">
-                          <CalendarDaysIcon className="h-6 w-6 text-gray-400" />
-                          <h3 className="text-lg font-semibold text-gray-900">
-                            {formatDate(date)}
-                          </h3>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3 md:mb-4">
+                          <div className="flex items-center gap-2 sm:gap-3">
+                            <CalendarDaysIcon className="h-5 w-5 md:h-6 md:w-6 text-gray-500 flex-shrink-0" />
+                            <h3 className="text-base md:text-lg font-black text-gray-900 capitalize">
+                              {formatDate(date)}
+                            </h3>
+                          </div>
                           {blocked && (
-                            <span className="px-3 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">
+                            <span className="inline-flex items-center gap-1 px-2.5 md:px-3 py-1 md:py-1.5 bg-orange-100 text-orange-800 text-xs md:text-sm font-bold rounded-full">
                               Bloqueado: {blocked.reason}
                             </span>
                           )}
@@ -299,58 +321,100 @@ function DashboardContent() {
 
                         {/* Reservas en esta fecha */}
                         {dateBookings.length > 0 && (
-                          <div className="space-y-3 ml-9">
-                            {dateBookings.map((booking) => (
-                              <div
-                                key={booking.id}
-                                className="bg-gray-50 rounded-lg p-4 border border-gray-200"
-                              >
-                                <div className="flex items-start justify-between">
-                                  <div className="flex-1 space-y-2">
-                                    <p className="font-semibold text-gray-900">
-                                      {booking.serviceName}
-                                    </p>
-                                    
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm">
-                                      <div className="flex items-center gap-2 text-gray-700">
-                                        <UserIcon className="h-4 w-4 text-gray-400" />
-                                        <span>{booking.buyer?.name || 'Sin nombre'}</span>
+                          <div className="space-y-3 ml-0 md:ml-9">
+                            {dateBookings.map((booking) => {
+                              const payment = getPaymentStatus(booking);
+                              return (
+                                <div
+                                  key={booking.id}
+                                  className="bg-white rounded-lg p-4 md:p-5 border-2 border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+                                >
+                                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                                    <div className="flex-1 space-y-3">
+                                      {/* Servicio */}
+                                      <div>
+                                        <p className="text-base md:text-lg font-bold text-gray-900 leading-tight">
+                                          {booking.serviceName}
+                                        </p>
                                       </div>
-                                      
-                                      <div className="flex items-center gap-2 text-gray-700">
-                                        <PhoneIcon className="h-4 w-4 text-gray-400" />
-                                        <span>{booking.buyer?.phone || 'Sin teléfono'}</span>
+
+                                      {/* Info del cliente */}
+                                      <div className="space-y-2">
+                                        <div className="flex items-center gap-2 text-sm md:text-base">
+                                          <UserIcon className="h-4 w-4 md:h-5 md:w-5 text-gray-500 flex-shrink-0" />
+                                          <span className="font-semibold text-gray-900">{booking.buyer?.name || 'Sin nombre'}</span>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 text-sm md:text-base">
+                                          <PhoneIcon className="h-4 w-4 md:h-5 md:w-5 text-gray-500 flex-shrink-0" />
+                                          <a href={`tel:${booking.buyer?.phone}`} className="text-blue-600 hover:underline">
+                                            {booking.buyer?.phone || 'Sin teléfono'}
+                                          </a>
+                                        </div>
+
+                                        <div className="flex items-center gap-2 text-sm md:text-base">
+                                          <EnvelopeIcon className="h-4 w-4 md:h-5 md:w-5 text-gray-500 flex-shrink-0" />
+                                          <a href={`mailto:${booking.buyer?.email}`} className="text-blue-600 hover:underline truncate">
+                                            {booking.buyer?.email || 'Sin email'}
+                                          </a>
+                                        </div>
                                       </div>
-                                      
-                                      <div className="flex items-center gap-2 text-gray-700">
-                                        <EnvelopeIcon className="h-4 w-4 text-gray-400" />
-                                        <span className="truncate">{booking.buyer?.email || 'Sin email'}</span>
+
+                                      {/* Información de pago */}
+                                      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-3 md:p-4 space-y-2 border border-gray-200">
+                                        <div className="flex items-center justify-between text-sm md:text-base">
+                                          <span className="text-gray-600 font-medium">Precio Total:</span>
+                                          <span className="font-bold text-gray-900">
+                                            {formatPrice(payment.total, booking.currency)}
+                                          </span>
+                                        </div>
+
+                                        <div className="flex items-center justify-between text-sm md:text-base">
+                                          <span className="text-gray-600 font-medium">Reserva Pagada:</span>
+                                          <span className="font-bold text-green-600">
+                                            {formatPrice(payment.paid, booking.currency)}
+                                          </span>
+                                        </div>
+
+                                        {payment.remaining > 0 && (
+                                          <div className="flex items-center justify-between text-sm md:text-base pt-2 border-t border-gray-300">
+                                            <span className="text-gray-700 font-semibold">Pendiente:</span>
+                                            <span className="font-bold text-orange-600 text-base md:text-lg">
+                                              {formatPrice(payment.remaining, booking.currency)}
+                                            </span>
+                                          </div>
+                                        )}
+                                      </div>
+
+                                      {/* Estado */}
+                                      <div className="flex items-center gap-2">
+                                        {payment.isPaidFull ? (
+                                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 text-green-800 text-xs md:text-sm font-bold rounded-full">
+                                            <CheckCircleIcon className="h-4 w-4" />
+                                            Pagado Completo
+                                          </span>
+                                        ) : (
+                                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 text-blue-800 text-xs md:text-sm font-bold rounded-full">
+                                            <CalendarDaysIcon className="h-4 w-4" />
+                                            Reservado
+                                          </span>
+                                        )}
                                       </div>
                                     </div>
 
-                                    <div className="flex items-center gap-4 text-sm">
-                                      <span className="text-gray-600">
-                                        Pagado: <span className="font-semibold text-green-600">
-                                          {formatPrice(booking.pricePaid, booking.currency)}
-                                        </span>
-                                      </span>
-                                      <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
-                                        {booking.status}
-                                      </span>
-                                    </div>
+                                    {/* Botón eliminar */}
+                                    <button
+                                      onClick={() => handleCancelBooking(booking.id)}
+                                      disabled={actionLoading}
+                                      className="self-start sm:self-auto p-2.5 md:p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 border border-red-200"
+                                      title="Cancelar reserva"
+                                    >
+                                      <TrashIcon className="h-5 w-5 md:h-6 md:w-6" />
+                                    </button>
                                   </div>
-
-                                  <button
-                                    onClick={() => handleCancelBooking(booking.id)}
-                                    disabled={actionLoading}
-                                    className="ml-4 p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                                    title="Cancelar reserva"
-                                  >
-                                    <TrashIcon className="h-5 w-5" />
-                                  </button>
                                 </div>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
                         )}
                       </div>
@@ -359,7 +423,7 @@ function DashboardContent() {
                         <button
                           onClick={() => handleUnblockDay(date)}
                           disabled={actionLoading}
-                          className="ml-4 px-3 py-1 text-sm text-orange-600 hover:bg-orange-50 rounded-lg transition-colors disabled:opacity-50"
+                          className="self-start sm:self-auto px-3 md:px-4 py-2 text-xs md:text-sm text-orange-700 hover:bg-orange-100 bg-orange-50 rounded-lg transition-colors disabled:opacity-50 font-bold border border-orange-200"
                         >
                           Desbloquear
                         </button>
