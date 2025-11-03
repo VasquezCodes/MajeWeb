@@ -184,9 +184,19 @@ export async function POST(req) {
     // Datos base
     const total = session.amount_total || 0;
     const currency = session.currency || 'usd';
+
+    // Obtener nombre del custom field si existe, sino usar el del titular de tarjeta
+    let customerName = session.customer_details?.name || '';
+    if (session.custom_fields && session.custom_fields.length > 0) {
+      const nameField = session.custom_fields.find(field => field.key === 'customer_name');
+      if (nameField && nameField.text && nameField.text.value) {
+        customerName = nameField.text.value;
+      }
+    }
+
     const comprador = {
       email: session.customer_details?.email || session.customer_email || '',
-      name: session.customer_details?.name || '',
+      name: customerName,
       phone: session.customer_details?.phone || '',
     };
 

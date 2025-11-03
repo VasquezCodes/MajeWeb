@@ -119,6 +119,16 @@ export async function POST(req) {
       phone_number_collection: {
         enabled: true,
       },
+      custom_fields: [
+        {
+          key: 'customer_name',
+          label: {
+            type: 'custom',
+            custom: 'Nombre completo del cliente',
+          },
+          type: 'text',
+        },
+      ],
       billing_address_collection: 'required',
       locale: 'auto',
       payment_method_options: {
