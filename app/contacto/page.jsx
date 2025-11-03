@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 export default function ContactoPage() {
   return (
     <div className="min-h-screen bg-white">

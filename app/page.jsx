@@ -1,53 +1,32 @@
 'use client';
 
-import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useStaggeredAnimation } from '../hooks/useScrollAnimation';
 import ScrollReveal from '../components/ScrollReveal';
 
-// Importamos los iconos que usaremos (asegúrate de tener @heroicons/react instalado)
-import { 
-  SparklesIcon, 
-  PaintBrushIcon, 
-  HandRaisedIcon, 
-  StarIcon 
-} from '@heroicons/react/24/solid';
-
 // --- Datos de Ejemplo ---
 const featuredServices = [
   {
-    name: "Manicura Semipermanente",
-    shortLabel: "Mani",
-    description: "Brillo espejo hasta tres semanas con acabado impecable.",
-    imageUrl: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1000&q=80",
+    name: "Mentorías VIP",
+    shortLabel: "Academia",
+    description: "Aprende técnicas profesionales de manicura y pedicura con nuestras mentorías exclusivas.",
+    imageUrl: "/portadaMentoria.jpeg",
+    link: "/academia",
   },
   {
-    name: "Spa de Pedicura",
-    shortLabel: "Pedi",
-    description: "Exfoliación aromática, masaje relajante y esmaltado perfecto.",
-    imageUrl: "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=1000&q=80",
+    name: "Información sobre Nuestros Servicios",
+    shortLabel: "Servicios",
+    description: "Conoce todos los servicios de spa y belleza que ofrecemos para ti.",
+    imageUrl: "/portadaParaServicios.jpg",
+    link: "/reserva",
   },
   {
-    name: "Diseños Personalizados",
-    shortLabel: "Art",
-    description: "Creamos diseños exclusivos inspirados en las últimas tendencias.",
-    imageUrl: "https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=1000&q=80",
-  },
-];
-
-const testimonials = [
-  {
-    quote: "¡El mejor servicio de kapping en la ciudad! Majo es súper detallista y mis uñas duran semanas.",
-    author: "Laura G.",
-  },
-  {
-    quote: "Me hice la pedicura y fue una experiencia súper relajante. Profesionalismo 100%. ¡Volveré sin dudas!",
-    author: "Sofía P.",
-  },
-  {
-    quote: "Amo mis uñas. Los diseños son únicos y el lugar es impecable. Súper recomendado.",
-    author: "Ana L.",
+    name: "Productos Digitales",
+    shortLabel: "E-books",
+    description: "Descubre nuestros productos digitales exclusivos para emprendedoras.",
+    imageUrl: "/portadaParaProductosDigitales.PNG",
+    link: "/productos",
   },
 ];
 
@@ -81,7 +60,7 @@ export default function HomePage() {
             <div className="max-w-3xl lg:max-w-2xl space-y-4 lg:space-y-8 text-brand-white text-left">
               {/* Espaciado reducido en móvil para comprimir el contenido */}
               <h1 className="text-3xl md:text-5xl lg:text-7xl font-serif font-bold leading-tight animate-slide-up">
-                Hola, soy MariaJesus,
+                Hola, soy Mariajesus,
               </h1>
               <p className="font-crimson text-base md:text-xl lg:text-2xl text-brand-gray-light/90 leading-relaxed tracking-[0.08em] animate-fade-in delay-300">
                 fundadora de Maje Nail Spa y Maje Nail Academy. Con más de 7 años de trayectoria en el mundo de las uñas y en la formación de profesionales del ramo, te doy la bienvenida a este espacio, donde podrás reservar tus servicios y formarte como profesional si así lo deseas.
@@ -106,76 +85,98 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* === Sección 2: Servicios Destacados === */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ScrollReveal animation="fade-up" className="text-center">
-          <h2 className="text-sm font-semibold text-brand-gray-dark uppercase tracking-widest">
-            Nuestros Servicios
+      {/* === Sección 2: Todo lo que puedes encontrar === */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+        <ScrollReveal animation="fade-up" className="text-center mb-12 md:mb-16">
+          <h2 className="text-xs md:text-sm font-bold text-brand-gray-dark uppercase tracking-[0.3em] md:tracking-widest font-crimson">
+            Explora
           </h2>
-          <p className="mt-3 text-3xl md:text-4xl font-serif font-bold text-brand-text">
-            Especialistas en Cuidado y Diseño
+          <p className="mt-4 text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-brand-text leading-tight">
+            Todo lo que puedes encontrar en esta web
           </p>
         </ScrollReveal>
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="mt-12 md:mt-16 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
           {featuredServices.map((service, index) => (
-            <div
+            <Link
               key={service.name}
+              href={service.link}
               ref={(el) => (serviceRefs.current[index] = el)}
-              className="relative group rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:scale-[1.02] opacity-0 animate-fade-in-up"
-              style={{ animationDelay: `${index * 0.2}s` }}
+              className="relative group rounded-2xl md:rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.03] opacity-0 animate-fade-in-up"
+              style={{ animationDelay: `${index * 0.15}s` }}
             >
-              <Image
-                src={service.imageUrl}
-                alt={service.name}
-                width={500}
-                height={600}
-                className="h-80 w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-black/85 via-brand-black/45 to-transparent" />
-              <div className="absolute inset-0 p-6 md:p-8 flex flex-col justify-end space-y-3 text-brand-white">
-                <span className="text-xs md:text-sm tracking-[0.4em] uppercase text-brand-gray-light/80 font-crimson">{service.shortLabel}</span>
-                <h3 className="text-2xl md:text-3xl font-serif font-bold leading-snug">{service.name}</h3>
-                <p className="text-sm md:text-base text-brand-gray-light/90 font-sans leading-relaxed max-w-sm">
-                  {service.description}
-                </p>
+              <div className="relative h-72 md:h-80 lg:h-96">
+                <Image
+                  src={service.imageUrl}
+                  alt={service.name}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  style={service.imageUrl === '/portadaParaServicios.jpg' ? { objectPosition: 'center 35%' } : {}}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-brand-black/90 via-brand-black/50 to-transparent" />
+                <div className="absolute inset-0 p-5 md:p-6 lg:p-8 flex flex-col justify-end space-y-2 md:space-y-3 text-brand-white">
+                  <span className="text-[10px] md:text-xs tracking-[0.3em] md:tracking-[0.4em] uppercase text-brand-gray-light/90 font-crimson font-bold">
+                    {service.shortLabel}
+                  </span>
+                  <h3 className="text-xl md:text-2xl lg:text-3xl font-serif font-bold leading-tight">
+                    {service.name}
+                  </h3>
+                  <p className="text-xs md:text-sm lg:text-base text-brand-gray-light/95 font-sans leading-relaxed">
+                    {service.description}
+                  </p>
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>
       
-      {/* === Sección 3: Testimonios (Prueba Social) === */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ScrollReveal animation="fade-up" className="text-center">
-          <h2 className="text-sm font-semibold text-brand-slate uppercase tracking-widest">
-            Testimonios
-          </h2>
-          <p className="mt-3 text-3xl md:text-4xl font-serif font-bold text-brand-text">
-            Lo que dicen nuestras clientas
-          </p>
-        </ScrollReveal>
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
-            <ScrollReveal
-              key={testimonial.author}
-              animation="scale"
-              delay={index * 0.2}
-              className="bg-brand-white p-8 rounded-2xl shadow-xl flex flex-col hover:shadow-2xl transition-all duration-300 hover:scale-105"
-            >
-              <div className="flex text-brand-black animate-float">
-                <StarIcon className="h-5 w-5" /><StarIcon className="h-5 w-5" />
-                <StarIcon className="h-5 w-5" /><StarIcon className="h-5 w-5" />
-                <StarIcon className="h-5 w-5" />
-              </div>
-              <blockquote className="mt-5 text-brand-text-light italic text-lg flex-grow">
-                "{testimonial.quote}"
-              </blockquote>
-              <footer className="mt-4">
-                <p className="font-bold text-brand-text">— {testimonial.author}</p>
-                <p className="text-sm text-gray-400">Opinión verificada (Booksy)</p>
-              </footer>
-            </ScrollReveal>
-          ))}
+      {/* === Sección 3: Mi Historia / About Me === */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+          {/* Imagen */}
+          <ScrollReveal animation="fade-right" className="order-2 lg:order-1">
+            <div className="relative h-96 md:h-[500px] lg:h-[600px] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
+              <Image
+                src="/historia.png"
+                alt="María Jesús Matos"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </ScrollReveal>
+
+          {/* Contenido */}
+          <ScrollReveal animation="fade-left" className="order-1 lg:order-2 space-y-6 md:space-y-8">
+            <div className="space-y-4">
+              <p className="text-xs md:text-sm tracking-[0.3em] md:tracking-[0.4em] uppercase text-blue-600 font-crimson font-bold">
+                Mi Historia
+              </p>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-brand-text leading-tight">
+                De Sueños a Realidad
+              </h2>
+            </div>
+
+            <div className="space-y-5 text-brand-text-light leading-relaxed text-base md:text-lg font-crimson">
+              <p>
+                Soy venezolana, y hace 8 años emigré a los Estados Unidos con tan solo 19 años, llevando en la maleta mis sueños... y una pasión que me acompañaba desde niña: el mundo de las uñas.
+              </p>
+              <p>
+                Hoy tengo más de 10 años de experiencia en esta industria, pero no siempre fue fácil. Al inicio, mis conocimientos eran empíricos. Sabía que amaba este arte, pero entendí que el talento por sí solo no era suficiente para escalar un negocio rentable ni atraer clientas de alto valor.
+              </p>
+              <p>
+                Con los años, descubrí que este mundo va mucho más allá de una buena técnica: es un negocio poderoso que necesita estructura, estrategia y educación.
+              </p>
+              <p>
+                Por eso, comencé a formarme. Estudié con grandes academias e instructores, tanto presenciales como online. Me capacité en técnicas avanzadas, finanzas, redes sociales y marketing especializado para manicuristas.
+              </p>
+              <p>
+                Hoy soy <span className="font-bold text-brand-text">Master Instructor en uñas y marketing para manicuristas</span>, y mi misión es compartir este camino con más mujeres soñadoras, que como yo, quieren vivir de su talento y construir una marca profesional y rentable.
+              </p>
+              <p className="text-brand-text font-bold italic">
+                Porque el arte transforma... pero la educación y la visión hacen que ese arte se convierta en libertad.
+              </p>
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 

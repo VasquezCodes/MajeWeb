@@ -3,62 +3,62 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 
-// Datos de las imágenes de la galería (usando tus nuevas rutas)
+// Datos de las imágenes de la galería
 const galleryImages = [
-  {
-    src: '/serviciosImg/nails1.jpeg',
-    alt: 'Manicura profesional con esmaltado perfecto',
-    category: 'Manicura'
-  },
-  {
-    src: '/serviciosImg/nails2.jpeg',
-    alt: 'Uñas esculpidas con técnica avanzada',
-    category: 'Manicura'
-  },
-  {
-    src: '/serviciosImg/nails3.jpeg',
-    alt: 'Pedicura spa completa y relajante',
-    category: 'Pedicura'
-  },
-  {
-    src: '/serviciosImg/nails4.jpeg',
-    alt: 'Decoración artística personalizada',
-    category: 'Manicura'
-  },
-  {
-    src: '/serviciosImg/nails5.jpeg',
-    alt: 'Sistema dual para extensiones naturales',
-    category: 'Manicura'
-  },
-  {
-    src: '/serviciosImg/nails6.jpeg',
-    alt: 'Esmaltado espejo premium',
-    category: 'Manicura'
-  },
-  {
-    src: '/serviciosImg/nails7.jpeg',
-    alt: 'Trabajo de cutículas profesional',
-    category: 'Manicura'
-  },
-  {
-    src: '/serviciosImg/nails8.jpeg',
-    alt: 'Resultado final de manicura elegante',
-    category: 'Manicura'
-  },
-  {
-    src: '/serviciosImg/nails9.jpeg',
-    alt: 'Pedicura con masaje terapéutico',
-    category: 'Pedicura'
-  },
-  {
-    src: '/serviciosImg/redNails.jpeg',
-    alt: 'Herramientas profesionales de alta calidad',
-    category: 'Manicura'
-  }
+  // Manicuras (14 imágenes)
+  { src: '/manicurasjpg/IMG_7119.jpg', alt: 'Manicura profesional', category: 'Manicura' },
+  { src: '/manicurasjpg/IMG_4912.jpg', alt: 'Manicura elegante', category: 'Manicura' },
+  { src: '/manicurasjpg/IMG_0183.jpg', alt: 'Manicura con diseño', category: 'Manicura' },
+  { src: '/manicurasjpg/IMG_1200.jpg', alt: 'Manicura perfecta', category: 'Manicura' },
+  { src: '/manicurasjpg/IMG_3867.jpg', alt: 'Manicura premium', category: 'Manicura' },
+  { src: '/manicurasjpg/IMG_4312.jpg', alt: 'Manicura clásica', category: 'Manicura' },
+  { src: '/manicurasjpg/IMG_5756.jpg', alt: 'Manicura francesa', category: 'Manicura' },
+  { src: '/manicurasjpg/IMG_6242.jpg', alt: 'Manicura moderna', category: 'Manicura' },
+  { src: '/manicurasjpg/IMG_6250.jpg', alt: 'Manicura natural', category: 'Manicura' },
+  { src: '/manicurasjpg/IMG_6487.jpg', alt: 'Manicura sofisticada', category: 'Manicura' },
+  { src: '/manicurasjpg/IMG_7139.jpg', alt: 'Manicura delicada', category: 'Manicura' },
+  { src: '/manicurasjpg/IMG_8632.jpg', alt: 'Manicura brillante', category: 'Manicura' },
+  { src: '/manicurasjpg/Usa está en el servicio de manicura .jpg', alt: 'Manicura Rusa', category: 'Manicura' },
+  { src: '/manicurasjpg/Usar en servicio de extensión con Poly gel .jpg', alt: 'Extensión Polygel', category: 'Manicura' },
+
+  // Diseños (16 imágenes)
+  { src: '/diseniosjpg/IMG_0981.jpg', alt: 'Diseño artístico', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_1006.jpg', alt: 'Diseño creativo', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_1999.jpg', alt: 'Diseño único', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_2147.jpg', alt: 'Diseño elegante', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_3323.jpg', alt: 'Diseño moderno', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_4309.jpg', alt: 'Diseño personalizado', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_4324.jpg', alt: 'Diseño sofisticado', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_5246.jpg', alt: 'Diseño delicado', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_5274.jpg', alt: 'Diseño especial', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_6536.jpg', alt: 'Diseño premium', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_6907.jpg', alt: 'Diseño exclusivo', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_6913.jpg', alt: 'Diseño brillante', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_8432.jpg', alt: 'Diseño glamuroso', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_8444.jpg', alt: 'Diseño original', category: 'Diseño' },
+  { src: '/diseniosjpg/IMG_8454.jpg', alt: 'Diseño perfecto', category: 'Diseño' },
+  { src: '/diseniosjpg/Usar en servicio de _ extensión con builder gel .jpg', alt: 'Extensión Builder Gel', category: 'Diseño' },
+
+  // Pedicuras (16 imágenes)
+  { src: '/pedicurajpg/IMG_0479.jpg', alt: 'Pedicura spa', category: 'Pedicura' },
+  { src: '/pedicurajpg/IMG_0497.jpg', alt: 'Pedicura completa', category: 'Pedicura' },
+  { src: '/pedicurajpg/IMG_0941.jpg', alt: 'Pedicura caballero', category: 'Pedicura' },
+  { src: '/pedicurajpg/IMG_1169.jpg', alt: 'Pedicura profesional', category: 'Pedicura' },
+  { src: '/pedicurajpg/IMG_1170.jpg', alt: 'Pedicura relajante', category: 'Pedicura' },
+  { src: '/pedicurajpg/IMG_1433.jpg', alt: 'Pedicura premium', category: 'Pedicura' },
+  { src: '/pedicurajpg/IMG_2802.jpg', alt: 'Pedicura elegante', category: 'Pedicura' },
+  { src: '/pedicurajpg/IMG_4088.jpg', alt: 'Pedicura deluxe', category: 'Pedicura' },
+  { src: '/pedicurajpg/IMG_4089.jpg', alt: 'Pedicura sofisticada', category: 'Pedicura' },
+  { src: '/pedicurajpg/IMG_6006.jpg', alt: 'Pedicura clásica', category: 'Pedicura' },
+  { src: '/pedicurajpg/IMG_6324.jpg', alt: 'Pedicura moderna', category: 'Pedicura' },
+  { src: '/pedicurajpg/IMG_7597.jpg', alt: 'Pedicura natural', category: 'Pedicura' },
+  { src: '/pedicurajpg/IMG_7620.jpg', alt: 'Pedicura francesa', category: 'Pedicura' },
+  { src: '/pedicurajpg/IMG_8390.jpg', alt: 'Pedicura perfecta', category: 'Pedicura' },
+  { src: '/pedicurajpg/Usar para servicio _ de pedicura .jpg', alt: 'Pedicura clásica', category: 'Pedicura' },
 ];
 
-// Categorías disponibles basadas en las imágenes de servicios
-const categories = ['Todos', 'Manicura', 'Pedicura'];
+// Categorías disponibles
+const categories = ['Todos', 'Manicura', 'Diseño', 'Pedicura'];
 
 export default function GaleriaPage() {
   const [selectedCategory, setSelectedCategory] = useState('Todos');
@@ -120,12 +120,8 @@ export default function GaleriaPage() {
           ))}
         </div>
 
-        {/* --- CAMBIO AQUÍ --- 
-            Grid de 2 columnas en móvil y 5 en desktop.
-            Esto encaja perfecto con 10 imágenes (5 filas en móvil, 2 en desktop).
-            No más espacios vacíos.
-        */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
+        {/* Grid responsive para 41 imágenes */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           {filteredImages.map((image, index) => (
             <div
               key={index}

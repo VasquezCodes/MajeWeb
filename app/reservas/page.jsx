@@ -1,6 +1,99 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+
+// --- Datos de Servicios ---
+const servicios = {
+  manicuras: [
+    {
+      id: 1,
+      nombre: "Manicura Rusa con Rubber Base",
+      descripcion: "Ideal para uñas cortas o pequeñas que necesitan resistencia y una mejor apariencia.",
+      detalles: "Incluye manicura rusa avanzada, nivelación con rubber base y esmaltado en gel color sólido. No incluye diseño.",
+      imagen: "/manicurasjpg/Usa está en el servicio de manicura .jpg"
+    },
+    {
+      id: 2,
+      nombre: "Manicura Rusa con Builder Gel",
+      descripcion: "Recomendada para uñas naturales cortas a medianas que requieren mayor soporte.",
+      detalles: "Incluye manicura rusa, nivelación con builder gel y esmaltado en gel color sólido. No incluye diseño.",
+      imagen: "/manicurasjpg/IMG_7119.jpg"
+    },
+    {
+      id: 3,
+      nombre: "Extensiones con Builder Gel",
+      descripcion: "Extensión de la uña natural con molde o sistema dual. Uñas resistentes y naturales.",
+      detalles: "Incluye un solo color en gel. No incluye diseño.",
+      imagen: "/diseniosjpg/Usar en servicio de _ extensión con builder gel .jpg"
+    },
+    {
+      id: 4,
+      nombre: "Polygel en Uñas Naturales",
+      descripcion: "Refuerzo híbrido que aporta resistencia y flexibilidad en uñas cortas o medianas.",
+      detalles: "Incluye esmaltado en gel color sólido. No incluye diseño.",
+      imagen: "/manicurasjpg/IMG_4912.jpg"
+    },
+    {
+      id: 5,
+      nombre: "Extensiones con Polygel",
+      descripcion: "Para estructura más definida y acabados más elaborados.",
+      detalles: "Incluye esmaltado en gel color sólido. No incluye diseño.",
+      imagen: "/manicurasjpg/Usar en servicio de extensión con Poly gel .jpg"
+    },
+    {
+      id: 6,
+      nombre: "Manicura Caballero",
+      descripcion: "Limpieza detallada de uñas, cutículas, exfoliación e hidratación.",
+      detalles: "No incluye esmaltado.",
+      imagen: "/manicurasjpg/IMG_6242.jpg"
+    }
+  ],
+  pedicuras: [
+    {
+      id: 7,
+      nombre: "Pedicura Clásica en Gel",
+      descripcion: "Limpieza detallada con máquina, vapor y esmaltado en gel.",
+      detalles: "Técnica europea moderna.",
+      imagen: "/pedicurajpg/Usar para servicio _ de pedicura .jpg"
+    },
+    {
+      id: 8,
+      nombre: "Pedicura Deluxe",
+      descripcion: "Servicio de higiene profunda para pies sanos que requieren mayor cuidado estético.",
+      detalles: "Incluye limpieza detallada con técnica mecánica, vapor, remoción de callosidades y piel agrietada, limpieza profunda de laterales y paroniquios, corte y perfeccionamiento de cutículas, exfoliación, masaje hidratante y esmaltado en gel.",
+      imagen: "/pedicurajpg/IMG_7597.jpg"
+    },
+    {
+      id: 9,
+      nombre: "Pedicura Rusa",
+      descripcion: "Técnica al seco, detallada en cutículas con tijera, nivelación con rubber base si se requiere y esmaltado en gel.",
+      detalles: "Ideal para uñas sanas.",
+      imagen: "/pedicurajpg/IMG_0479.jpg"
+    },
+    {
+      id: 10,
+      nombre: "Quirópedia Combinada",
+      descripcion: "Tratamiento no invasivo para casos leves de hongos, uñas encarnadas en fase inicial y cuidado preventivo.",
+      detalles: "Incluye tratamiento tópico natural, remoción de hiperqueratosis y plan de seguimiento. *No tratamos casos clínicos. No somos podólogos.*",
+      imagen: "/quieropediaJPG/Usar en servicio de Quiropedia combinada .jpg"
+    },
+    {
+      id: 11,
+      nombre: "Mantenimiento de Quirópedia",
+      descripcion: "Solo para usuarios en seguimiento periódico.",
+      detalles: "No aplica para nuevos clientes.",
+      imagen: "/quieropediaJPG/majenailspa - 3.jpg"
+    },
+    {
+      id: 12,
+      nombre: "Pedicura Caballero",
+      descripcion: "Limpieza profunda con máquina, exfoliación e hidratación.",
+      detalles: "No incluye esmaltado.",
+      imagen: "/pedicurajpg/IMG_0941.jpg"
+    }
+  ]
+};
 
 /**
  * ServiciosBookingPage (JS puro)
@@ -122,32 +215,169 @@ export default function ServiciosBookingPage() {
   return (
     <div className="space-y-24 md:space-y-32 mb-24 md:mb-32">
       {/* === Sección 1: Hero de Reservas === */}
-      <section className="relative overflow-hidden pt-24 pb-20 md:pt-32 md:pb-28">
+      <section className="relative overflow-hidden pt-24 pb-12 md:pt-32 md:pb-16">
         <div className="absolute inset-0 bg-gradient-to-br from-gray-100 via-white to-gray-100" />
         <div className="absolute -top-20 -right-20 h-80 w-80 rounded-full bg-black/5 blur-3xl" />
         <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-black/5 blur-3xl" />
 
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <span className="inline-flex items-center justify-center rounded-full bg-white/70 px-5 py-2 text-sm font-semibold uppercase tracking-[0.3em] text-gray-800 shadow-sm">
-            Reservar Turno
+          <span className="inline-flex items-center justify-center rounded-full bg-white/70 px-4 md:px-5 py-2 text-xs md:text-sm font-bold uppercase tracking-[0.3em] text-gray-800 shadow-sm font-crimson">
+            Servicios Profesionales
           </span>
-          <h1 className="mt-6 text-4xl md:text-6xl font-bold text-gray-900 tracking-tight">
-            Agenda tu cita <span className="text-gray-700">fácilmente</span>
+          <h1 className="mt-4 md:mt-6 text-3xl md:text-5xl lg:text-6xl font-serif font-bold text-brand-text tracking-tight leading-tight">
+            Maje Nail Spa
           </h1>
-          <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-            Haz clic en el botón de abajo para seleccionar el servicio, el día y la hora que prefieras a través de nuestro sistema de reservas online con Booksy.
+          <p className="mt-4 md:mt-6 text-base md:text-lg lg:text-xl font-crimson text-brand-text-light max-w-3xl mx-auto leading-relaxed">
+            Descubre todos nuestros servicios profesionales de manicura y pedicura. Agenda tu cita fácilmente.
           </p>
+
+          {/* Botón para ir a reservar */}
+          <div className="mt-8 md:mt-10">
+            <button
+              onClick={() => {
+                const elemento = document.getElementById('contenedor-booksy');
+                if (elemento) {
+                  elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+              }}
+              className="inline-flex items-center justify-center gap-2 px-6 md:px-8 py-3 md:py-4 bg-brand-black text-white rounded-full font-black text-base md:text-lg hover:bg-brand-text transition-all duration-300 hover:scale-105 active:scale-95 shadow-xl hover:shadow-2xl"
+            >
+              Reservar Ahora
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </button>
+          </div>
         </div>
       </section>
 
-      {/* === Sección 2: Botón de Booksy === */}
-      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Contenedor objetivo del widget */}
-        <div
-          ref={contenedorBooksyRef}
-          id="contenedor-booksy"
-          className="w-full flex flex-col items-center gap-4 py-12 min-h-[100px]"
-        >
+      {/* === Sección 2: Servicios de Manicura === */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div className="text-center mb-10 md:mb-14">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold text-brand-text mb-3">
+            Manicuras
+          </h2>
+          <div className="w-20 h-1 bg-brand-pink mx-auto"></div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {servicios.manicuras.map((servicio) => (
+            <div
+              key={servicio.id}
+              className="bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]"
+            >
+              <div className="relative h-80 md:h-96 lg:h-[28rem]">
+                <Image
+                  src={servicio.imagen}
+                  alt={servicio.nombre}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute top-3 left-3 md:top-4 md:left-4">
+                  <span className="inline-flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-pink text-white font-black text-sm md:text-base">
+                    {servicio.id}
+                  </span>
+                </div>
+              </div>
+              <div className="p-5 md:p-6 space-y-3">
+                <h3 className="text-lg md:text-xl font-serif font-bold text-brand-text leading-tight">
+                  {servicio.nombre}
+                </h3>
+                <p className="text-sm md:text-base text-brand-text-light font-crimson leading-relaxed">
+                  {servicio.descripcion}
+                </p>
+                <p className="text-xs md:text-sm text-gray-500 italic">
+                  {servicio.detalles}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* === Sección 3: Servicios de Pedicura === */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div className="text-center mb-10 md:mb-14">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold text-brand-text mb-3">
+            Pedicuras
+          </h2>
+          <div className="w-20 h-1 bg-brand-pink mx-auto"></div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          {servicios.pedicuras.map((servicio) => (
+            <div
+              key={servicio.id}
+              className="bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]"
+            >
+              <div className="relative h-80 md:h-96 lg:h-[28rem]">
+                <Image
+                  src={servicio.imagen}
+                  alt={servicio.nombre}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute top-3 left-3 md:top-4 md:left-4">
+                  <span className="inline-flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-brand-pink text-white font-black text-sm md:text-base">
+                    {servicio.id}
+                  </span>
+                </div>
+              </div>
+              <div className="p-5 md:p-6 space-y-3">
+                <h3 className="text-lg md:text-xl font-serif font-bold text-brand-text leading-tight">
+                  {servicio.nombre}
+                </h3>
+                <p className="text-sm md:text-base text-brand-text-light font-crimson leading-relaxed">
+                  {servicio.descripcion}
+                </p>
+                <p className="text-xs md:text-sm text-gray-500 italic">
+                  {servicio.detalles}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Notas importantes */}
+        <div className="mt-10 md:mt-14 bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-2xl md:rounded-3xl p-6 md:p-8">
+          <h3 className="text-lg md:text-xl font-serif font-bold text-brand-text mb-4">
+            Notas Importantes
+          </h3>
+          <ul className="space-y-2 text-sm md:text-base text-brand-text-light font-crimson">
+            <li className="flex items-start gap-2">
+              <span className="text-brand-pink mt-1">•</span>
+              <span>Los diseños no están incluidos en ningún servicio.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-brand-pink mt-1">•</span>
+              <span>Se pueden agregar según complejidad.</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-brand-pink mt-1">•</span>
+              <span>Todos los servicios incluyen exfoliación e hidratación.</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      {/* === Sección 4: Botón de Booksy === */}
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        <div className="bg-gradient-to-br from-brand-pink/10 to-pink-50 rounded-3xl p-8 md:p-12 shadow-xl">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-serif font-bold text-brand-text mb-3">
+              ¿Lista para Reservar tu Cita?
+            </h2>
+            <p className="text-base md:text-lg font-crimson text-brand-text-light max-w-2xl mx-auto">
+              Haz clic en el botón de abajo para seleccionar tu servicio, día y hora preferida.
+            </p>
+          </div>
+
+          {/* Contenedor objetivo del widget */}
+          <div
+            ref={contenedorBooksyRef}
+            id="contenedor-booksy"
+            className="w-full flex flex-col items-center gap-4 py-6 min-h-[100px]"
+          >
           {!widgetListo && !errorWidget && (
             <p className="p-4 text-center text-gray-500">Cargando botón de reserva...</p>
           )}
@@ -179,18 +409,19 @@ export default function ServiciosBookingPage() {
           </div>
         )}
 
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Si el botón de reserva no aparece correctamente, por favor{' '}
-          <a
-            href="https://booksy.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-800 underline"
-          >
-            visita Booksy
-          </a>{' '}
-          o contáctanos.
-        </p>
+          <p className="mt-6 text-center text-sm md:text-base text-brand-text-light font-crimson">
+            Si el botón de reserva no aparece correctamente, por favor{' '}
+            <a
+              href="https://booksy.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-brand-text underline font-bold"
+            >
+              visita Booksy
+            </a>{' '}
+            o contáctanos.
+          </p>
+        </div>
       </section>
     </div>
   );
