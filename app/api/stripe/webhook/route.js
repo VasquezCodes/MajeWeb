@@ -316,16 +316,32 @@ export async function POST(req) {
 
           const newBookingRef = bookingsCol.doc();
 
+          // Determinar precio total y monto pagado según tipo de pago
+          let fullPrice = 0;
+          let amountPaid = 0;
+
+          if (paymentType === 'reservation') {
+            // Reserva: guardamos precio total y lo que pagaron (30%)
+            fullPrice = (item.price || 0) * 100; // Precio completo del servicio
+            amountPaid = (item.reservation_paid || 0) * 100; // 30% que pagaron
+          } else {
+            // Pago completo
+            fullPrice = (item.price || 0) * 100;
+            amountPaid = (item.price || 0) * 100;
+          }
+
           transaction.set(newBookingRef, {
             orderId,
             serviceId: courseId,
             serviceName: item.title,
             bookingDate,
-            pricePaid: (item.price || 0) * 100,
+            price: fullPrice, // Precio total del servicio
+            pricePaid: amountPaid, // Monto realmente pagado
+            paymentType, // 'full' o 'reservation'
             currency,
             isPartOfOffer: item.price === 0 && item.isMarketingCourse,
             buyer: comprador,
-            status: 'paid',
+            status: paymentType === 'reservation' ? 'reserved' : 'paid',
             createdAt: new Date(),
           });
 
