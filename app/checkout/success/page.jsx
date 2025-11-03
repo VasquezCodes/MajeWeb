@@ -97,7 +97,7 @@ function SuccessPageContent() {
                           <strong>Saldo pendiente:</strong> ${cartSummary.reduce((sum, item) => sum + (item.remaining_balance || 0) * (item.qty || 1), 0).toFixed(2)}
                           <br />
                           <span className="text-xs text-brand-text-light mt-1 block">
-                            Este monto se paga el día de la clase presencialmente con María Jesús.
+                            Este monto se paga el día de la clase presencialmente con mariajesus.
                           </span>
                         </span>
                       </p>
@@ -151,8 +151,8 @@ function SuccessPageContent() {
             <div className="pt-4 space-y-4">
               <p className="text-sm text-brand-text-light font-medium">
                 ¿Alguna pregunta? Escribinos a{' '}
-                <a href="mailto:info@majeacademy.com" className="text-brand-pink font-bold hover:underline">
-                  info@majeacademy.com
+                <a href="mailto:info@majenailspa.com" className="text-brand-pink font-bold hover:underline">
+                  info@majenailspa.com
                 </a>
               </p>
 

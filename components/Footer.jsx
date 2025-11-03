@@ -41,11 +41,11 @@ export default function Footer() {
                 <EnvelopeIcon className="w-5 h-5 text-brand-pink mt-1 group-hover:scale-110 transition-transform" />
                 <div>
                   <p className="text-brand-white font-medium">Email</p>
-                  <a 
-                    href="mailto:contacto@ejemplo.com" 
+                  <a
+                    href="mailto:info@majenailspa.com"
                     className="text-brand-gray-light/80 hover:text-brand-pink transition-colors"
                   >
-                    contacto@ejemplo.com
+                    info@majenailspa.com
                   </a>
                 </div>
               </div>
@@ -54,11 +54,11 @@ export default function Footer() {
                 <PhoneIcon className="w-5 h-5 text-brand-pink mt-1 group-hover:scale-110 transition-transform" />
                 <div>
                   <p className="text-brand-white font-medium">Teléfono</p>
-                  <a 
-                    href="tel:+14075551234" 
+                  <a
+                    href="tel:+13213145268"
                     className="text-brand-gray-light/80 hover:text-brand-pink transition-colors"
                   >
-                    (407) 555-1234
+                    +1 (321) 314-5268
                   </a>
                 </div>
               </div>

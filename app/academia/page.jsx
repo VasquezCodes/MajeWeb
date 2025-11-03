@@ -213,7 +213,7 @@ const testimonials = [
 const faqs = [
   {
     question: "COMO SERA LA MODALIDAD DE PAGO ?",
-    answer: "Ofrecemos dos opciones: 1) Pago Completo: Paga el total de la mentoría con tarjeta (aceptamos pagos en cuotas con Afterpay y Klarna). 2) Pago de Reserva: Asegura tu cupo con el 30% del total y el saldo restante se paga el día de la clase presencialmente con María Jesús."
+    answer: "Ofrecemos dos opciones: 1) Pago Completo: Paga el total de la mentoría con tarjeta (aceptamos pagos en cuotas con Afterpay y Klarna). 2) Pago de Reserva: Asegura tu cupo con el 30% del total y el saldo restante se paga el día de la clase presencialmente con mariajesus."
   },
   {
     question: "EL CERTIFICADO ME SIRVE PARA TRABAJAR EN LOS ESTADOS UNIDOS ?",
@@ -715,6 +715,60 @@ export default function AcademiaPage() {
         </div>
       </section>
 
+      {/* === Sección 2.3: Galería Visual === */}
+      <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-20">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+
+          {/* Imagen 1 - Certificado */}
+          <div className="relative group overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500">
+            <div className="relative aspect-[4/5] md:aspect-[3/4]">
+              <img
+                src="/queAprenderan/IMG_5957.jpg"
+                alt="Certificado de Maje Nails Academy"
+                className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                style={{ objectPosition: 'center center' }}
+              />
+              {/* Overlay con gradiente - siempre visible en mobile, hover en desktop */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/30 md:from-black/60 md:via-black/20 md:to-transparent md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500" />
+
+              {/* Texto overlay - siempre visible en mobile, hover en desktop */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 md:transform md:translate-y-full md:group-hover:translate-y-0 transition-transform duration-500">
+                <h3 className="text-2xl md:text-3xl font-black text-white mb-2 drop-shadow-lg">
+                  Certificación Profesional
+                </h3>
+                <p className="text-sm md:text-base text-white font-light drop-shadow-md">
+                  Reconocimiento oficial al completar tu mentoría
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Imagen 2 - Salón */}
+          <div className="relative group overflow-hidden rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500">
+            <div className="relative aspect-[4/5] md:aspect-[3/4]">
+              <img
+                src="/queAprenderan/IMG_7539.jpg"
+                alt="Instalaciones de Maje Nails Academy"
+                className="w-full h-full object-cover object-center transform group-hover:scale-105 transition-transform duration-700"
+              />
+              {/* Overlay con gradiente - siempre visible en mobile, hover en desktop */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/70 to-black/30 md:from-black/60 md:via-black/20 md:to-transparent md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500" />
+
+              {/* Texto overlay - siempre visible en mobile, hover en desktop */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 md:transform md:translate-y-full md:group-hover:translate-y-0 transition-transform duration-500">
+                <h3 className="text-2xl md:text-3xl font-black text-white mb-2 drop-shadow-lg">
+                  Ambiente Profesional
+                </h3>
+                <p className="text-sm md:text-base text-white font-light drop-shadow-md">
+                  Instalaciones equipadas para tu aprendizaje
+                </p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
       {/* === Sección 2.5: Qué logran las alumnas === */}
       <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24">
@@ -754,53 +808,16 @@ export default function AcademiaPage() {
               </div>
             </div>
 
-            {/* Columna de Collage - Derecha */}
+            {/* Columna de Imagen - Derecha */}
             <div className="relative order-1 lg:order-2">
-              {/* Grid de collage */}
-              <div className="grid grid-cols-2 gap-3 md:gap-4">
-
-                {/* Imagen grande - ocupa 2 filas */}
-                <div className="relative row-span-2 overflow-hidden rounded-2xl md:rounded-3xl shadow-xl">
-                  <div className="relative h-full min-h-[400px] md:min-h-[500px]">
-                    <Image
-                      src="/queAprenderan/queAprenderan.jpg"
-                      alt="Alumna de Maje Nails Academy trabajando"
-                      fill
-                      className="object-cover object-center"
-                      priority={false}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent" />
-                  </div>
-                </div>
-
-                {/* Imagen superior derecha */}
-                <div className="relative overflow-hidden rounded-2xl md:rounded-3xl shadow-xl">
-                  <div className="relative h-full min-h-[190px] md:min-h-[240px]">
-                    <Image
-                      src="/queAprenderan/IMG_5957.jpg"
-                      alt="Resultados de alumnas"
-                      fill
-                      className="object-cover object-center"
-                      priority={false}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent" />
-                  </div>
-                </div>
-
-                {/* Imagen inferior derecha */}
-                <div className="relative overflow-hidden rounded-2xl md:rounded-3xl shadow-xl">
-                  <div className="relative h-full min-h-[190px] md:min-h-[240px]">
-                    <Image
-                      src="/queAprenderan/IMG_7539.jpg"
-                      alt="Técnicas aprendidas"
-                      fill
-                      className="object-cover object-center"
-                      priority={false}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent" />
-                  </div>
-                </div>
-
+              <div className="relative overflow-hidden rounded-3xl shadow-2xl aspect-[4/5] lg:aspect-[3/4]">
+                <img
+                  src="/queAprenderan/queAprenderan.jpg"
+                  alt="Alumna de Maje Nails Academy trabajando"
+                  className="w-full h-full object-cover object-center"
+                />
+                {/* Overlay sutil */}
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent" />
               </div>
 
               {/* Elementos decorativos */}
@@ -811,22 +828,6 @@ export default function AcademiaPage() {
           </div>
         </div>
       </section>
-
-      {/* === Sección de Pricing === */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16">
-        <div className="flex justify-center">
-          <div className="relative overflow-hidden rounded-3xl shadow-2xl bg-white p-6 md:p-8 max-w-4xl w-full">
-            <Image
-              src="/academiaImg/pricing.png"
-              alt="Pricing de Maje Nails Academy"
-              width={1200}
-              height={800}
-              className="w-full h-auto rounded-2xl"
-            />
-          </div>
-        </div>
-      </section>
-
       {/* === Sección de Paquetes === */}
       <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="text-center max-w-3xl mx-auto space-y-5 mb-12">
@@ -1181,17 +1182,41 @@ export default function AcademiaPage() {
       </section>
 
       {/* === Sección 5: FAQs === */}
-      <section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12">
+      <section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-20">
         <div className="text-center max-w-3xl mx-auto space-y-5 mb-16">
+          <div className="inline-flex items-center gap-2.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 px-5 py-2.5">
+            <SparklesIcon className="h-4 w-4 text-brand-pink" />
+            <span className="text-xs font-bold text-brand-pink uppercase tracking-[0.2em]">
+              Preguntas Frecuentes
+            </span>
+          </div>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-brand-text leading-tight">
-            Preguntas Frecuentes
+            ¿Tienes Dudas?
           </h2>
+          <p className="text-lg md:text-xl text-brand-text-light font-light leading-relaxed">
+            Resolvemos las preguntas más comunes sobre la mentoría.
+          </p>
         </div>
-        <div className="space-y-6">
-          {faqs.map((faq) => (
-            <div key={faq.question} className="bg-white border-2 border-brand-gray-light/20 rounded-2xl p-6">
-              <h3 className="text-xl font-black text-brand-text mb-3">{faq.question}</h3>
-              <p className="text-base text-brand-text-light font-light leading-relaxed">{faq.answer}</p>
+        <div className="space-y-4 md:space-y-5">
+          {faqs.map((faq, index) => (
+            <div
+              key={faq.question}
+              className="group bg-white border-2 border-brand-gray-light/20 rounded-3xl p-6 md:p-8 shadow-md hover:shadow-xl hover:border-brand-pink/30 transition-all duration-300"
+              style={{ animationDelay: `${index * 50}ms` }}
+            >
+              <div className="flex gap-4 items-start">
+                <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-brand-pink/10 flex items-center justify-center group-hover:bg-brand-pink/20 transition-colors duration-300">
+                  <span className="text-lg md:text-xl font-black text-brand-pink">Q</span>
+                </div>
+                <div className="flex-1 space-y-3">
+                  <h3 className="text-lg md:text-xl font-black text-brand-text leading-tight">
+                    {faq.question}
+                  </h3>
+                  <p className="text-base md:text-lg text-brand-text-light font-light leading-relaxed">
+                    {faq.answer}
+                  </p>
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -1470,7 +1495,7 @@ export default function AcademiaPage() {
                               ${(totalPrice * 0.3).toFixed(2)}
                             </div>
                             <p className="text-xs text-brand-text-light mt-2 italic">
-                              * El cobro presencial lo gestiona María Jesús el día de la mentoría
+                              * El cobro presencial lo gestiona mariajesus el día de la mentoría
                             </p>
                           </div>
                         </div>
@@ -1597,17 +1622,17 @@ export default function AcademiaPage() {
         <>
           <button
             onClick={() => setShowCart(!showCart)}
-            className="fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-brand-black text-white shadow-2xl shadow-black/40 border-4 border-white transition-all duration-300 hover:scale-110 hover:shadow-black/60 active:scale-95"
+            className="fixed bottom-20 right-6 md:bottom-8 md:right-8 z-[9999] flex h-16 w-16 md:h-20 md:w-20 items-center justify-center rounded-full bg-blue-600 text-white shadow-2xl shadow-blue-600/50 ring-4 ring-white transition-all duration-300 hover:scale-110 hover:bg-blue-700 hover:shadow-blue-600/70 active:scale-95"
           >
-            <ShoppingBagIcon className="h-7 w-7" />
-            <span className="absolute -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-green-500 border-4 border-white text-xs font-black text-white shadow-xl">
+            <ShoppingBagIcon className="h-8 w-8 md:h-10 md:w-10 text-white stroke-[2.5]" />
+            <span className="absolute -top-2 -right-2 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-emerald-500 border-4 border-white text-xs md:text-sm font-black text-white shadow-xl animate-pulse">
               {totalItems}
             </span>
           </button>
 
           {/* Cart Dropdown */}
           {showCart && (
-            <div className="fixed bottom-24 right-6 z-50 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border-2 border-brand-gray-light/20 overflow-hidden animate-fadeInUp">
+            <div className="fixed bottom-40 right-6 md:bottom-32 md:right-8 z-[9998] w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border-2 border-brand-gray-light/20 overflow-hidden animate-fadeInUp">
               <div className="bg-gradient-to-r from-brand-pink to-pink-400 px-6 py-4 flex items-center justify-between">
                 <h3 className="text-lg font-black text-white">Tu Carrito</h3>
                 <button
