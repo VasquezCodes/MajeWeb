@@ -778,7 +778,7 @@ export default function AcademiaPage() {
     <div className="space-y-20 md:space-y-32 mb-24 md:mb-32 font-sans">
 
   {/* === Sección 1: Hero === */}
-      <section className="relative overflow-hidden min-h-screen flex items-start pt-24 pb-20 lg:items-center lg:min-h-0 lg:pt-32 lg:pb-28">
+      <section className="relative overflow-hidden min-h-screen lg:min-h-0 pt-24 pb-20 lg:pt-32 lg:pb-28">
         {/* Fondos decorativos */}
         <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-brand-pink/10 blur-[100px]" />
         <div className="absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full bg-brand-gray/5 blur-[100px]" />
@@ -796,11 +796,10 @@ export default function AcademiaPage() {
         </div>
 
         {/* Contenido */}
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Texto */}
-          <div className="text-left h-full flex flex-col justify-between min-h-[600px] lg:min-h-0">
-            {/* Título arriba */}
-            <div>
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Texto */}
+            <div className="text-left space-y-8 lg:space-y-10">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1]">
                 <span className="text-white lg:text-brand-text drop-shadow-2xl lg:drop-shadow-none">
                   Convierte tu pasión en un{' '}
@@ -809,18 +808,15 @@ export default function AcademiaPage() {
                   negocio rentable
                 </span>
               </h1>
-            </div>
 
-            {/* Texto descriptivo y stats abajo */}
-            <div className="space-y-6">
               <p className="text-lg md:text-xl text-white lg:text-brand-text-light leading-relaxed max-w-xl font-light drop-shadow-lg lg:drop-shadow-none">
                 Consigue clientes de alto valor en 90 días. Muchas profesionales se frustran ❌ con malos cortes, esmalte corrido o clientas que no regresan. ¡Es momento de tomar acción!
               </p>
 
               {/* Stats */}
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-3 gap-6 lg:gap-8">
                 {stats.map((stat) => (
-                  <div key={stat.label} className="text-center lg:text-left space-y-1 lg:space-y-2">
+                  <div key={stat.label} className="text-center lg:text-left space-y-2 lg:space-y-3">
                     <div className="text-3xl lg:text-4xl font-black text-white lg:text-brand-text drop-shadow-xl lg:drop-shadow-none">{stat.value}</div>
                     <div className="text-[10px] lg:text-xs font-semibold lg:font-bold text-white/90 lg:text-brand-text-light uppercase tracking-wider lg:tracking-[0.2em] leading-tight drop-shadow-lg lg:drop-shadow-none">
                       {stat.label}
@@ -829,21 +825,43 @@ export default function AcademiaPage() {
                 ))}
               </div>
             </div>
-          </div>
 
-          {/* Imagen Desktop */}
-          <div className="relative mx-auto max-w-lg hidden lg:block">
-            <div className="absolute inset-0 bg-gradient-to-br from-brand-pink/40 via-transparent to-brand-gray/20 blur-3xl rounded-[3rem]" />
-            <div className="relative overflow-hidden rounded-[3rem] shadow-2xl">
-              <Image
-                src="/academiaImg/academiaHero.JPEG"
-                alt="Mentoría personalizada de uñas de lujo"
-                width={900}
-                height={1100}
-                className="h-[700px] w-full object-cover"
-                priority
-              />
+            {/* Imagen Desktop */}
+            <div className="relative mx-auto max-w-lg hidden lg:block">
+              <div className="absolute inset-0 bg-gradient-to-br from-brand-pink/40 via-transparent to-brand-gray/20 blur-3xl rounded-[3rem]" />
+              <div className="relative overflow-hidden rounded-[3rem] shadow-2xl">
+                <Image
+                  src="/academiaImg/academiaHero.JPEG"
+                  alt="Mentoría personalizada de uñas de lujo"
+                  width={900}
+                  height={1100}
+                  className="h-[700px] w-full object-cover"
+                  priority
+                />
+              </div>
             </div>
+          </div>
+        </div>
+
+        {/* Botón CTA - FUERA del contenedor, directo a la sección */}
+        <div className="absolute bottom-8 left-0 right-0 z-20 px-6 lg:relative lg:bottom-auto lg:w-full lg:max-w-7xl lg:mx-auto lg:px-6 lg:mt-16">
+          <div className="w-full flex justify-center lg:justify-start">
+            <button
+              onClick={() => {
+                const mentoriasSection = document.getElementById('mentorias');
+                if (mentoriasSection) {
+                  mentoriasSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+              className="group relative inline-flex items-center gap-3 px-6 md:px-8 py-4 md:py-5 bg-gradient-to-r from-emerald-500 via-lime-500 to-emerald-600 text-white font-black text-base md:text-lg rounded-full shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden"
+            >
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              <SparklesIcon className="h-6 w-6 relative z-10 animate-pulse" />
+              <span className="relative z-10">¡Asegura tu lugar ahora!</span>
+              <span className="relative z-10 text-xs md:text-sm font-semibold bg-white/20 px-3 py-1 rounded-full animate-pulse">
+                Últimos espacios disponibles
+              </span>
+            </button>
           </div>
         </div>
       </section>
