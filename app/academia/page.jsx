@@ -406,6 +406,65 @@ const courseTemarios = {
         ]
       }
     ]
+  },
+  "marketing": {
+    title: "MÓDULO — Marketing para Manicuristas",
+    subtitle: "Atrae clientas premium y posiciona tu negocio como experta",
+    sections: [
+      {
+        title: "Marca Personal y Posicionamiento",
+        items: [
+          "Qué es una marca personal en el mundo de las uñas",
+          "Cómo crear y comunicar tu marca personal",
+          "Cómo posicionarte como experta premium",
+          "Elegir un nombre adecuado para tu negocio y tu Instagram",
+          "Identidad visual sencilla y coherente (colores, estilo y mensaje)"
+        ]
+      },
+      {
+        title: "Biografía que Convierte",
+        items: [
+          "Optimización completa del perfil",
+          "Palabras clave para atraer a tu clienta ideal",
+          "CTA que impulsa citas y crecimiento"
+        ]
+      },
+      {
+        title: "Contenido Estratégico",
+        items: [
+          "Qué publicar según objetivos: atraer, educar, vender",
+          "Estructura sencilla para Reels y Stories que conectan",
+          "Storytelling: cómo contar tu historia y tus procesos",
+          "Organización del contenido y calendario semanal",
+          "Plan de acción para las primeras publicaciones"
+        ]
+      },
+      {
+        title: "Edición y Diseño para Emprendedoras",
+        items: [
+          "Cómo editar Reels fácilmente (CapCut básico)",
+          "Cómo crear plantillas en Canva básico",
+          "Fotografía y video funcional con celular",
+          "Cómo programar contenido para no perder constancia"
+        ]
+      },
+      {
+        title: "ChatGPT e Inteligencia Artificial para Manicuristas",
+        items: [
+          "Cómo pedir prompts y usar IA para tu negocio",
+          "Guiones, captions, ideas de contenido y respuestas por DM",
+          "IA como asistente de marketing para ahorrar tiempo"
+        ]
+      },
+      {
+        title: "Ventas y Comunicación",
+        items: [
+          "Cómo generar confianza por mensajes",
+          "Conversión: de seguidora a clienta que agenda",
+          "Lenguaje persuasivo y emocional aplicado a uñas"
+        ]
+      }
+    ]
   }
 };
 
