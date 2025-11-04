@@ -46,7 +46,7 @@ const servicios = {
       nombre: "Manicura Caballero",
       descripcion: "Limpieza detallada de uñas, cutículas, exfoliación e hidratación.",
       detalles: "No incluye esmaltado.",
-      imagen: "/manicurasjpg/IMG_6242.jpg"
+      imagen: "/manicurasjpg/manicuraCaballero.jpg"
     }
   ],
   pedicuras: [

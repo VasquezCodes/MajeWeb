@@ -1835,7 +1835,7 @@ export default function AcademiaPage() {
                       <p className="text-sm md:text-base text-brand-text-light">{selectedCourse.duration}</p>
                     </div>
 
-                    {!selectedCourse.isMarketingCourse && courseTemarios[selectedCourse.id] && (
+                    {courseTemarios[selectedCourse.id] && (
                       <button
                         onClick={() => {
                           setSelectedTemario(courseTemarios[selectedCourse.id]);
@@ -1844,7 +1844,7 @@ export default function AcademiaPage() {
                         className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-blue-500 px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-black text-blue-600 transition-all duration-300 hover:bg-blue-50 mb-3"
                       >
                         <DocumentTextIcon className="h-4 md:h-5 w-4 md:w-5" />
-                        Ver Temario
+                        Ver Temario Completo
                       </button>
                     )}
 

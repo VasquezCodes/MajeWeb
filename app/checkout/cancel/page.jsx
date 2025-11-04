@@ -111,9 +111,9 @@ export default function CancelPage() {
                     info@majenailspa.com
                   </a>
                   <span className="hidden sm:inline text-brand-text-light font-bold">•</span>
-                  <a 
-                    href="https://wa.me/1234567890" 
-                    target="_blank" 
+                  <a
+                    href="https://wa.me/13213145268"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-brand-pink font-black hover:underline transition-all hover:scale-105"
                   >
