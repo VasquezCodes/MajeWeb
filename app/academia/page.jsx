@@ -1589,7 +1589,7 @@ export default function AcademiaPage() {
                       Selecciona tus fechas
                     </h2>
                     <p className="text-sm sm:text-base lg:text-lg text-brand-text-light font-light max-w-2xl mx-auto px-4">
-                      Selecciona una fecha disponible (Lun, Mar o Sáb) para cada mentoría en tu carrito.
+                      Selecciona una fecha disponible (Sáb, Dom o Lun) para cada mentoría en tu carrito.
                     </p>
                   </div>
 
