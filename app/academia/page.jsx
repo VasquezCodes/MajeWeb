@@ -469,10 +469,10 @@ const courseTemarios = {
 };
 
 // --- Horarios disponibles (definir después según reglas) ---
-// --- Helper: Verificar si un día es disponible (Lunes=1, Martes=2, Sábado=6) ---
+// --- Helper: Verificar si un día es disponible (Sábado=6, Domingo=0, Lunes=1) ---
 function isDayAvailable(date) {
   const day = date.getDay();
-  return day === 1 || day === 2 || day === 6;
+  return day === 0 || day === 1 || day === 6;
 }
 
 // --- Componente de Calendario ---
