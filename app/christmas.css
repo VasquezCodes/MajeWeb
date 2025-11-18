@@ -370,6 +370,15 @@
   }
 }
 
+@keyframes tree-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .christmas-tree-navbar {
   position: absolute;
   left: -70px;
@@ -380,6 +389,9 @@
   pointer-events: none;
   z-index: 10;
   filter: drop-shadow(0 2px 8px rgba(34, 139, 34, 0.4));
+  opacity: 0;
+  animation: tree-fade-in 0.5s ease-in forwards;
+  animation-delay: 0.3s;
 }
 
 .christmas-tree-navbar svg {
