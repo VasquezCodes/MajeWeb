@@ -230,6 +230,17 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+
+  /* Mobile viewport fix - usa dvh (dynamic viewport height) como fallback */
+  /* Esto previene el salto cuando aparece/desaparece la barra de navegación en mobile */
+  --vh: 1vh;
+}
+
+/* Fix para viewport en mobile - previene resize cuando aparece barra de navegación */
+@supports (height: 100dvh) {
+  :root {
+    --vh: 1dvh;
+  }
 }
 
 body {
@@ -240,10 +251,91 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+
+  /* Prevenir scroll horizontal */
+  overflow-x: hidden;
+
+  /* Mejorar rendering en mobile */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Fix global para prevenir problemas de viewport en mobile */
+html {
+  /* Prevenir zoom al tocar inputs en iOS */
+  -webkit-text-size-adjust: 100%;
+
+  /* Smooth scroll */
+  scroll-behavior: smooth;
+
+  /* Prevenir scroll horizontal */
+  overflow-x: hidden;
+}
+
+/* Fix específico para navegadores in-app (Instagram, Facebook, etc) */
+@media screen and (max-width: 768px) {
+  /* Usar min-height en lugar de height para evitar el problema de viewport */
+  .mobile-viewport-fix {
+    min-height: 100vh;
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+
+  /* Fallback con dvh si está disponible */
+  @supports (min-height: 100dvh) {
+    .mobile-viewport-fix {
+      min-height: 100dvh;
+    }
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Utilidad para min-height que funciona correctamente en mobile */
+  .min-h-screen-mobile {
+    min-height: 100vh;
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+
+  @supports (min-height: 100dvh) {
+    .min-h-screen-mobile {
+      min-height: 100dvh;
+    }
+  }
+
+  /* Utilidad para height fijo que funciona en mobile */
+  .h-screen-mobile {
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100);
+  }
+
+  @supports (height: 100dvh) {
+    .h-screen-mobile {
+      height: 100dvh;
+    }
+  }
+
+  /* Prevenir scroll bounce en iOS */
+  .prevent-bounce {
+    overscroll-behavior: none;
+  }
+
+  /* Safe area insets para notch en iPhone */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
   }
 }

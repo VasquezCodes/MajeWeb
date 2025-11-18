@@ -38,7 +38,7 @@ export default function HomePage() {
     <div className="space-y-32 md:space-y-40 mb-32 md:mb-40">
       
       {/* === Sección 1: Hero === */}
-      <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-end lg:items-center overflow-hidden">
+      <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-end lg:items-center overflow-hidden" style={{minHeight: 'calc(var(--vh, 1vh) * 85)'}}>
         <div className="absolute inset-0">
           <Image
             src="/photo4.JPEG"

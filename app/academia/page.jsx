@@ -837,7 +837,7 @@ export default function AcademiaPage() {
     <div className="space-y-20 md:space-y-32 mb-24 md:mb-32 font-sans">
 
   {/* === Sección 1: Hero === */}
-      <section className="relative overflow-hidden min-h-screen lg:min-h-0 pt-24 pb-20 lg:pt-32 lg:pb-28">
+      <section className="relative overflow-hidden min-h-screen-mobile lg:min-h-0 pt-24 pb-20 lg:pt-32 lg:pb-28">
         {/* Fondos decorativos */}
         <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-brand-pink/10 blur-[100px]" />
         <div className="absolute -bottom-40 -left-40 h-[500px] w-[500px] rounded-full bg-brand-gray/5 blur-[100px]" />

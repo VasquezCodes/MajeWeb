@@ -3,7 +3,12 @@
     "allow": [
       "Bash(dir /s /b)",
       "Bash(dir:*)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(npm install:*)",
+      "Bash(cat:*)",
+      "Bash(echo:*)",
+      "Bash(layout.jsx)",
+      "Bash(npm uninstall:*)"
     ],
     "deny": [],
     "ask": []

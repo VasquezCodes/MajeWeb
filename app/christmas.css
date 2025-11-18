@@ -1,0 +1,458 @@
+/* ============================================
+   CHRISTMAS DECORATIONS CSS
+   Active: November 10 - January 10
+   ============================================ */
+
+/* === SNOW ANIMATION === */
+@keyframes snowfall {
+  0% {
+    transform: translateY(-10vh) translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) translateX(100px);
+    opacity: 0.3;
+  }
+}
+
+@keyframes snowfall-slow {
+  0% {
+    transform: translateY(-10vh) translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(110vh) translateX(-50px) rotate(360deg);
+    opacity: 0.2;
+  }
+}
+
+@keyframes snowfall-medium {
+  0% {
+    transform: translateY(-10vh) translateX(0) rotate(0deg);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(110vh) translateX(80px) rotate(180deg);
+    opacity: 0.4;
+  }
+}
+
+/* === SNOW CONTAINER === */
+.snow-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+/* === SNOWFLAKES === */
+.snowflake {
+  position: absolute;
+  top: -10px;
+  color: #fff;
+  font-size: 1em;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+  animation: snowfall linear infinite;
+  user-select: none;
+  opacity: 0.6;
+}
+
+.snowflake:nth-child(odd) {
+  animation-name: snowfall-slow;
+}
+
+.snowflake:nth-child(3n) {
+  animation-name: snowfall-medium;
+}
+
+/* === CHRISTMAS LIGHTS === */
+@keyframes twinkle {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.4; filter: brightness(1.5); }
+}
+
+@keyframes color-shift {
+  0% { filter: hue-rotate(0deg); }
+  100% { filter: hue-rotate(360deg); }
+}
+
+.christmas-lights {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  pointer-events: none;
+  z-index: 100;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding: 10px 0;
+}
+
+.christmas-light {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  animation: twinkle 2s ease-in-out infinite;
+  box-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+}
+
+.christmas-light:nth-child(1) { background: #ff0000; animation-delay: 0s; }
+.christmas-light:nth-child(2) { background: #00ff00; animation-delay: 0.2s; }
+.christmas-light:nth-child(3) { background: #0000ff; animation-delay: 0.4s; }
+.christmas-light:nth-child(4) { background: #ffff00; animation-delay: 0.6s; }
+.christmas-light:nth-child(5) { background: #ff00ff; animation-delay: 0.8s; }
+.christmas-light:nth-child(6) { background: #00ffff; animation-delay: 1s; }
+.christmas-light:nth-child(7) { background: #ff6600; animation-delay: 1.2s; }
+.christmas-light:nth-child(8) { background: #ff0000; animation-delay: 1.4s; }
+.christmas-light:nth-child(9) { background: #00ff00; animation-delay: 1.6s; }
+.christmas-light:nth-child(10) { background: #0000ff; animation-delay: 1.8s; }
+
+/* === GARLAND/GUIRNALDA === */
+@keyframes sway {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(5px) rotate(1deg); }
+}
+
+.garland {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 80px;
+  pointer-events: none;
+  z-index: 99;
+  overflow: hidden;
+}
+
+.garland-strand {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.garland-strand svg {
+  width: 100%;
+  height: 100%;
+  animation: sway 3s ease-in-out infinite;
+}
+
+/* === ORNAMENTS/ADORNOS === */
+@keyframes swing {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+@keyframes ornament-glow {
+  0%, 100% { filter: brightness(1) drop-shadow(0 0 5px rgba(218, 134, 149, 0.5)); }
+  50% { filter: brightness(1.3) drop-shadow(0 0 15px rgba(218, 134, 149, 0.8)); }
+}
+
+.christmas-ornament {
+  position: absolute;
+  font-size: 2rem;
+  animation: swing 3s ease-in-out infinite, ornament-glow 2s ease-in-out infinite;
+  transform-origin: top center;
+  pointer-events: none;
+  z-index: 98;
+}
+
+/* === HOLLY DECORATIONS === */
+@keyframes float-holly {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+.holly-decoration {
+  position: absolute;
+  font-size: 1.5rem;
+  animation: float-holly 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 97;
+  opacity: 0.8;
+}
+
+/* === CHRISTMAS TREE CORNERS === */
+@keyframes tree-sparkle {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+.christmas-tree-corner {
+  position: fixed;
+  font-size: 3rem;
+  pointer-events: none;
+  z-index: 96;
+  animation: tree-sparkle 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 10px rgba(168, 181, 160, 0.6));
+}
+
+.tree-bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+
+.tree-bottom-right {
+  bottom: 20px;
+  right: 20px;
+  transform: scaleX(-1);
+}
+
+/* === SANTA HAT ON LOGO === */
+@keyframes hat-wiggle {
+  0%, 100% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+}
+
+.santa-hat {
+  position: absolute;
+  top: -20px;
+  right: -10px;
+  font-size: 2rem;
+  animation: hat-wiggle 2s ease-in-out infinite;
+  z-index: 101;
+}
+
+/* === GIFT BOXES === */
+@keyframes gift-bounce {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+.gift-box {
+  position: absolute;
+  font-size: 1.8rem;
+  animation: gift-bounce 2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 95;
+}
+
+/* === CANDY CANES === */
+@keyframes candy-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.candy-cane {
+  position: absolute;
+  font-size: 1.5rem;
+  pointer-events: none;
+  z-index: 94;
+  opacity: 0.7;
+}
+
+.candy-cane.rotating {
+  animation: candy-rotate 20s linear infinite;
+}
+
+/* === CHRISTMAS BADGE/RIBBON === */
+@keyframes ribbon-pulse {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.05) rotate(5deg); }
+}
+
+.christmas-ribbon {
+  position: fixed;
+  top: 80px;
+  right: -40px;
+  background: linear-gradient(135deg, #c41e3a 0%, #e63946 50%, #c41e3a 100%);
+  color: white;
+  padding: 8px 50px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-align: center;
+  transform: rotate(45deg);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 9998;
+  pointer-events: none;
+  animation: ribbon-pulse 3s ease-in-out infinite;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* === SPARKLES === */
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+.sparkle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: white;
+  border-radius: 50%;
+  animation: sparkle 2s ease-in-out infinite;
+  pointer-events: none;
+  box-shadow: 0 0 10px white;
+}
+
+/* === RESPONSIVE ADJUSTMENTS === */
+@media (max-width: 768px) {
+  .christmas-tree-corner {
+    font-size: 2rem;
+  }
+
+  .christmas-ornament {
+    font-size: 1.5rem;
+  }
+
+  .holly-decoration {
+    font-size: 1.2rem;
+  }
+
+  .gift-box {
+    font-size: 1.5rem;
+  }
+
+  .christmas-lights {
+    height: 40px;
+  }
+
+  .christmas-light {
+    width: 8px;
+    height: 8px;
+  }
+
+  .garland {
+    height: 60px;
+  }
+
+  .christmas-ribbon {
+    font-size: 0.7rem;
+    padding: 6px 40px;
+    top: 60px;
+    right: -50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .christmas-tree-corner {
+    font-size: 1.5rem;
+    bottom: 10px;
+  }
+
+  .tree-bottom-left {
+    left: 10px;
+  }
+
+  .tree-bottom-right {
+    right: 10px;
+  }
+
+  .snowflake {
+    font-size: 0.8em;
+  }
+}
+
+/* === CHRISTMAS TREE NAVBAR === */
+@keyframes star-grow {
+  0% {
+    transform: scale(0);
+    animation-timing-function: cubic-bezier(.74,1.72,.57,1.01)
+  }
+  10% {
+    transform: scale(1);
+  }
+  65% {
+    transform: translateY(0px) scale(1);
+  }
+  75% {
+    transform: translateY(50px) scale(0);
+  }
+  100% {
+    transform: translateY( 0px ) scale(0);
+  }
+}
+
+.christmas-tree-navbar {
+  position: absolute;
+  left: -70px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
+  height: 60px;
+  pointer-events: none;
+  z-index: 10;
+  filter: drop-shadow(0 2px 8px rgba(34, 139, 34, 0.4));
+}
+
+.christmas-tree-navbar svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.christmas-tree-navbar path {
+  fill: #2d8b3d;
+  stroke: #228B22;
+  stroke-width: 0.3;
+  transform: scale(0);
+  transform-origin: 50% 50%;
+  animation: star-grow 8s ease-in-out infinite;
+  animation-delay: calc( var(--no) * .025s );
+  transform-box: fill-box;
+}
+
+/* Estrella en la punta del árbol - color dorado */
+.christmas-tree-navbar path:first-child {
+  fill: #FFD700;
+  stroke: #FFA500;
+  filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.8));
+}
+
+/* Algunas estrellas rojas para variedad */
+.christmas-tree-navbar path:nth-child(3n) {
+  fill: #c41e3a;
+  stroke: #8B0000;
+}
+
+/* Algunas estrellas doradas */
+.christmas-tree-navbar path:nth-child(5n) {
+  fill: #FFD700;
+  stroke: #DAA520;
+}
+
+/* Responsive - en móvil mover a la derecha del logo */
+@media (max-width: 768px) {
+  .christmas-tree-navbar {
+    left: auto;
+    right: -50px;
+    width: 45px;
+    height: 45px;
+  }
+}
+
+/* === PERFORMANCE OPTIMIZATIONS === */
+.snow-container,
+.christmas-lights,
+.garland,
+.christmas-ornament,
+.holly-decoration,
+.christmas-tree-corner,
+.gift-box,
+.candy-cane,
+.sparkle,
+.christmas-tree-navbar {
+  will-change: transform, opacity;
+}
+
+/* Reducir animaciones en modo de bajo rendimiento */
+@media (prefers-reduced-motion: reduce) {
+  .snowflake,
+  .christmas-light,
+  .christmas-ornament,
+  .holly-decoration,
+  .christmas-tree-corner,
+  .gift-box,
+  .candy-cane,
+  .sparkle,
+  .christmas-ribbon {
+    animation: none !important;
+  }
+}
