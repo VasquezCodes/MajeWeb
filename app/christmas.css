@@ -430,13 +430,35 @@
   stroke: #DAA520;
 }
 
-/* Responsive - en móvil mover a la derecha del logo */
+/* Responsive - en móvil mover a la derecha del logo y mejorar animaciones */
 @media (max-width: 768px) {
   .christmas-tree-navbar {
     left: auto;
     right: -50px;
     width: 45px;
     height: 45px;
+  }
+
+  /* Hacer las animaciones más suaves y menos intensas en móvil */
+  .christmas-tree-navbar path {
+    animation-duration: 10s; /* Más lento en móvil */
+  }
+
+  /* Reducir el drop shadow en móvil */
+  .christmas-tree-navbar {
+    filter: drop-shadow(0 1px 4px rgba(34, 139, 34, 0.3));
+  }
+
+  /* Reducir opacidad de copos de nieve en móvil */
+  .snowflake {
+    opacity: 0.4;
+    font-size: 0.7em;
+  }
+
+  /* Hacer la animación de fade-in más rápida en móvil */
+  .christmas-tree-navbar {
+    animation-duration: 0.3s;
+    animation-delay: 0.2s;
   }
 }
 
