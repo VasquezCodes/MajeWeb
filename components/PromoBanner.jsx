@@ -14,7 +14,7 @@ export default function PromoBanner() {
 
             // Fechas de configuración (Ajustar según el año real)
             // Black Friday: Jueves 27 Nov - Lunes 1 Dic
-            const bfStart = new Date(year, 10, 27, 0, 0, 0); // Mes 10 es Noviembre
+            const bfStart = new Date(year, 10, 28, 0, 0, 0); // Mes 10 es Noviembre
             const bfEnd = new Date(year, 11, 1, 23, 59, 59); // Mes 11 es Diciembre
 
             // Para pruebas: Descomentar para simular fechas
