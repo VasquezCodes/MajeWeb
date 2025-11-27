@@ -8,6 +8,8 @@ import Footer from "../components/Footer";
 import BooksyGuard from "../components/BooksyGuard"; // opcional: limpia flotantes fuera de /reservas
 import ChristmasDecorations from "../components/ChristmasDecorations"; // Decoraciones navideñas automáticas
 
+import PromoBanner from "../components/PromoBanner"; // Banner de ofertas (BF/CM)
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -87,6 +89,9 @@ export default function RootLayout({ children }) {
         <ChristmasDecorations />
 
         <Navbar />
+
+        {/* Banner de Ofertas (Solo visible en fechas configuradas) */}
+        <PromoBanner />
 
         <main className="min-h-screen-mobile">{children}</main>
 

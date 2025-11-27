@@ -163,35 +163,35 @@ const stats = [
 
 // --- Beneficios de la Mentoría ---
 const inclusions = [
-  { 
-    name: "Capacitación Intensiva", 
+  {
+    name: "Capacitación Intensiva",
     desc: "Entrenamiento de 6 a 8 horas enfocado 100% en la práctica.",
-    icon: AcademicCapIcon 
+    icon: AcademicCapIcon
   },
-  { 
-    name: "Kit de Materiales", 
+  {
+    name: "Kit de Materiales",
     desc: "Recibe un kit completo con los productos esenciales para empezar.",
-    icon: ShoppingBagIcon 
+    icon: ShoppingBagIcon
   },
-  { 
-    name: "Guía Teórica", 
+  {
+    name: "Guía Teórica",
     desc: "Manual de estudio impreso y digital para consultar siempre.",
-    icon: BookOpenIcon 
+    icon: BookOpenIcon
   },
-  { 
-    name: "Soporte Online", 
+  {
+    name: "Soporte Online",
     desc: "Correcciones de práctica y dudas resueltas por 3 meses.",
-    icon: LifebuoyIcon 
+    icon: LifebuoyIcon
   },
-  { 
-    name: "Ebook de Marketing", 
+  {
+    name: "Ebook de Marketing",
     desc: "Acceso a la guía de estrategia de marketing para manicuristas.",
-    icon: SparklesIcon 
+    icon: SparklesIcon
   },
-  { 
-    name: "Lista de Proveedores", 
+  {
+    name: "Lista de Proveedores",
     desc: "Mis contactos y artículos recomendados para tu negocio.",
-    icon: ListBulletIcon 
+    icon: ListBulletIcon
   },
 ];
 
@@ -492,12 +492,12 @@ function CalendarPicker({ selectedDate, onSelectDate, bookedDates }) {
     const startingDayOfWeek = firstDay.getDay();
 
     const days = [];
-    
+
     // Días vacíos al inicio
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
-    
+
     // Días del mes
     const minDate = new Date();
     minDate.setDate(minDate.getDate() + 14); // Mínimo 14 días adelante
@@ -511,7 +511,7 @@ function CalendarPicker({ selectedDate, onSelectDate, bookedDates }) {
       const isWorkingDay = isDayAvailable(date);
 
       const isAvailable = isWorkingDay && !isPast && !isAlreadyBooked;
-      
+
       days.push({
         date,
         day,
@@ -559,11 +559,11 @@ function CalendarPicker({ selectedDate, onSelectDate, bookedDates }) {
         >
           <ChevronLeftIcon className="h-5 w-5 text-brand-text group-hover:text-brand-pink transition-colors" />
         </button>
-        
+
         <h3 className="text-base sm:text-lg lg:text-xl font-black text-brand-text">
           {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
         </h3>
-        
+
         <button
           onClick={goToNextMonth}
           className="p-2 sm:p-2.5 rounded-lg sm:rounded-xl hover:bg-brand-pink/10 transition-colors group"
@@ -602,13 +602,13 @@ function CalendarPicker({ selectedDate, onSelectDate, bookedDates }) {
               disabled={!isAvailable}
               className={`
                 aspect-square rounded-lg sm:rounded-xl text-xs sm:text-sm lg:text-base font-bold transition-all duration-200 flex items-center justify-center
-                ${isSelected 
-                  ? 'bg-emerald-500 text-white shadow-xl scale-110 ring-4 ring-emerald-200' 
+                ${isSelected
+                  ? 'bg-emerald-500 text-white shadow-xl scale-110 ring-4 ring-emerald-200'
                   : isAvailable
-                  ? 'bg-brand-gray-light/40 text-brand-text hover:bg-emerald-50 hover:ring-2 hover:ring-emerald-200 active:scale-95 sm:hover:scale-105 sm:hover:shadow-md'
-                  : isAlreadyBooked
-                  ? 'bg-red-100 text-red-400 cursor-not-allowed line-through'
-                  : 'bg-transparent text-brand-text-light/30 cursor-not-allowed'
+                    ? 'bg-brand-gray-light/40 text-brand-text hover:bg-emerald-50 hover:ring-2 hover:ring-emerald-200 active:scale-95 sm:hover:scale-105 sm:hover:shadow-md'
+                    : isAlreadyBooked
+                      ? 'bg-red-100 text-red-400 cursor-not-allowed line-through'
+                      : 'bg-transparent text-brand-text-light/30 cursor-not-allowed'
                 }
               `}
             >
@@ -652,12 +652,43 @@ export default function AcademiaPage() {
   const [showTemarioModal, setShowTemarioModal] = useState(false);
   const [selectedTemario, setSelectedTemario] = useState(null);
 
-  const { eligibleForOffer, offerApplied, finalCart, totalPrice, packageType, discount, marketingFormat, marketingIncluded } = useMemo(() => {
+  // --- Estado para manejar la promoción (Client-side only para evitar Hydration Mismatch) ---
+  const [clientPromoStatus, setClientPromoStatus] = useState('STANDARD');
+
+  useEffect(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+
+    // Black Friday: Jueves 27 Nov - Domingo 30 Nov
+    const bfStart = new Date(year, 10, 27, 0, 0, 0);
+    const bfEnd = new Date(year, 10, 30, 23, 59, 59);
+
+    // Cyber Monday: Lunes 1 Dec - Miércoles 3 Dec
+    const cmStart = new Date(year, 11, 1, 0, 0, 0);
+    const cmEnd = new Date(year, 11, 3, 23, 59, 59);
+
+    // Para pruebas: Descomentar para simular fechas
+    // const now = new Date(year, 10, 28, 10, 0, 0); // Simular BF
+    // const now = new Date(year, 11, 1, 10, 0, 0); // Simular CM
+
+    if (now >= bfStart && now <= bfEnd) {
+      setClientPromoStatus('BF');
+    } else if (now >= cmStart && now <= cmEnd) {
+      setClientPromoStatus('CM');
+    } else {
+      setClientPromoStatus('STANDARD');
+    }
+  }, []);
+
+  const { eligibleForOffer, offerApplied, finalCart, totalPrice, packageType, discount, marketingFormat, marketingIncluded, promoStatus } = useMemo(() => {
     const nonMarketingCourses = cart.filter(c => !c.isMarketingCourse);
     const hasMarketingCourse = cart.some(c => c.isMarketingCourse);
     const mentoriaCount = nonMarketingCourses.length;
 
-    // Verificar si la promoción de marketing gratis aún está vigente
+    // Usar el estado del cliente para la promo
+    const currentPromoStatus = clientPromoStatus;
+
+    // Verificar si la promoción de marketing gratis aún está vigente (siempre activa si se cumple condición)
     const today = new Date();
     const promoEndDate = new Date('2025-12-15T23:59:59');
     const isMarketingPromoActive = today <= promoEndDate;
@@ -667,20 +698,32 @@ export default function AcademiaPage() {
     let discountPercent = 0;
     let marketingDelivery = null;
 
-    if (mentoriaCount === 2) {
-      packageName = 'GOLD';
-      discountPercent = 15;
-      marketingDelivery = 'presencial';
-    } else if (mentoriaCount === 3) {
-      packageName = 'PLATINUM';
+    if (currentPromoStatus === 'BF') {
+      // Black Friday: 20% en todo, sin paquetes escalonados
+      packageName = 'BLACK FRIDAY';
       discountPercent = 20;
-      marketingDelivery = 'online';
-    } else if (mentoriaCount >= 4) {
-      packageName = 'DIAMOND';
-      discountPercent = 25;
-      marketingDelivery = 'online';
+    } else if (currentPromoStatus === 'CM') {
+      // Cyber Monday: 30% en todo, sin paquetes escalonados
+      packageName = 'CYBER MONDAY';
+      discountPercent = 30;
+    } else {
+      // Lógica Estándar de Paquetes
+      if (mentoriaCount === 2) {
+        packageName = 'GOLD';
+        discountPercent = 15;
+        marketingDelivery = 'presencial';
+      } else if (mentoriaCount === 3) {
+        packageName = 'PLATINUM';
+        discountPercent = 20;
+        marketingDelivery = 'online';
+      } else if (mentoriaCount >= 4) {
+        packageName = 'DIAMOND';
+        discountPercent = 25;
+        marketingDelivery = 'online';
+      }
     }
 
+    // Regla de Marketing Gratis: Se mantiene en BF/CM si compran 2+ mentorías
     const isEligible = mentoriaCount >= 2 && !hasMarketingCourse && isMarketingPromoActive;
     const isApplied = mentoriaCount >= 2 && hasMarketingCourse && isMarketingPromoActive;
 
@@ -690,14 +733,14 @@ export default function AcademiaPage() {
     // Calcular precio base de las mentorías (sin descuento)
     const mentoriasBasePrice = nonMarketingCourses.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-    // Aplicar descuento si hay paquete
-    const mentoriasWithDiscount = packageName
-      ? mentoriasBasePrice * (1 - discountPercent / 100)
-      : mentoriasBasePrice;
+    // Aplicar descuento
+    // En BF/CM el descuento aplica a TODAS las mentorías, no solo si hay paquete
+    // En Standard, solo si hay paquete
+    const applyDiscount = (currentPromoStatus !== 'STANDARD') || (packageName !== null);
 
     // Actualizar precios de las mentorías con descuento aplicado
     tempFinalCart = tempFinalCart.map(item => {
-      if (!item.isMarketingCourse && packageName) {
+      if (!item.isMarketingCourse && applyDiscount) {
         const discountedPrice = item.price * (1 - discountPercent / 100);
         return { ...item, price: discountedPrice, originalPrice: item.price };
       }
@@ -705,6 +748,12 @@ export default function AcademiaPage() {
       if (item.isMarketingCourse) {
         if (isApplied) {
           return { ...item, price: 0, originalPrice: 497.00 };
+        }
+        // Si es BF/CM y NO es gratis (ej. compró solo 1 mentoría), ¿aplica descuento al marketing?
+        // Asumiremos que el descuento de BF/CM aplica a TODO, incluido marketing si se compra suelto.
+        if (currentPromoStatus !== 'STANDARD') {
+          const discountedPrice = marketingBasePrice * (1 - discountPercent / 100);
+          return { ...item, price: discountedPrice, originalPrice: marketingBasePrice };
         }
         return { ...item, price: marketingBasePrice };
       }
@@ -723,8 +772,9 @@ export default function AcademiaPage() {
       discount: discountPercent,
       marketingFormat: marketingDelivery,
       marketingIncluded: isMarketingPromoActive,
+      promoStatus: currentPromoStatus
     };
-  }, [cart]);
+  }, [cart, clientPromoStatus]);
 
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const allDatesSelected = useMemo(
@@ -833,10 +883,37 @@ export default function AcademiaPage() {
     }
   };
 
+  // --- Preparar cursos para mostrar (con precios actualizados según promo) ---
+  const displayCourses = useMemo(() => {
+    let discountPct = 0;
+    if (clientPromoStatus === 'BF') discountPct = 20;
+    if (clientPromoStatus === 'CM') discountPct = 30;
+
+    return courses.map(course => {
+      let finalPrice = course.price;
+      let originalPrice = course.originalPrice || course.price;
+      let hasDiscount = false;
+
+      if (clientPromoStatus !== 'STANDARD') {
+        // Aplicar descuento de evento
+        finalPrice = course.price * (1 - discountPct / 100);
+        hasDiscount = true;
+      }
+
+      return {
+        ...course,
+        displayPrice: finalPrice,
+        displayOriginalPrice: originalPrice,
+        hasDiscount,
+        discountPct
+      };
+    });
+  }, [clientPromoStatus]);
+
   return (
     <div className="space-y-20 md:space-y-32 mb-24 md:mb-32 font-sans">
 
-  {/* === Sección 1: Hero === */}
+      {/* === Sección 1: Hero === */}
       <section className="relative overflow-hidden min-h-screen-mobile lg:min-h-0 pt-24 pb-20 lg:pt-32 lg:pb-28">
         {/* Fondos decorativos */}
         <div className="absolute -top-40 -right-40 h-[500px] w-[500px] rounded-full bg-brand-pink/10 blur-[100px]" />
@@ -938,8 +1015,8 @@ export default function AcademiaPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {inclusions.map((item) => (
-            <div 
-              key={item.name} 
+            <div
+              key={item.name}
               className="flex gap-5 bg-white p-6 rounded-3xl shadow-lg border border-brand-gray-light/20"
             >
               <div className="flex-shrink-0">
@@ -1206,6 +1283,10 @@ export default function AcademiaPage() {
         </div>
       </section>
 
+
+
+
+
       {/* === Sección 3: Lista de Mentorías === */}
       <section id="mentorias" className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 scroll-mt-20">
         <div className="text-center max-w-3xl mx-auto space-y-5 mb-16">
@@ -1227,13 +1308,13 @@ export default function AcademiaPage() {
 
         {/* Cards de Cursos */}
         <div className="space-y-8">
-          {courses.map((course, index) => {
+          {displayCourses.map((course, index) => {
             const isInCart = cart.some(item => item.id === course.id);
 
             return (
-              <div 
-                key={course.id} 
-                className="group animate-fadeInUp" 
+              <div
+                key={course.id}
+                className="group animate-fadeInUp"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 {/* Mobile Layout */}
@@ -1246,11 +1327,16 @@ export default function AcademiaPage() {
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
                     />
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/80" />
-          
+
                     <div className="absolute top-4 left-4 right-4 flex justify-between items-start gap-3">
                       <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-4 py-2 text-[11px] font-black text-brand-text uppercase tracking-wider shadow-xl">
                         {course.format}
                       </span>
+                      {course.hasDiscount && (
+                        <span className="inline-flex items-center rounded-full bg-red-500 text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-xl animate-pulse">
+                          {course.discountPct}% OFF
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -1259,37 +1345,48 @@ export default function AcademiaPage() {
                       <h3 className="text-2xl font-black text-brand-text leading-tight">
                         {course.title}
                       </h3>
+                      {/* Precio Mobile */}
+                      <div className="flex items-baseline gap-3">
+                        <span className="text-3xl font-black text-emerald-600">
+                          ${course.displayPrice.toFixed(0)}
+                        </span>
+                        {course.hasDiscount && (
+                          <span className="text-lg text-gray-400 line-through font-medium">
+                            ${course.displayOriginalPrice.toFixed(0)}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
                     <div className="flex gap-3 pt-2">
-                        {isInCart ? (
-                          <button
-                            onClick={() => removeFromCart(course.id)}
-                            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-5 py-4 text-sm font-black text-red-600 transition-all duration-300 active:scale-95"
-                          >
-                            <TrashIcon className="h-5 w-5" />
-                            Quitar
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => addToCart(course)}
-                            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-5 py-4 text-sm font-black text-white shadow-lg transition-all duration-300 active:scale-95"
-                          >
-                            <ShoppingBagIcon className="h-5 w-5" />
-                            Añadir
-                          </button>
-                        )}
-
+                      {isInCart ? (
                         <button
-                          onClick={() => {
-                            setSelectedCourse(course);
-                            setShowModal(true);
-                          }}
-                          className="flex-1 flex items-center justify-center rounded-2xl border-2 border-brand-text/20 px-5 py-4 text-sm font-black text-brand-text transition-all duration-300 active:scale-95"
+                          onClick={() => removeFromCart(course.id)}
+                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-5 py-4 text-sm font-black text-red-600 transition-all duration-300 active:scale-95"
                         >
-                          Ver detalle
+                          <TrashIcon className="h-5 w-5" />
+                          Quitar
                         </button>
-                      </div>
+                      ) : (
+                        <button
+                          onClick={() => addToCart(course)} // Nota: addToCart usa el objeto original, pero el ID es el mismo
+                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-5 py-4 text-sm font-black text-white shadow-lg transition-all duration-300 active:scale-95"
+                        >
+                          <ShoppingBagIcon className="h-5 w-5" />
+                          Añadir
+                        </button>
+                      )}
+
+                      <button
+                        onClick={() => {
+                          setSelectedCourse(course);
+                          setShowModal(true);
+                        }}
+                        className="flex-1 flex items-center justify-center rounded-2xl border-2 border-brand-text/20 px-5 py-4 text-sm font-black text-brand-text transition-all duration-300 active:scale-95"
+                      >
+                        Ver detalle
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -1305,11 +1402,16 @@ export default function AcademiaPage() {
                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-black/20 to-black/60" />
-          
+
                       <div className="absolute top-6 left-6 right-6 flex justify-between items-start">
                         <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-5 py-2.5 text-xs font-black uppercase tracking-wider text-brand-text shadow-xl">
                           {course.format}
                         </span>
+                        {course.hasDiscount && (
+                          <span className="inline-flex items-center rounded-full bg-red-500 text-white px-4 py-2 text-xs font-black uppercase tracking-wider shadow-xl animate-pulse">
+                            {course.discountPct}% OFF
+                          </span>
+                        )}
                       </div>
                     </div>
 
@@ -1318,6 +1420,17 @@ export default function AcademiaPage() {
                         <h3 className="text-3xl lg:text-4xl font-black text-brand-text leading-tight">
                           {course.title}
                         </h3>
+                        {/* Precio Desktop */}
+                        <div className="flex items-baseline gap-4">
+                          <span className="text-4xl lg:text-5xl font-black text-emerald-600">
+                            ${course.displayPrice.toFixed(0)}
+                          </span>
+                          {course.hasDiscount && (
+                            <span className="text-xl lg:text-2xl text-gray-400 line-through font-medium">
+                              ${course.displayOriginalPrice.toFixed(0)}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <div className="space-y-4 pt-4">
@@ -1386,40 +1499,40 @@ export default function AcademiaPage() {
               >
                 {/* Estrellas de rating */}
                 <div className="flex gap-1 mb-6">
-                    {[...Array(5)].map((_, i) => (
-                      <StarIcon key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />
-                    ))}
-                  </div>
+                  {[...Array(5)].map((_, i) => (
+                    <StarIcon key={i} className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                  ))}
+                </div>
 
-                  {/* Quote */}
-                  <div className="space-y-6">
-                    <p className="text-lg md:text-xl text-brand-text leading-relaxed font-light">
-                      {t.quote}
-                    </p>
+                {/* Quote */}
+                <div className="space-y-6">
+                  <p className="text-lg md:text-xl text-brand-text leading-relaxed font-light">
+                    {t.quote}
+                  </p>
 
-                    {/* Divider */}
-                    <div className="h-px bg-gradient-to-r from-transparent via-brand-pink/30 to-transparent" />
+                  {/* Divider */}
+                  <div className="h-px bg-gradient-to-r from-transparent via-brand-pink/30 to-transparent" />
 
-                    {/* Author info */}
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="font-black text-lg text-brand-text">
-                          {t.author}
-                        </div>
-                        <div className="text-sm font-semibold text-brand-pink">
-                          {t.role}
-                        </div>
+                  {/* Author info */}
+                  <div className="flex items-center justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="font-black text-lg text-brand-text">
+                        {t.author}
                       </div>
+                      <div className="text-sm font-semibold text-brand-pink">
+                        {t.role}
+                      </div>
+                    </div>
 
-                      {/* Badge verificado */}
-                      <div className="flex-shrink-0">
-                        <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1">
-                          <CheckCircleIcon className="h-4 w-4 text-emerald-600" />
-                          <span className="text-xs font-bold text-emerald-600">Verificado</span>
-                        </div>
+                    {/* Badge verificado */}
+                    <div className="flex-shrink-0">
+                      <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1">
+                        <CheckCircleIcon className="h-4 w-4 text-emerald-600" />
+                        <span className="text-xs font-bold text-emerald-600">Verificado</span>
                       </div>
                     </div>
                   </div>
+                </div>
               </div>
             ))}
           </div>
@@ -1473,7 +1586,7 @@ export default function AcademiaPage() {
           <div className="relative rounded-[calc(1.5rem-2px)] bg-white px-8 py-12 sm:px-12 sm:py-16 text-center">
             <div className="absolute -right-32 -top-20 h-64 w-64 rounded-full bg-brand-pink/10 blur-3xl" />
             <div className="absolute -left-32 -bottom-20 h-64 w-64 rounded-full bg-brand-gray/5 blur-3xl" />
-            
+
             <div className="relative space-y-6">
               <div className="inline-flex items-center gap-2.5 rounded-full border-2 border-brand-pink/20 bg-brand-pink/5 px-5 py-2.5">
                 <SparklesIcon className="h-4 w-4 text-brand-pink animate-pulse" />
@@ -1481,11 +1594,11 @@ export default function AcademiaPage() {
                   RESERVA AHORA
                 </span>
               </div>
-              
+
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-brand-text leading-tight max-w-2xl mx-auto">
                 De manicurista a líder reconocida
               </h2>
-              
+
               <p className="text-lg sm:text-xl text-brand-text-light font-light max-w-2xl mx-auto leading-relaxed">
                 Este programa está creado para que pases de ser una manicurista que lucha con clientes regateando precios a convertirte en una líder reconocida en la industria.
               </p>
@@ -1545,11 +1658,10 @@ export default function AcademiaPage() {
                 <button
                   onClick={handleCheckout}
                   disabled={finalCart.length === 0}
-                  className={`inline-flex items-center justify-center gap-2 rounded-2xl px-8 py-4 text-base font-black transition-all duration-300 ${
-                    finalCart.length > 0
-                      ? 'bg-brand-black text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
-                      : 'bg-brand-gray-light/50 text-brand-text/40 cursor-not-allowed'
-                  }`}
+                  className={`inline-flex items-center justify-center gap-2 rounded-2xl px-8 py-4 text-base font-black transition-all duration-300 ${finalCart.length > 0
+                    ? 'bg-brand-black text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
+                    : 'bg-brand-gray-light/50 text-brand-text/40 cursor-not-allowed'
+                    }`}
                 >
                   <CalendarDaysIcon className="h-6 w-6" />
                   Seleccionar Fecha
@@ -1681,11 +1793,10 @@ export default function AcademiaPage() {
                       <button
                         onClick={handleConfirmBooking}
                         disabled={!allDatesSelected}
-                        className={`flex-1 flex items-center justify-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all duration-300 order-1 sm:order-2 ${
-                          allDatesSelected
-                            ? 'bg-brand-black text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
-                            : 'bg-brand-gray-light/50 text-brand-text/40 cursor-not-allowed'
-                        }`}
+                        className={`flex-1 flex items-center justify-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all duration-300 order-1 sm:order-2 ${allDatesSelected
+                          ? 'bg-brand-black text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
+                          : 'bg-brand-gray-light/50 text-brand-text/40 cursor-not-allowed'
+                          }`}
                       >
                         <ShoppingBagIcon className="h-6 w-6" />
                         Continuar al Pago
@@ -1823,11 +1934,13 @@ export default function AcademiaPage() {
                   <div className="pt-3 border-t border-brand-gray-light/20">
                     <div className="flex items-baseline gap-3 mb-4">
                       <span className="text-3xl md:text-4xl font-black text-[#32CD32]">
-                        ${selectedCourse.price}
+                        ${(selectedCourse.displayPrice || selectedCourse.price).toFixed(0)}
                       </span>
-                      <span className="text-lg md:text-xl font-medium text-brand-text-light/70 line-through">
-                        $1,197
-                      </span>
+                      {(selectedCourse.hasDiscount || selectedCourse.displayOriginalPrice) && (
+                        <span className="text-lg md:text-xl font-medium text-brand-text-light/70 line-through">
+                          ${(selectedCourse.displayOriginalPrice || selectedCourse.originalPrice || 1197).toFixed(0)}
+                        </span>
+                      )}
                     </div>
 
                     <div className="space-y-2 mb-4">
@@ -1935,13 +2048,12 @@ export default function AcademiaPage() {
 
               <div className="border-t-2 border-brand-gray-light/20 p-4 space-y-3 bg-brand-gray-light/10">
                 {packageType && (
-                  <div className={`flex items-center justify-center gap-2 rounded-lg px-4 py-2 ${
-                    packageType === 'GOLD'
-                      ? 'bg-gradient-to-r from-yellow-400 to-yellow-500'
-                      : packageType === 'PLATINUM'
+                  <div className={`flex items-center justify-center gap-2 rounded-lg px-4 py-2 ${packageType === 'GOLD'
+                    ? 'bg-gradient-to-r from-yellow-400 to-yellow-500'
+                    : packageType === 'PLATINUM'
                       ? 'bg-gradient-to-r from-gray-300 to-gray-400'
                       : 'bg-gradient-to-r from-black to-gray-800'
-                  }`}>
+                    }`}>
                     <SparklesIcon className="h-4 w-4 text-white" />
                     <span className="text-xs font-black text-white uppercase tracking-wider">
                       {packageType === 'DIAMOND' ? `${packageType} VIP` : packageType} - {discount}% OFF
