@@ -1,9 +1,34 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function ProductosPage() {
+  const [isBlackFriday, setIsBlackFriday] = useState(false);
+
+  useEffect(() => {
+    const checkPromo = () => {
+      const now = new Date();
+      const year = now.getFullYear();
+      // Black Friday: Viernes 28 Nov - Lunes 1 Dic
+      const bfStart = new Date(year, 10, 28, 0, 0, 0);
+      const bfEnd = new Date(year, 11, 1, 23, 59, 59);
+
+      // Para pruebas: Descomentar para simular fechas
+      // const nowTest = new Date(year, 10, 28, 10, 0, 0); // Simular BF
+
+      if (now >= bfStart && now <= bfEnd) {
+        setIsBlackFriday(true);
+      } else {
+        setIsBlackFriday(false);
+      }
+    };
+
+    checkPromo();
+    const timer = setInterval(checkPromo, 60000);
+    return () => clearInterval(timer);
+  }, []);
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -39,11 +64,19 @@ export default function ProductosPage() {
 
             {/* Content */}
             <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500 px-4 py-2 w-fit">
-                <span className="text-xs font-black text-white uppercase tracking-wider">
-                  Con Derechos de Reventa
-                </span>
-              </div>
+              {isBlackFriday ? (
+                <div className="inline-flex items-center gap-2 rounded-full bg-black px-4 py-2 w-fit animate-pulse">
+                  <span className="text-xs font-black text-white uppercase tracking-wider">
+                    🔥 50% OFF BLACK FRIDAY
+                  </span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-yellow-400 to-yellow-500 px-4 py-2 w-fit">
+                  <span className="text-xs font-black text-white uppercase tracking-wider">
+                    Con Derechos de Reventa
+                  </span>
+                </div>
+              )}
 
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-brand-text leading-tight">
                 E-book: Manicuras Millonarias
@@ -96,11 +129,19 @@ export default function ProductosPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Content (Order 2 on mobile, 1 on desktop for alternation) */}
             <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center space-y-6 order-2 lg:order-1">
-              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-pink to-pink-600 px-4 py-2 w-fit">
-                <span className="text-xs font-black text-white uppercase tracking-wider">
-                  Workshop Online
-                </span>
-              </div>
+              {isBlackFriday ? (
+                <div className="inline-flex items-center gap-2 rounded-full bg-black px-4 py-2 w-fit animate-pulse">
+                  <span className="text-xs font-black text-white uppercase tracking-wider">
+                    🔥 50% OFF BLACK FRIDAY
+                  </span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-pink to-pink-600 px-4 py-2 w-fit">
+                  <span className="text-xs font-black text-white uppercase tracking-wider">
+                    Workshop Online
+                  </span>
+                </div>
+              )}
 
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-brand-text leading-tight">
                 Programa Online Manicurista CEO

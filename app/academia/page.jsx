@@ -660,7 +660,7 @@ export default function AcademiaPage() {
     const year = now.getFullYear();
 
     // Black Friday: Jueves 27 Nov - Lunes 1 Dic
-    const bfStart = new Date(year, 10, 27, 0, 0, 0);
+    const bfStart = new Date(year, 10, 28, 0, 0, 0);
     const bfEnd = new Date(year, 11, 1, 23, 59, 59);
 
     // Para pruebas: Descomentar para simular fechas
