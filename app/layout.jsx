@@ -9,6 +9,7 @@ import BooksyGuard from "../components/BooksyGuard"; // opcional: limpia flotant
 import ChristmasDecorations from "../components/ChristmasDecorations"; // Decoraciones navideñas automáticas
 
 import PromoBanner from "../components/PromoBanner"; // Banner de ofertas (BF/CM)
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -161,6 +162,7 @@ export default function RootLayout({ children }) {
 
         {/* Mantiene limpio el DOM de cualquier botón flotante de Booksy fuera de /reservas */}
         <BooksyGuard />
+        <Analytics />
       </body>
     </html>
   );
