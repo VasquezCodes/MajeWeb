@@ -27,7 +27,7 @@ export default function PromoBanner() {
                 setPromo({
                     type: 'BF',
                     title: 'BLACK FRIDAY',
-                    offer: '20% OFF EN MENTORÍAS + BONUS',
+                    offer: '20% OFF MENTORÍAS VIP + BONUS ACTIVOS 50% OFF EN PRODUCTOS DIGITALES 🌏',
                     bgColor: 'bg-black',
                     textColor: 'text-white',
                     accentColor: 'text-brand-pink',
@@ -97,22 +97,30 @@ export default function PromoBanner() {
                     </span>
                 </div>
 
-                {/* CTA Button */}
-                <Link
-                    href="/academia#mentorias"
-                    onClick={(e) => {
-                        if (window.location.pathname === '/academia') {
-                            e.preventDefault();
-                            const element = document.getElementById('mentorias');
-                            if (element) {
-                                element.scrollIntoView({ behavior: 'smooth' });
+                {/* CTA Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 mt-2 md:mt-0">
+                    <Link
+                        href="/academia#mentorias"
+                        onClick={(e) => {
+                            if (window.location.pathname === '/academia') {
+                                e.preventDefault();
+                                const element = document.getElementById('mentorias');
+                                if (element) {
+                                    element.scrollIntoView({ behavior: 'smooth' });
+                                }
                             }
-                        }
-                    }}
-                    className="mt-2 md:mt-0 bg-white text-black px-6 py-2 rounded-full text-xs md:text-sm font-black tracking-wider hover:scale-105 transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)]"
-                >
-                    VER OFERTAS
-                </Link>
+                        }}
+                        className="bg-white text-black px-5 py-2 rounded-full text-[10px] md:text-xs font-black tracking-wider hover:scale-105 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.3)] hover:shadow-[0_0_20px_rgba(255,255,255,0.5)] whitespace-nowrap"
+                    >
+                        OFERTAS MENTORÍAS
+                    </Link>
+                    <Link
+                        href="/productos"
+                        className="bg-brand-pink text-white px-5 py-2 rounded-full text-[10px] md:text-xs font-black tracking-wider hover:scale-105 transition-all duration-300 shadow-[0_0_10px_rgba(218,134,149,0.5)] hover:shadow-[0_0_20px_rgba(218,134,149,0.8)] whitespace-nowrap"
+                    >
+                        OFERTAS PRODUCTOS
+                    </Link>
+                </div>
             </div>
         </div>
     );

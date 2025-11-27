@@ -89,6 +89,70 @@ export default function ProductosPage() {
           </div>
         </div>
       </section>
+
+      {/* Programa CEO Section */}
+      <section className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 pb-24 md:pb-32">
+        <div className="bg-gradient-to-br from-gray-50 to-white rounded-3xl shadow-2xl overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+            {/* Content (Order 2 on mobile, 1 on desktop for alternation) */}
+            <div className="p-8 md:p-12 lg:p-16 flex flex-col justify-center space-y-6 order-2 lg:order-1">
+              <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-brand-pink to-pink-600 px-4 py-2 w-fit">
+                <span className="text-xs font-black text-white uppercase tracking-wider">
+                  Workshop Online
+                </span>
+              </div>
+
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-brand-text leading-tight">
+                Programa Online Manicurista CEO
+              </h2>
+
+              <p className="text-base md:text-lg text-brand-text-light leading-relaxed">
+                Domina el negocio de las uñas y escala tu carrera al siguiente nivel. Aprende a gestionar tu tiempo, tus finanzas y a atraer clientes de alto valor.
+              </p>
+
+              <ul className="space-y-3">
+                <li className="flex items-start gap-3">
+                  <span className="text-brand-pink text-xl">✓</span>
+                  <span className="text-brand-text">Estrategias de negocio probadas</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-brand-pink text-xl">✓</span>
+                  <span className="text-brand-text">Gestión de marca personal</span>
+                </li>
+                <li className="flex items-start gap-3">
+                  <span className="text-brand-pink text-xl">✓</span>
+                  <span className="text-brand-text">Marketing digital para manicuristas</span>
+                </li>
+              </ul>
+
+              <div className="pt-6">
+                <a
+                  href="https://majenailspa.hotmart.host/manicurista-ceo-workshop-online-4c740e82-2dc3-4c72-bc14-943d17e181bf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-3 w-full md:w-auto px-8 py-4 bg-brand-black text-white rounded-full font-black text-lg hover:bg-brand-text transition-all duration-300 hover:scale-105 active:scale-95 shadow-xl hover:shadow-2xl"
+                >
+                  Inscribirme Ahora
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+
+            {/* Image (Order 1 on mobile, 2 on desktop) */}
+            <div className="relative h-96 lg:h-auto order-1 lg:order-2">
+              <Image
+                src="/hero.JPEG"
+                alt="Programa Manicurista CEO"
+                fill
+                className="object-cover"
+                style={{ objectPosition: 'center 25%' }}
+              />
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

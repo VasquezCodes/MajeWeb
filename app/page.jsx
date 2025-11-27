@@ -15,11 +15,11 @@ const featuredServices = [
     link: "/academia",
   },
   {
-    name: "Información sobre Nuestros Servicios",
-    shortLabel: "Servicios",
-    description: "Conoce todos los servicios de spa y belleza que ofrecemos para ti.",
-    imageUrl: "/portadaParaServicios.jpg",
-    link: "/reservas",
+    name: "Programa online manicurista CEO",
+    shortLabel: "Workshop Online",
+    description: "Domina el negocio de las uñas y escala tu carrera al siguiente nivel.",
+    imageUrl: "/hero.JPEG",
+    link: "https://majenailspa.hotmart.host/manicurista-ceo-workshop-online-4c740e82-2dc3-4c72-bc14-943d17e181bf",
   },
   {
     name: "Productos Digitales",
@@ -36,9 +36,9 @@ export default function HomePage() {
 
   return (
     <div className="space-y-32 md:space-y-40 mb-32 md:mb-40">
-      
+
       {/* === Sección 1: Hero === */}
-      <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-end lg:items-center overflow-hidden" style={{minHeight: 'calc(var(--vh, 1vh) * 85)'}}>
+      <section className="relative min-h-[85vh] lg:min-h-[90vh] flex items-end lg:items-center overflow-hidden" style={{ minHeight: 'calc(var(--vh, 1vh) * 85)' }}>
         <div className="absolute inset-0">
           <Image
             src="/photo4.JPEG"
@@ -100,6 +100,8 @@ export default function HomePage() {
             <Link
               key={service.name}
               href={service.link}
+              target={service.link.startsWith('http') ? '_blank' : undefined}
+              rel={service.link.startsWith('http') ? 'noopener noreferrer' : undefined}
               ref={(el) => (serviceRefs.current[index] = el)}
               className="relative group rounded-2xl md:rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-[1.03] opacity-0 animate-fade-in-up"
               style={{ animationDelay: `${index * 0.15}s` }}
@@ -110,7 +112,11 @@ export default function HomePage() {
                   alt={service.name}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  style={service.imageUrl === '/portadaParaServicios.jpg' ? { objectPosition: 'center 35%' } : {}}
+                  style={
+                    service.imageUrl === '/portadaParaServicios.jpg' ? { objectPosition: 'center 35%' } :
+                      service.imageUrl === '/hero.JPEG' ? { objectPosition: 'center 25%' } :
+                        {}
+                  }
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-brand-black/90 via-brand-black/50 to-transparent" />
                 <div className="absolute inset-0 p-5 md:p-6 lg:p-8 flex flex-col justify-end space-y-2 md:space-y-3 text-brand-white">
@@ -129,7 +135,7 @@ export default function HomePage() {
           ))}
         </div>
       </section>
-      
+
       {/* === Sección 3: Mi Historia / About Me === */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
