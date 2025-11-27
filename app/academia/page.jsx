@@ -659,22 +659,15 @@ export default function AcademiaPage() {
     const now = new Date();
     const year = now.getFullYear();
 
-    // Black Friday: Jueves 27 Nov - Domingo 30 Nov
+    // Black Friday: Jueves 27 Nov - Lunes 1 Dic
     const bfStart = new Date(year, 10, 27, 0, 0, 0);
-    const bfEnd = new Date(year, 10, 30, 23, 59, 59);
-
-    // Cyber Monday: Lunes 1 Dec - Miércoles 3 Dec
-    const cmStart = new Date(year, 11, 1, 0, 0, 0);
-    const cmEnd = new Date(year, 11, 3, 23, 59, 59);
+    const bfEnd = new Date(year, 11, 1, 23, 59, 59);
 
     // Para pruebas: Descomentar para simular fechas
     // const now = new Date(year, 10, 28, 10, 0, 0); // Simular BF
-    // const now = new Date(year, 11, 1, 10, 0, 0); // Simular CM
 
     if (now >= bfStart && now <= bfEnd) {
       setClientPromoStatus('BF');
-    } else if (now >= cmStart && now <= cmEnd) {
-      setClientPromoStatus('CM');
     } else {
       setClientPromoStatus('STANDARD');
     }

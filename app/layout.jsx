@@ -27,6 +27,14 @@ const crimsonText = Crimson_Text({
   weight: ["400", "600"],
 });
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: "#DA8695",
+};
+
 export const metadata = {
   title: "Maje Nail Spa - Orlando, FL",
   description:
@@ -40,13 +48,6 @@ export const metadata = {
     shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
-  themeColor: "#DA8695",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",

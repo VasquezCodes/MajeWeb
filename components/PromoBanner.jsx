@@ -1,5 +1,4 @@
 'use client';
-'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -14,17 +13,12 @@ export default function PromoBanner() {
             const year = now.getFullYear();
 
             // Fechas de configuración (Ajustar según el año real)
-            // Black Friday: Jueves 27 Nov - Domingo 30 Nov
+            // Black Friday: Jueves 27 Nov - Lunes 1 Dic
             const bfStart = new Date(year, 10, 27, 0, 0, 0); // Mes 10 es Noviembre
-            const bfEnd = new Date(year, 10, 30, 23, 59, 59);
-
-            // Cyber Monday: Lunes 1 Dec - Miércoles 3 Dec
-            const cmStart = new Date(year, 11, 1, 0, 0, 0); // Mes 11 es Diciembre
-            const cmEnd = new Date(year, 11, 3, 23, 59, 59);
+            const bfEnd = new Date(year, 11, 1, 23, 59, 59); // Mes 11 es Diciembre
 
             // Para pruebas: Descomentar para simular fechas
             // const nowTest = new Date(year, 10, 28, 10, 0, 0); // Simular BF
-            // const nowTest = new Date(year, 11, 1, 10, 0, 0); // Simular CM
 
             // USAR FECHA DE PRUEBA SI ESTÁ DESCOMENTADA, SINO USAR FECHA REAL
             const currentDate = now;
@@ -38,16 +32,6 @@ export default function PromoBanner() {
                     textColor: 'text-white',
                     accentColor: 'text-brand-pink',
                     endTime: bfEnd
-                });
-            } else if (currentDate >= cmStart && currentDate <= cmEnd) {
-                setPromo({
-                    type: 'CM',
-                    title: 'CYBER MONDAY',
-                    offer: '30% OFF EN TODO',
-                    bgColor: 'bg-blue-900',
-                    textColor: 'text-white',
-                    accentColor: 'text-cyan-400',
-                    endTime: cmEnd
                 });
             } else {
                 setPromo(null);
