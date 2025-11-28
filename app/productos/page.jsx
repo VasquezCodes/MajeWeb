@@ -107,7 +107,7 @@ export default function ProductosPage() {
 
               <div className="pt-6">
                 <a
-                  href="https://hotmart.com/es/marketplace/productos/e-book-manicuras-millonarias-con-derechos-de-reventa/A91933579Q?fbclid=PAZnRzaAN0m_VleHRuA2FlbQIxMQABpykGIk5y8tRcJhw5uyLFlvi9pCJg7EXoTjZpxmn031jTREMiuuujnqZwpHLQ_aem_4PtqUabkUrg6QPypXIkvpQ"
+                  href="https://go.hotmart.com/A91933579Q"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-3 w-full md:w-auto px-8 py-4 bg-brand-black text-white rounded-full font-black text-lg hover:bg-brand-text transition-all duration-300 hover:scale-105 active:scale-95 shadow-xl hover:shadow-2xl"
