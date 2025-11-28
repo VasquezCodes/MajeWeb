@@ -168,7 +168,7 @@ export default function ProductosPage() {
 
               <div className="pt-6">
                 <a
-                  href="https://majenailspa.hotmart.host/manicurista-ceo-workshop-online-4c740e82-2dc3-4c72-bc14-943d17e181bf"
+                  href="https://go.hotmart.com/G99672120D"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-3 w-full md:w-auto px-8 py-4 bg-brand-black text-white rounded-full font-black text-lg hover:bg-brand-text transition-all duration-300 hover:scale-105 active:scale-95 shadow-xl hover:shadow-2xl"

@@ -19,7 +19,7 @@ const featuredServices = [
     shortLabel: "Workshop Online",
     description: "Domina el negocio de las uñas y escala tu carrera al siguiente nivel.",
     imageUrl: "/hero.JPEG",
-    link: "https://majenailspa.hotmart.host/manicurista-ceo-workshop-online-4c740e82-2dc3-4c72-bc14-943d17e181bf",
+    link: "https://go.hotmart.com/G99672120D",
   },
   {
     name: "Productos Digitales",
