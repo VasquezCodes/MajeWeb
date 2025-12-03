@@ -10,6 +10,7 @@ import ChristmasDecorations from "../components/ChristmasDecorations"; // Decora
 
 import PromoBanner from "../components/PromoBanner"; // Banner de ofertas (BF/CM)
 import { Analytics } from "@vercel/analytics/next";
+import SmoothScrolling from "../components/SmoothScrolling";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -148,21 +149,23 @@ export default function RootLayout({ children }) {
       <body
         className={`${inter.variable} ${playfairDisplay.variable} ${crimsonText.variable} antialiased bg-brand-white text-brand-text`}
       >
-        {/* Decoraciones navideñas (Nov 10 - Ene 10) */}
-        <ChristmasDecorations />
+        <SmoothScrolling>
+          {/* Decoraciones navideñas (Nov 10 - Ene 10) */}
+          <ChristmasDecorations />
 
-        <Navbar />
+          <Navbar />
 
-        {/* Banner de Ofertas (Solo visible en fechas configuradas) */}
-        <PromoBanner />
+          {/* Banner de Ofertas (Solo visible en fechas configuradas) */}
+          <PromoBanner />
 
-        <main className="min-h-screen-mobile">{children}</main>
+          <main className="min-h-screen-mobile">{children}</main>
 
-        <Footer />
+          <Footer />
 
-        {/* Mantiene limpio el DOM de cualquier botón flotante de Booksy fuera de /reservas */}
-        <BooksyGuard />
-        <Analytics />
+          {/* Mantiene limpio el DOM de cualquier botón flotante de Booksy fuera de /reservas */}
+          <BooksyGuard />
+          <Analytics />
+        </SmoothScrolling>
       </body>
     </html>
   );
