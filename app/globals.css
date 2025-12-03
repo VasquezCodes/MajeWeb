@@ -265,47 +265,27 @@ html {
   /* Prevenir zoom al tocar inputs en iOS */
   -webkit-text-size-adjust: 100%;
 
-  /* Smooth scroll */
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth; - Removed for Lenis compatibility */
 
   /* Prevenir scroll horizontal */
   overflow-x: hidden;
 }
 
-/* Fix específico para navegadores in-app (Instagram, Facebook, etc) */
-@media screen and (max-width: 768px) {
-  /* Usar min-height en lugar de height para evitar el problema de viewport */
-  .mobile-viewport-fix {
-    min-height: 100vh;
-    min-height: calc(var(--vh, 1vh) * 100);
-  }
-
-  /* Fallback con dvh si está disponible */
-  @supports (min-height: 100dvh) {
+  /* Fix específico para navegadores in-app (Instagram, Facebook, etc) */
+  @media screen and (max-width: 768px) {
+    /* Usar min-height en lugar de height para evitar el problema de viewport */
     .mobile-viewport-fix {
-      min-height: 100dvh;
+      min-height: 100vh;
+      min-height: calc(var(--vh, 1vh) * 100);
+    }
+
+    /* Fallback con dvh si está disponible */
+    @supports (min-height: 100dvh) {
+      .mobile-viewport-fix {
+        min-height: 100dvh;
+      }
     }
   }
-
-  /* Prevenir que el contenido se ajuste cuando aparece la barra del navegador */
-  html, body {
-    height: 100%;
-    overflow: auto;
-    position: fixed;
-    width: 100%;
-  }
-
-  body {
-    position: relative;
-  }
-
-  /* Usar position fixed para el contenedor principal */
-  #__next, main {
-    position: relative;
-    width: 100%;
-    overflow-x: hidden;
-  }
-}
 
 @layer utilities {
   .text-balance {
