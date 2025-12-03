@@ -285,6 +285,25 @@ html {
         min-height: 100dvh;
       }
     }
+
+    /* Prevenir que el contenido se ajuste cuando aparece la barra del navegador */
+    html, body {
+      height: 100%;
+      overflow: auto;
+      position: fixed;
+      width: 100%;
+    }
+  
+    body {
+      position: relative;
+    }
+  
+    /* Usar position fixed para el contenedor principal */
+    #__next, main {
+      position: relative;
+      width: 100%;
+      overflow-x: hidden;
+    }
   }
 
 @layer utilities {
