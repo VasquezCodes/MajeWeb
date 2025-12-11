@@ -1,14 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import '../app/christmas.css';
 
 export default function ChristmasDecorations() {
   const [isChristmasSeason, setIsChristmasSeason] = useState(false);
+  const searchParams = useSearchParams();
+
+  // Detectar si el parámetro ?noChristmas=true está presente para desactivar decoraciones
+  const noChristmas = searchParams.get('noChristmas') === 'true';
 
   useEffect(() => {
     // Verificar si estamos en temporada navideña (Nov 10 - Ene 10)
     const checkChristmasSeason = () => {
+      // Si noChristmas está activo, desactivar decoraciones
+      if (noChristmas) return false;
+
       const now = new Date();
       const year = now.getFullYear();
       const month = now.getMonth(); // 0-11 (0 = Enero)
@@ -30,7 +38,7 @@ export default function ChristmasDecorations() {
     }, 1000 * 60 * 60); // Check every hour
 
     return () => clearInterval(checkDaily);
-  }, []);
+  }, [noChristmas]);
 
   // Generar copos de nieve
   const generateSnowflakes = () => {

@@ -3,17 +3,24 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline"; // Iconos para el menú móvil
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isChristmasSeason, setIsChristmasSeason] = useState(false);
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  // Detectar si el parámetro ?noChristmas=true está presente para desactivar decoraciones
+  const noChristmas = searchParams.get('noChristmas') === 'true';
 
   useEffect(() => {
     // Verificar si estamos en temporada navideña (Nov 10 - Ene 10)
     const checkChristmasSeason = () => {
+      // Si noChristmas está activo, desactivar decoraciones
+      if (noChristmas) return false;
+
       const now = new Date();
       const month = now.getMonth(); // 0-11 (0 = Enero)
       const day = now.getDate();
@@ -22,7 +29,7 @@ export default function Navbar() {
       return isNovemberToDecember || isEarlyJanuary;
     };
     setIsChristmasSeason(checkChristmasSeason());
-  }, []);
+  }, [noChristmas]);
 
   const links = [
     { name: "Inicio", href: "/" },
