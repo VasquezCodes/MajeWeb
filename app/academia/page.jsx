@@ -1668,9 +1668,9 @@ export default function AcademiaPage() {
       {/* === Modal de Reserva (Calendarios por curso) === */}
       {showBookingModal && (
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-md">
-          <div className="flex min-h-full items-center justify-center p-4 sm:p-6">
+          <div className="flex min-h-full items-center justify-center p-4 sm:p-8 md:py-12">
             <div className="relative w-full max-w-6xl">
-              <div className="bg-white rounded-none sm:rounded-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
+              <div className="bg-gradient-to-br from-white via-white to-brand-pink/5 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/50">
                 <button
                   onClick={() => {
                     setShowBookingModal(false);

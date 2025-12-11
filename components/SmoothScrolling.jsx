@@ -29,7 +29,31 @@ function SmoothScrolling({ children }) {
     }
 
     return (
-        <ReactLenis root options={{ lerp: 0.1, duration: 2.0, smoothWheel: true }}>
+        <ReactLenis
+            root
+            options={{
+                lerp: 0.1,
+                duration: 2.0,
+                smoothWheel: true,
+                // Prevenir Lenis en elementos con data-lenis-prevent o con overflow scroll
+                prevent: (node) => {
+                    // Permitir scroll nativo en modales y elementos con overflow
+                    if (node.hasAttribute('data-lenis-prevent')) return true;
+                    if (node.closest('[data-lenis-prevent]')) return true;
+
+                    // Detectar elementos con overflow scroll/auto
+                    const style = getComputedStyle(node);
+                    const overflowY = style.overflowY;
+                    if (overflowY === 'scroll' || overflowY === 'auto') {
+                        // Si el contenido es más alto que el contenedor, prevenir Lenis
+                        if (node.scrollHeight > node.clientHeight) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+            }}
+        >
             {children}
         </ReactLenis>
     );
