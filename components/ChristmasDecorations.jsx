@@ -1,10 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import '../app/christmas.css';
 
-export default function ChristmasDecorations() {
+// Componente interno que usa useSearchParams
+function ChristmasDecorationsContent() {
   const [isChristmasSeason, setIsChristmasSeason] = useState(false);
   const searchParams = useSearchParams();
 
@@ -78,5 +79,14 @@ export default function ChristmasDecorations() {
         {generateSnowflakes()}
       </div>
     </>
+  );
+}
+
+// Export con Suspense wrapper para useSearchParams
+export default function ChristmasDecorations() {
+  return (
+    <Suspense fallback={null}>
+      <ChristmasDecorationsContent />
+    </Suspense>
   );
 }

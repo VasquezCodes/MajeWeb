@@ -1,12 +1,13 @@
 // Usamos "use client" para poder usar hooks de React como useState (para el menú móvil)
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline"; // Iconos para el menú móvil
 
-export default function Navbar() {
+// Componente interno que usa useSearchParams
+function NavbarContent() {
   const [isOpen, setIsOpen] = useState(false);
   const [isChristmasSeason, setIsChristmasSeason] = useState(false);
   const pathname = usePathname();
@@ -228,5 +229,24 @@ export default function Navbar() {
         </div>
       </div>
     </nav>
+  );
+}
+
+// Export con Suspense wrapper para useSearchParams
+export default function Navbar() {
+  return (
+    <Suspense fallback={
+      <nav className="bg-brand-white shadow-lg sticky top-0 z-50 border-b border-brand-gray-light">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-24">
+            <div className="flex-shrink-0">
+              <span className="text-3xl font-crimson font-semibold text-brand-black">Maje Nail Spa</span>
+            </div>
+          </div>
+        </div>
+      </nav>
+    }>
+      <NavbarContent />
+    </Suspense>
   );
 }
