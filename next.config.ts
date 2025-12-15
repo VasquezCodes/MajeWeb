@@ -12,6 +12,11 @@ const nextConfig = {
         protocol: "https",
         hostname: "placehold.co",
       },
+      // Sanity CDN para imágenes del CMS
+      {
+        protocol: "https",
+        hostname: "cdn.sanity.io",
+      },
     ],
   },
 };

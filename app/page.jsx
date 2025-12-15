@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useStaggeredAnimation } from '../hooks/useScrollAnimation';
@@ -30,9 +31,49 @@ const featuredServices = [
   },
 ];
 
+// Contenido por defecto
+const defaultContent = {
+  heroTitle: 'Hola, soy Mariajesus,',
+  heroSubtitle: 'fundadora de Maje Nail Spa y Maje Nail Academy. Con más de 7 años de trayectoria en el mundo de las uñas y en la formación de profesionales del ramo, te doy la bienvenida a este espacio, donde podrás reservar tus servicios y formarte como profesional si así lo deseas.',
+  heroButtons: [
+    { label: 'Academia', url: '/academia', variant: 'primary' },
+    { label: 'Servicios', url: '/reservas', variant: 'secondary' }
+  ],
+  aboutLabel: 'Mi Historia',
+  aboutTitle: 'De Sueños a Realidad',
+  aboutContent: [
+    'Soy venezolana, y hace 8 años emigré a los Estados Unidos con tan solo 19 años, llevando en la maleta mis sueños... y una pasión que me acompañaba desde niña: el mundo de las uñas.',
+    'Hoy tengo más de 10 años de experiencia en esta industria, pero no siempre fue fácil. Al inicio, mis conocimientos eran empíricos. Sabía que amaba este arte, pero entendí que el talento por sí solo no era suficiente para escalar un negocio rentable ni atraer clientas de alto valor.',
+    'Con los años, descubrí que este mundo va mucho más allá de una buena técnica: es un negocio poderoso que necesita estructura, estrategia y educación.',
+    'Por eso, comencé a formarme. Estudié con grandes academias e instructores, tanto presenciales como online. Me capacité en técnicas avanzadas, finanzas, redes sociales y marketing especializado para manicuristas.',
+    'Hoy soy Master Instructor en uñas y marketing para manicuristas, y mi misión es compartir este camino con más mujeres soñadoras, que como yo, quieren vivir de su talento y construir una marca profesional y rentable.',
+    'Porque el arte transforma... pero la educación y la visión hacen que ese arte se convierta en libertad.'
+  ],
+  ctaTitle: '¿Lista para tu próximo turno?',
+  ctaDescription: 'Agenda tu cita en menos de un minuto a través de nuestro sistema de reservas online.',
+  ctaButtonText: 'Reservar Turno Ahora',
+  ctaButtonUrl: '/reservas'
+};
+
 // --- Componente Principal de la Página ---
 export default function HomePage() {
   const serviceRefs = useStaggeredAnimation(3, 0.2);
+  const [content, setContent] = useState(defaultContent);
+
+  // Cargar datos de Sanity via API route
+  useEffect(() => {
+    fetch('/api/sanity/homepage')
+      .then(res => res.json())
+      .then(data => {
+        if (data && Object.keys(data).length > 0) {
+          setContent(prev => ({ ...prev, ...data }));
+        }
+      })
+      .catch(err => console.log('Using default content'));
+  }, []);
+
+  const heroButtons = content.heroButtons || defaultContent.heroButtons;
+  const aboutContent = content.aboutContent || defaultContent.aboutContent;
 
   return (
     <div className="space-y-32 md:space-y-40 mb-32 md:mb-40">
@@ -60,25 +101,28 @@ export default function HomePage() {
             <div className="max-w-3xl lg:max-w-2xl space-y-4 lg:space-y-8 text-brand-white text-left">
               {/* Espaciado reducido en móvil para comprimir el contenido */}
               <h1 className="text-3xl md:text-5xl lg:text-7xl font-serif font-bold leading-tight animate-slide-up">
-                Hola, soy Mariajesus,
+                {content.heroTitle}
               </h1>
               <p className="font-crimson text-base md:text-xl lg:text-2xl text-brand-gray-light/90 leading-relaxed tracking-[0.08em] animate-fade-in delay-300">
-                fundadora de Maje Nail Spa y Maje Nail Academy. Con más de 7 años de trayectoria en el mundo de las uñas y en la formación de profesionales del ramo, te doy la bienvenida a este espacio, donde podrás reservar tus servicios y formarte como profesional si así lo deseas.
+                {content.heroSubtitle}
               </p>
-              {/* Botones con espaciado reducido en móvil */}
+              {/* Botones dinámicos desde Sanity */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4 lg:pt-6 justify-start animate-fade-in delay-500">
-                <Link
-                  href="/academia"
-                  className="inline-flex items-center justify-center px-8 py-3.5 bg-brand-white text-brand-black text-sm md:text-base lg:text-lg font-crimson tracking-[0.2em] rounded-2xl shadow-lg hover:bg-brand-gray-light hover:shadow-xl hover:scale-105 transition-all duration-300"
-                >
-                  Academia
-                </Link>
-                <Link
-                  href="/reservas"
-                  className="inline-flex items-center justify-center px-8 py-3.5 border-2 border-brand-white/70 text-brand-white text-sm md:text-base lg:text-lg font-crimson tracking-[0.2em] rounded-2xl hover:bg-brand-white/15 hover:border-brand-white transition-all duration-300"
-                >
-                  Servicios
-                </Link>
+                {heroButtons.map((button, index) => (
+                  <Link
+                    key={index}
+                    href={button.url}
+                    target={button.url?.startsWith('http') ? '_blank' : undefined}
+                    rel={button.url?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    className={
+                      button.variant === 'primary'
+                        ? "inline-flex items-center justify-center px-8 py-3.5 bg-brand-white text-brand-black text-sm md:text-base lg:text-lg font-crimson tracking-[0.2em] rounded-2xl shadow-lg hover:bg-brand-gray-light hover:shadow-xl hover:scale-105 transition-all duration-300"
+                        : "inline-flex items-center justify-center px-8 py-3.5 border-2 border-brand-white/70 text-brand-white text-sm md:text-base lg:text-lg font-crimson tracking-[0.2em] rounded-2xl hover:bg-brand-white/15 hover:border-brand-white transition-all duration-300"
+                    }
+                  >
+                    {button.label}
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
@@ -155,32 +199,33 @@ export default function HomePage() {
           <ScrollReveal animation="fade-left" className="order-1 lg:order-2 space-y-6 md:space-y-8">
             <div className="space-y-4">
               <p className="text-xs md:text-sm tracking-[0.3em] md:tracking-[0.4em] uppercase text-blue-600 font-crimson font-bold">
-                Mi Historia
+                {content.aboutLabel}
               </p>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold text-brand-text leading-tight">
-                De Sueños a Realidad
+                {content.aboutTitle}
               </h2>
             </div>
 
             <div className="space-y-5 text-brand-text-light leading-relaxed text-base md:text-lg font-crimson">
-              <p>
-                Soy venezolana, y hace 8 años emigré a los Estados Unidos con tan solo 19 años, llevando en la maleta mis sueños... y una pasión que me acompañaba desde niña: el mundo de las uñas.
-              </p>
-              <p>
-                Hoy tengo más de 10 años de experiencia en esta industria, pero no siempre fue fácil. Al inicio, mis conocimientos eran empíricos. Sabía que amaba este arte, pero entendí que el talento por sí solo no era suficiente para escalar un negocio rentable ni atraer clientas de alto valor.
-              </p>
-              <p>
-                Con los años, descubrí que este mundo va mucho más allá de una buena técnica: es un negocio poderoso que necesita estructura, estrategia y educación.
-              </p>
-              <p>
-                Por eso, comencé a formarme. Estudié con grandes academias e instructores, tanto presenciales como online. Me capacité en técnicas avanzadas, finanzas, redes sociales y marketing especializado para manicuristas.
-              </p>
-              <p>
-                Hoy soy <span className="font-bold text-brand-text">Master Instructor en uñas y marketing para manicuristas</span>, y mi misión es compartir este camino con más mujeres soñadoras, que como yo, quieren vivir de su talento y construir una marca profesional y rentable.
-              </p>
-              <p className="text-brand-text font-bold italic">
-                Porque el arte transforma... pero la educación y la visión hacen que ese arte se convierta en libertad.
-              </p>
+              {aboutContent.map((paragraph, index) => {
+                // El penúltimo párrafo tiene un estilo especial
+                if (index === aboutContent.length - 2) {
+                  return (
+                    <p key={index}>
+                      Hoy soy <span className="font-bold text-brand-text">Master Instructor en uñas y marketing para manicuristas</span>, y mi misión es compartir este camino con más mujeres soñadoras, que como yo, quieren vivir de su talento y construir una marca profesional y rentable.
+                    </p>
+                  );
+                }
+                // El último párrafo es italic
+                if (index === aboutContent.length - 1) {
+                  return (
+                    <p key={index} className="text-brand-text font-bold italic">
+                      {paragraph}
+                    </p>
+                  );
+                }
+                return <p key={index}>{paragraph}</p>;
+              })}
             </div>
           </ScrollReveal>
         </div>
@@ -190,17 +235,17 @@ export default function HomePage() {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal animation="scale" className="bg-brand-gray-light p-12 md:p-20 rounded-3xl text-center shadow-lg">
           <h2 className="text-3xl md:text-4xl font-serif font-bold text-brand-text animate-slide-up">
-            ¿Lista para tu próximo turno?
+            {content.ctaTitle}
           </h2>
           <p className="mt-4 text-lg text-brand-text-light max-w-xl mx-auto animate-fade-in delay-300">
-            Agenda tu cita en menos de un minuto a través de nuestro sistema de reservas online.
+            {content.ctaDescription}
           </p>
           <div className="mt-8 animate-fade-in delay-500">
             <Link
-              href="/reservas"
+              href={content.ctaButtonUrl}
               className="inline-block px-10 py-4 bg-brand-black text-brand-white text-lg font-semibold rounded-2xl shadow-lg hover:bg-brand-charcoal hover:shadow-xl hover:scale-105 transition-all duration-300"
             >
-              Reservar Turno Ahora
+              {content.ctaButtonText}
             </Link>
           </div>
         </ScrollReveal>

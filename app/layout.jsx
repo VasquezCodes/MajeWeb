@@ -1,16 +1,7 @@
 // app/layout.jsx
 import { Inter, Playfair_Display, Crimson_Text } from "next/font/google";
 import "./globals.css";
-
-// Componentes propios
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import BooksyGuard from "../components/BooksyGuard"; // opcional: limpia flotantes fuera de /reservas
-import ChristmasDecorations from "../components/ChristmasDecorations"; // Decoraciones navideñas automáticas
-
-import PromoBanner from "../components/PromoBanner"; // Banner de ofertas (BF/CM)
-import { Analytics } from "@vercel/analytics/next";
-import SmoothScrolling from "../components/SmoothScrolling";
+import MainLayout from "../components/MainLayout";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -38,7 +29,7 @@ export const viewport = {
 };
 
 export const metadata = {
-  metadataBase: new URL('https://majenailspa.com'), // Reemplazar con el dominio real si es diferente
+  metadataBase: new URL('https://majenailspa.com'),
   title: {
     default: "Maje Nail Spa - Orlando, FL | Arte de Uñas y Manicura",
     template: "%s | Maje Nail Spa"
@@ -75,7 +66,7 @@ export const metadata = {
     siteName: 'Maje Nail Spa',
     images: [
       {
-        url: '/hero.JPEG', // Asegúrate de que esta imagen sea representativa
+        url: '/hero.JPEG',
         width: 1200,
         height: 630,
         alt: 'Maje Nail Spa Salon',
@@ -88,7 +79,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: "Maje Nail Spa - Orlando, FL",
     description: "Expertas en arte de uñas y cuidado personal en Orlando.",
-    images: ['/hero.JPEG'], // Misma imagen o una específica para Twitter
+    images: ['/hero.JPEG'],
   },
   icons: {
     icon: [
@@ -127,7 +118,7 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
 
-        {/* Script para fix de viewport height en mobile - debe estar en head para ejecutarse antes del render */}
+        {/* Script para fix de viewport height en mobile */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
@@ -136,7 +127,6 @@ export default function RootLayout({ children }) {
                   let vh = window.innerHeight * 0.01;
                   document.documentElement.style.setProperty('--vh', vh + 'px');
                 }
-
                 setVH();
                 window.addEventListener('resize', setVH);
                 window.addEventListener('orientationchange', setVH);
@@ -145,27 +135,10 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      {/* Nada de Script de Booksy aquí; solo en /reservas */}
       <body
         className={`${inter.variable} ${playfairDisplay.variable} ${crimsonText.variable} antialiased bg-brand-white text-brand-text`}
       >
-        <SmoothScrolling>
-          {/* Decoraciones navideñas (Nov 10 - Ene 10) */}
-          <ChristmasDecorations />
-
-          <Navbar />
-
-          {/* Banner de Ofertas (Solo visible en fechas configuradas) */}
-          <PromoBanner />
-
-          <main className="min-h-screen-mobile">{children}</main>
-
-          <Footer />
-
-          {/* Mantiene limpio el DOM de cualquier botón flotante de Booksy fuera de /reservas */}
-          <BooksyGuard />
-          <Analytics />
-        </SmoothScrolling>
+        <MainLayout>{children}</MainLayout>
       </body>
     </html>
   );
