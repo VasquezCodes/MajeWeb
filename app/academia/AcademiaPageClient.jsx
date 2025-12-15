@@ -95,7 +95,7 @@ const courses = [
     imageUrl: "/mentoriasVIP/rusa.png",
     tags: ["Técnica Rusa", "Builder Gel", "Nivelación Perfecta"],
     price: 850.00,
-    originalPrice: 850.00,
+    originalPrice: 1197.00,
     format: "Mentoría VIP Presencial",
     duration: "6-8 horas",
     isMarketingCourse: false,
@@ -108,7 +108,7 @@ const courses = [
     imageUrl: "/mentoriasVIP/dual.png",
     tags: ["Dual System", "Builder Gel", "Estructura Rápida"],
     price: 850.00,
-    originalPrice: 850.00,
+    originalPrice: 1197.00,
     format: "Mentoría VIP Presencial",
     duration: "6-8 horas",
     isMarketingCourse: false,
@@ -121,7 +121,7 @@ const courses = [
     imageUrl: "/mentoriasVIP/polygel.png",
     tags: ["Poly Gel", "Técnicas Híbridas", "Esculpidas"],
     price: 850.00,
-    originalPrice: 850.00,
+    originalPrice: 1197.00,
     format: "Mentoría VIP Presencial",
     duration: "6-8 horas",
     isMarketingCourse: false,
@@ -134,7 +134,7 @@ const courses = [
     imageUrl: "/mentoriasVIP/pedicura.png",
     tags: ["Pedicura Pro", "Servicio Spa", "Técnica Avanzada"],
     price: 850.00,
-    originalPrice: 850.00,
+    originalPrice: 1197.00,
     format: "Mentoría VIP Presencial",
     duration: "6-8 horas",
     isMarketingCourse: false,
@@ -147,7 +147,7 @@ const courses = [
     imageUrl: "/mentoriasVIP/marketin.png",
     tags: ["Marketing", "Clientes Premium", "Redes Sociales"],
     price: 497.00,
-    originalPrice: 497.00,
+    originalPrice: null,
     format: "Módulo Bonus",
     duration: "1 Día",
     isMarketingCourse: true,
@@ -884,13 +884,23 @@ export default function AcademiaPage() {
 
     return courses.map(course => {
       let finalPrice = course.price;
-      let originalPrice = course.originalPrice || course.price;
+      let originalPrice = course.originalPrice;
       let hasDiscount = false;
 
-      if (clientPromoStatus !== 'STANDARD') {
-        // Aplicar descuento de evento
-        finalPrice = course.price * (1 - discountPct / 100);
+      // Para cursos VIP (no marketing), siempre mostrar precio tachado $1197
+      if (!course.isMarketingCourse && course.originalPrice) {
         hasDiscount = true;
+      }
+
+      // Para marketing, nunca mostrar precio tachado
+      if (course.isMarketingCourse) {
+        hasDiscount = false;
+        originalPrice = null;
+      }
+
+      // Si hay promo activa (BF/CM), aplicar descuento adicional
+      if (clientPromoStatus !== 'STANDARD') {
+        finalPrice = course.price * (1 - discountPct / 100);
       }
 
       return {
@@ -1325,7 +1335,7 @@ export default function AcademiaPage() {
                       <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-4 py-2 text-[11px] font-black text-brand-text uppercase tracking-wider shadow-xl">
                         {course.format}
                       </span>
-                      {course.hasDiscount && (
+                      {course.discountPct > 0 && (
                         <span className="inline-flex items-center rounded-full bg-red-500 text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-xl animate-pulse">
                           {course.discountPct}% OFF
                         </span>
@@ -1343,7 +1353,7 @@ export default function AcademiaPage() {
                         <span className="text-3xl font-black text-emerald-600">
                           ${course.displayPrice.toFixed(0)}
                         </span>
-                        {course.hasDiscount && (
+                        {course.displayOriginalPrice && (
                           <span className="text-lg text-gray-400 line-through font-medium">
                             ${course.displayOriginalPrice.toFixed(0)}
                           </span>
@@ -1400,7 +1410,7 @@ export default function AcademiaPage() {
                         <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-5 py-2.5 text-xs font-black uppercase tracking-wider text-brand-text shadow-xl">
                           {course.format}
                         </span>
-                        {course.hasDiscount && (
+                        {course.discountPct > 0 && (
                           <span className="inline-flex items-center rounded-full bg-red-500 text-white px-4 py-2 text-xs font-black uppercase tracking-wider shadow-xl animate-pulse">
                             {course.discountPct}% OFF
                           </span>
@@ -1418,7 +1428,7 @@ export default function AcademiaPage() {
                           <span className="text-4xl lg:text-5xl font-black text-emerald-600">
                             ${course.displayPrice.toFixed(0)}
                           </span>
-                          {course.hasDiscount && (
+                          {course.displayOriginalPrice && (
                             <span className="text-xl lg:text-2xl text-gray-400 line-through font-medium">
                               ${course.displayOriginalPrice.toFixed(0)}
                             </span>
@@ -1929,9 +1939,9 @@ export default function AcademiaPage() {
                       <span className="text-3xl md:text-4xl font-black text-[#32CD32]">
                         ${(selectedCourse.displayPrice || selectedCourse.price).toFixed(0)}
                       </span>
-                      {(selectedCourse.hasDiscount || selectedCourse.displayOriginalPrice) && (
+                      {selectedCourse.originalPrice && selectedCourse.originalPrice !== selectedCourse.price && (
                         <span className="text-lg md:text-xl font-medium text-brand-text-light/70 line-through">
-                          ${(selectedCourse.displayOriginalPrice || selectedCourse.originalPrice || 1197).toFixed(0)}
+                          ${selectedCourse.originalPrice.toFixed(0)}
                         </span>
                       )}
                     </div>
