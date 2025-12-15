@@ -982,25 +982,29 @@ export default function AcademiaPage() {
           </div>
         </div>
 
-        {/* Botón CTA - FUERA del contenedor, directo a la sección */}
+        {/* Botón CTA Simple */}
         <div className="absolute bottom-8 left-0 right-0 z-20 px-6 lg:relative lg:bottom-auto lg:w-full lg:max-w-7xl lg:mx-auto lg:px-6 lg:mt-16">
           <div className="w-full flex justify-center lg:justify-start">
-            <button
-              onClick={() => {
-                const mentoriasSection = document.getElementById('mentorias');
-                if (mentoriasSection) {
-                  mentoriasSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            <a
+              href="#mentorias"
+              onClick={(e) => {
+                e.preventDefault();
+                const target = document.getElementById('mentorias');
+                if (target) {
+                  // Usar scroll nativo con offset
+                  const yOffset = -80;
+                  const y = target.getBoundingClientRect().top + window.scrollY + yOffset;
+                  window.scrollTo({ top: y, behavior: 'smooth' });
                 }
               }}
-              className="group relative inline-flex items-center gap-3 px-6 md:px-8 py-4 md:py-5 bg-gradient-to-r from-emerald-500 via-lime-500 to-emerald-600 text-white font-black text-base md:text-lg rounded-full shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300 hover:scale-105 active:scale-95 overflow-hidden"
+              className="inline-flex items-center gap-3 px-8 py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black text-lg rounded-full shadow-xl cursor-pointer"
             >
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-              <SparklesIcon className="h-6 w-6 relative z-10 animate-pulse" />
-              <span className="relative z-10">¡Asegura tu lugar ahora!</span>
-              <span className="relative z-10 text-xs md:text-sm font-semibold bg-white/20 px-3 py-1 rounded-full animate-pulse">
+              <SparklesIcon className="h-6 w-6" />
+              <span>¡Asegura tu lugar ahora!</span>
+              <span className="text-sm font-semibold bg-white/20 px-3 py-1 rounded-full">
                 Últimos espacios disponibles
               </span>
-            </button>
+            </a>
           </div>
         </div>
       </section>

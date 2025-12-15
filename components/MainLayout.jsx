@@ -9,7 +9,7 @@ import BooksyGuard from "./BooksyGuard";
 import ChristmasDecorations from "./ChristmasDecorations";
 import PromoBanner from "./PromoBanner";
 import { Analytics } from "@vercel/analytics/next";
-import SmoothScrolling from "./SmoothScrolling";
+// import SmoothScrolling from "./SmoothScrolling"; // Deshabilitado temporalmente para debug
 
 export default function MainLayout({ children }) {
     const pathname = usePathname();
@@ -21,7 +21,7 @@ export default function MainLayout({ children }) {
     }
 
     return (
-        <SmoothScrolling>
+        <>
             {/* Decoraciones navideñas (Nov 10 - Ene 10) */}
             <ChristmasDecorations />
 
@@ -37,6 +37,7 @@ export default function MainLayout({ children }) {
             {/* Mantiene limpio el DOM de cualquier botón flotante de Booksy fuera de /reservas */}
             <BooksyGuard />
             <Analytics />
-        </SmoothScrolling>
+        </>
     );
 }
+
