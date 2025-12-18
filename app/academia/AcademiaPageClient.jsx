@@ -809,10 +809,16 @@ export default function AcademiaPage() {
       }
       const newCart = [...prevCart, { ...product, quantity: 1 }];
 
+      // Verificar si la promo de marketing gratis está activa
+      const today = new Date();
+      const promoEndDate = new Date('2025-12-15T23:59:59');
+      const isMarketingPromoActive = today <= promoEndDate;
+
       const nonMarketing = newCart.filter(c => !c.isMarketingCourse).length;
       const hasMarketing = newCart.some(c => c.isMarketingCourse);
 
-      if (nonMarketing >= 2 && !hasMarketing) {
+      // Solo añadir marketing gratis si la promo está activa
+      if (isMarketingPromoActive && nonMarketing >= 2 && !hasMarketing) {
         const marketingCourse = courses.find(c => c.id === 'marketing');
         if (marketingCourse && !newCart.some(c => c.id === 'marketing')) {
           return [...newCart, { ...marketingCourse, price: 0, quantity: 1 }];
