@@ -478,7 +478,7 @@ function isDayAvailable(date) {
 }
 
 // --- Componente de Calendario ---
-function CalendarPicker({ selectedDate, onSelectDate, bookedDates }) {
+function CalendarPicker({ selectedDate, onSelectDate, bookedDates, presencialDates }) {
   const [currentMonth, setCurrentMonth] = useState(() => {
     const today = new Date();
     today.setDate(today.getDate() + 14); // Empezar 14 días adelante
@@ -510,9 +510,11 @@ function CalendarPicker({ selectedDate, onSelectDate, bookedDates }) {
       const isPast = date < minDate;
       const dateString = date.toISOString().split('T')[0];
       const isAlreadyBooked = bookedDates.has(dateString);
+      const isGroupClass = presencialDates?.has(dateString);
       const isWorkingDay = isDayAvailable(date);
 
-      const isAvailable = isWorkingDay && !isPast && !isAlreadyBooked;
+      // Group class takes precedence over availability, but not past dates
+      const isAvailable = isWorkingDay && !isPast && !isAlreadyBooked && !isGroupClass;
 
       days.push({
         date,
@@ -520,11 +522,12 @@ function CalendarPicker({ selectedDate, onSelectDate, bookedDates }) {
         isAvailable,
         isPast,
         isAlreadyBooked,
+        isGroupClass,
       });
     }
 
     return days;
-  }, [currentMonth, bookedDates]);
+  }, [currentMonth, bookedDates, presencialDates]);
 
   const monthNames = [
     "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -610,7 +613,9 @@ function CalendarPicker({ selectedDate, onSelectDate, bookedDates }) {
                     ? 'bg-brand-gray-light/40 text-brand-text hover:bg-emerald-50 hover:ring-2 hover:ring-emerald-200 active:scale-95 sm:hover:scale-105 sm:hover:shadow-md'
                     : isAlreadyBooked
                       ? 'bg-red-100 text-red-400 cursor-not-allowed line-through'
-                      : 'bg-transparent text-brand-text-light/30 cursor-not-allowed'
+                      : isGroupClass
+                        ? 'bg-indigo-100 text-indigo-400 cursor-not-allowed font-medium' // Estilo para clase grupal
+                        : 'bg-transparent text-brand-text-light/30 cursor-not-allowed'
                 }
               `}
             >
@@ -635,6 +640,10 @@ function CalendarPicker({ selectedDate, onSelectDate, bookedDates }) {
             <div className="h-3 w-3 sm:h-4 sm:w-4 rounded-md sm:rounded-lg bg-transparent border-2 border-brand-text-light/30" />
             <span className="text-brand-text font-bold">No disponible</span>
           </div>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="h-3 w-3 sm:h-4 sm:w-4 rounded-md sm:rounded-lg bg-indigo-100 border border-indigo-200" />
+            <span className="text-brand-text font-bold">Clase Grupal</span>
+          </div>
         </div>
       </div>
     </div>
@@ -650,6 +659,7 @@ export default function AcademiaPage() {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [bookingDates, setBookingDates] = useState({});
   const [bookedDates, setBookedDates] = useState(new Set());
+  const [presencialDates, setPresencialDates] = useState(new Set()); // New state for group classes
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
   const [showTemarioModal, setShowTemarioModal] = useState(false);
   const [selectedTemario, setSelectedTemario] = useState(null);
@@ -795,6 +805,33 @@ export default function AcademiaPage() {
         const dates = new Set(snapshot.docs.map(doc => doc.id));
         setBookedDates(dates);
         console.log('Fechas ocupadas cargadas:', dates);
+
+        // Fetch Presencial Courses to block dates
+        const presencialCol = collection(db, 'presencial_courses');
+        const presencialSnapshot = await getDocs(presencialCol);
+        const pDates = new Set();
+
+        presencialSnapshot.docs.forEach(doc => {
+          const data = doc.data();
+          if (data.startDate) {
+            // Parse start date "YYYY-MM-DD"
+            const [y, m, d] = data.startDate.split('-').map(Number);
+            const start = new Date(y, m - 1, d);
+
+            // Add start date
+            const startStr = start.toISOString().split('T')[0];
+            pDates.add(startStr);
+
+            // Add next day (assuming 2 day courses as per design)
+            const nextDay = new Date(start);
+            nextDay.setDate(nextDay.getDate() + 1);
+            const nextDayStr = nextDay.toISOString().split('T')[0];
+            pDates.add(nextDayStr);
+          }
+        });
+        setPresencialDates(pDates);
+        console.log('Fechas de clases grupales cargadas:', pDates);
+
       } catch (error) {
         console.error("Error cargando fechas ocupadas:", error);
       }
@@ -1767,6 +1804,7 @@ export default function AcademiaPage() {
                                 setBookingDates(prev => ({ ...prev, [item.id]: dateString }));
                               }}
                               bookedDates={blockedDates}
+                              presencialDates={presencialDates} // Pass the new prop
                             />
                           </div>
                         </div>

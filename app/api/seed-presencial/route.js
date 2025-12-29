@@ -16,7 +16,7 @@ export async function GET() {
             price: 80000,
             capacity: 10,
             enrolled: 0,
-            image: '/portadasMentoriasNueva/MANICURA RUSA_.jpg',
+            image: '/carruselMaje/manicuraRusaHighLevel.jpg',
             syllabus: [
                 {
                     title: "Fundamentos de la Uña",
@@ -48,7 +48,7 @@ export async function GET() {
             price: 80000,
             capacity: 10,
             enrolled: 0,
-            image: '/portadasMentoriasNueva/SISTEMA DUAL_.jpg',
+            image: '/carruselMaje/sistemaDualGelPro.jpg',
             syllabus: [
                 {
                     title: "Fundamentos del Sistema Dual",
@@ -81,7 +81,7 @@ export async function GET() {
             price: 80000,
             capacity: 10,
             enrolled: 0,
-            image: '/portadasMentoriasNueva/POLYGEL_.jpg',
+            image: '/carruselMaje/polygelLevelUp.jpg',
             syllabus: [
                 {
                     title: "Dominio del PolyGEL",
