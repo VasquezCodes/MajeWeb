@@ -96,8 +96,8 @@ const courses = [
       "Capacitación intensiva de 6-8 horas. Perfecciona la limpieza profunda de cutícula y la nivelación con builder gel para un acabado impecable.",
     imageUrl: "/mentoriasVIP/rusa.png",
     tags: ["Técnica Rusa", "Builder Gel", "Nivelación Perfecta"],
-    price: 850.00,
-    originalPrice: 1197.00,
+    price: 1197.00,
+    originalPrice: null,
     format: "Mentoría VIP Presencial",
     duration: "6-8 horas",
     isMarketingCourse: false,
@@ -109,8 +109,8 @@ const courses = [
       "Capacitación intensiva de 6-8 horas. Domina la construcción rápida y estructural con moldes dual system y la versatilidad del builder gel.",
     imageUrl: "/mentoriasVIP/dual.png",
     tags: ["Dual System", "Builder Gel", "Estructura Rápida"],
-    price: 850.00,
-    originalPrice: 1197.00,
+    price: 1197.00,
+    originalPrice: null,
     format: "Mentoría VIP Presencial",
     duration: "6-8 horas",
     isMarketingCourse: false,
@@ -122,8 +122,8 @@ const courses = [
       "Capacitación intensiva de 6-8 horas. Aprende a combinar Poly Gel con otras técnicas para crear estructuras complejas y diseños innovadores.",
     imageUrl: "/mentoriasVIP/polygel.png",
     tags: ["Poly Gel", "Técnicas Híbridas", "Esculpidas"],
-    price: 850.00,
-    originalPrice: 1197.00,
+    price: 1197.00,
+    originalPrice: null,
     format: "Mentoría VIP Presencial",
     duration: "6-8 horas",
     isMarketingCourse: false,
@@ -135,8 +135,8 @@ const courses = [
       "Capacitación intensiva de 6-8 horas. Eleva tu servicio de pedicura a un nivel profesional, enfocándote en técnicas avanzadas, higiene y spa.",
     imageUrl: "/mentoriasVIP/pedicura.png",
     tags: ["Pedicura Pro", "Servicio Spa", "Técnica Avanzada"],
-    price: 850.00,
-    originalPrice: 1197.00,
+    price: 1197.00,
+    originalPrice: null,
     format: "Mentoría VIP Presencial",
     duration: "6-8 horas",
     isMarketingCourse: false,
@@ -736,7 +736,7 @@ export default function AcademiaPage() {
     // Actualizar precios de las mentorías con descuento aplicado
     tempFinalCart = tempFinalCart.map(item => {
       if (!item.isMarketingCourse && applyDiscount) {
-        const discountedPrice = item.price * (1 - discountPercent / 100);
+        const discountedPrice = Math.round(item.price * (1 - discountPercent / 100));
         return { ...item, price: discountedPrice, originalPrice: item.price };
       }
 

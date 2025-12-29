@@ -37,7 +37,8 @@ function NavbarContent() {
     { name: "Inicio", href: "/" },
     { name: "Servicios", href: "/reservas" },
     { name: "Galería", href: "/galeria" },
-    { name: "Academia", href: "/academia" },
+    { name: "Mentorías VIP", href: "/academia" },
+    { name: "Clases Grupales", href: "/presencial" },
     { name: "Productos Digitales", href: "/productos" },
     { name: "Contacto", href: "/contacto" },
   ];

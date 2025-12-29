@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import PassarelaCard from '../components/PassarelaCard';
-import { ArrowRightIcon } from '@heroicons/react/24/outline';
+import { ArrowDownIcon } from '@heroicons/react/24/outline';
 
 // --- Contenido de las Secciones ---
 const pasarelas = [
@@ -75,23 +75,23 @@ export default function HomePage() {
       <div className="bg-brand-white min-h-screen">
 
         {/* === HERO SECTION === */}
-        <section className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
+        <section className="relative h-screen min-h-[600px] flex flex-col items-center justify-end pb-12 overflow-hidden">
           {/* Background Image */}
           <div className="absolute inset-0">
             <Image
-              src="/historia.png"
+              src="/sesionFotosMaje/IMG_0192.jpg"
               alt="Mariajesus Matos fundadora de Maje Nail Spa"
               fill
-              className="object-cover object-top opacity-90"
+              className="object-cover object-center opacity-90"
               priority
               sizes="100vw"
             />
-            {/* Oscurecemos más el fondo para garantizar la legibilidad del texto blanco, como solicitó el usuario */}
-            <div className="absolute inset-0 bg-black/60" />
+            {/* Gradient Overlay for better visibility of text while keeping face clear */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
           </div>
 
           {/* Content */}
-          <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-8 animate-fade-in-up">
+          <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6 animate-fade-in-up">
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-tight drop-shadow-md">
               Un espacio para manicuristas que quieren más
             </h1>
@@ -105,21 +105,16 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="pt-8">
-              <Link
-                href="/academia"
-                className="inline-flex items-center gap-3 px-8 py-4 bg-white text-black font-crimson uppercase tracking-[0.15em] font-bold text-sm md:text-base rounded-sm hover:bg-gray-100 transition-all duration-300 shadow-xl hover:scale-105"
-              >
-                Ver programas y mentorías
-                <ArrowRightIcon className="w-5 h-5" />
-              </Link>
+            <div className="pt-12 flex flex-col items-center gap-4 animate-bounce">
+              <span className="text-white/90 font-light text-sm md:text-base uppercase tracking-[0.2em]">
+                Desliza para ver programas y mentorías
+              </span>
+              <ArrowDownIcon className="w-6 h-6 text-white/90" />
             </div>
           </div>
 
           {/* Scroll Indicator */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce text-white/70">
-            <div className="w-px h-16 bg-gradient-to-b from-transparent via-white/50 to-transparent"></div>
-          </div>
+          {/* Scroll Indicator (Removed as requested) */}
         </section>
 
         {/* === PASARELAS === */}

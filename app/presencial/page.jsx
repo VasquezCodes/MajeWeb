@@ -75,7 +75,7 @@ export default function PresencialPage() {
         <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 pb-20 font-lato">
             {/* Hero Section */}
             <section className="relative py-20 lg:py-32 overflow-hidden">
-                <div className="container px-4 md:px-6 relative z-10 text-center">
+                <div className="container mx-auto px-4 md:px-6 relative z-10 text-center">
                     <Badge variant="outline" className="mb-4 px-4 py-1 text-sm border-zinc-400 text-zinc-600 dark:text-zinc-400 uppercase tracking-widest font-sans">
                         Mentoria Exclusiva
                     </Badge>
@@ -92,7 +92,7 @@ export default function PresencialPage() {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl -z-10" />
             </section>
 
-            <div className="container px-4 md:px-6">
+            <div className="container mx-auto px-4 md:px-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                     {courses.map((course) => {
                         const isFull = course.enrolled >= course.capacity;

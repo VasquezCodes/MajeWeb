@@ -31,7 +31,7 @@ export default function PassarelaCard({
                                 src={image}
                                 alt={title}
                                 fill
-                                className="object-cover object-top transition-transform duration-[1.5s] hover:scale-105"
+                                className="object-cover object-center transition-transform duration-[1.5s] hover:scale-105"
                                 priority={index === 0}
                                 sizes="(max-width: 768px) 100vw, 50vw"
                             />
