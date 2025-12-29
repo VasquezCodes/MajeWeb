@@ -597,7 +597,7 @@ function CalendarPicker({ selectedDate, onSelectDate, bookedDates, presencialDat
             return <div key={`empty-${index}`} className="aspect-square" />;
           }
 
-          const { date, day, isAvailable, isPast, isAlreadyBooked } = dayInfo;
+          const { date, day, isAvailable, isPast, isAlreadyBooked, isGroupClass } = dayInfo;
           const isSelected = isSelectedDate(date);
 
           return (
@@ -1008,6 +1008,28 @@ export default function AcademiaPage() {
                   </div>
                 ))}
               </div>
+
+
+              {/* Botón CTA Shadcn */}
+              <div className="w-full flex justify-center lg:justify-start pt-6">
+                <Button
+                  size="lg"
+                  className="w-full sm:w-auto text-lg font-bold bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-xl rounded-full py-6 px-8 transition-all duration-300 transform hover:scale-105"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const target = document.getElementById('mentorias');
+                    if (target) {
+                      const yOffset = -80;
+                      const y = target.getBoundingClientRect().top + window.scrollY + yOffset;
+                      window.scrollTo({ top: y, behavior: 'smooth' });
+                    }
+                  }}
+                >
+                  <SparklesIcon className="mr-2 h-5 w-5" />
+                  Descubre nuestros programas
+                  <ArrowRightIcon className="ml-2 h-5 w-5 opacity-75" />
+                </Button>
+              </div>
             </div>
 
             {/* Imagen Desktop */}
@@ -1027,32 +1049,11 @@ export default function AcademiaPage() {
           </div>
         </div>
 
-        {/* Botón CTA Shadcn */}
-        <div className="mt-12 px-6 lg:mt-14 lg:px-0">
-          <div className="w-full flex justify-center lg:justify-start">
-            <Button
-              size="lg"
-              className="w-full sm:w-auto text-lg font-bold bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-xl rounded-full py-6 px-8 transition-all duration-300 transform hover:scale-105"
-              onClick={(e) => {
-                e.preventDefault();
-                const target = document.getElementById('mentorias');
-                if (target) {
-                  const yOffset = -80;
-                  const y = target.getBoundingClientRect().top + window.scrollY + yOffset;
-                  window.scrollTo({ top: y, behavior: 'smooth' });
-                }
-              }}
-            >
-              <SparklesIcon className="mr-2 h-5 w-5" />
-              Descubre nuestros programas
-              <ArrowRightIcon className="ml-2 h-5 w-5 opacity-75" />
-            </Button>
-          </div>
-        </div>
-      </section>
+
+      </section >
 
       {/* === Sección 2: Módulos Disponibles (Movido aquí) === */}
-      <section id="mentorias" className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 scroll-mt-20 my-16 md:my-24">
+      < section id="mentorias" className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 scroll-mt-20 my-16 md:my-24" >
         <div className="text-center max-w-3xl mx-auto space-y-5 mb-16">
           <div className="inline-flex items-center gap-2.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 px-5 py-2.5">
             <AcademicCapIcon className="h-4 w-4 text-brand-pink" />
@@ -1242,10 +1243,10 @@ export default function AcademiaPage() {
             );
           })}
         </div>
-      </section>
+      </section >
 
       {/* === Sección 2: Qué Incluye === */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      < section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12" >
         <div className="text-center max-w-3xl mx-auto space-y-5 mb-16">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-brand-text leading-tight">
             Tu Mentoría VIP Incluye
@@ -1275,10 +1276,10 @@ export default function AcademiaPage() {
             </div>
           ))}
         </div>
-      </section>
+      </section >
 
       {/* === Sección 2.3: Galería Visual === */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-20">
+      < section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-20" >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
 
           {/* Imagen 1 - Certificado */}
@@ -1329,10 +1330,10 @@ export default function AcademiaPage() {
           </div>
 
         </div>
-      </section>
+      </section >
 
       {/* === Sección 2.5: Qué logran las alumnas === */}
-      <section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden">
+      < section className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden" >
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-24">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
 
@@ -1389,9 +1390,9 @@ export default function AcademiaPage() {
 
           </div>
         </div>
-      </section>
+      </section >
       {/* === Sección de Paquetes === */}
-      <section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+      < section className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12" >
         <div className="text-center max-w-3xl mx-auto space-y-5 mb-12">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-brand-text leading-tight">
             Paquetes Exclusivos
@@ -1523,7 +1524,7 @@ export default function AcademiaPage() {
             </p>
           )}
         </div>
-      </section>
+      </section >
 
 
 
@@ -1532,7 +1533,7 @@ export default function AcademiaPage() {
 
 
       {/* === Sección 4: Testimonios === */}
-      <section className="relative py-20 md:py-32 bg-gradient-to-b from-white via-brand-pink/5 to-white">
+      < section className="relative py-20 md:py-32 bg-gradient-to-b from-white via-brand-pink/5 to-white" >
         <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
           <div className="text-center max-w-3xl mx-auto space-y-5 mb-16">
             <div className="inline-flex items-center gap-2.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 px-5 py-2.5">
@@ -1595,10 +1596,10 @@ export default function AcademiaPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section >
 
       {/* === Sección 5: FAQs === */}
-      <section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-20">
+      < section className="max-w-5xl mx-auto px-6 sm:px-8 lg:px-12 py-16 md:py-20" >
         <div className="text-center max-w-3xl mx-auto space-y-5 mb-16">
           <div className="inline-flex items-center gap-2.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 px-5 py-2.5">
             <SparklesIcon className="h-4 w-4 text-brand-pink" />
@@ -1636,10 +1637,10 @@ export default function AcademiaPage() {
             </div>
           ))}
         </div>
-      </section>
+      </section >
 
       {/* === CTA Final === */}
-      <section className="relative mx-auto max-w-5xl px-6 sm:px-8 lg:px-12">
+      < section className="relative mx-auto max-w-5xl px-6 sm:px-8 lg:px-12" >
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-brand-pink/5 via-white to-brand-gray-light/30 p-[2px]">
           <div className="relative rounded-[calc(1.5rem-2px)] bg-white px-8 py-12 sm:px-12 sm:py-16 text-center">
             <div className="absolute -right-32 -top-20 h-64 w-64 rounded-full bg-brand-pink/10 blur-3xl" />
@@ -1728,471 +1729,479 @@ export default function AcademiaPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section >
 
       {/* === Modal de Reserva (Calendarios por curso) === */}
-      {showBookingModal && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-md">
-          <div className="flex min-h-full items-center justify-center p-4 sm:p-8 md:py-12">
-            <div className="relative w-full max-w-6xl">
-              <div className="bg-gradient-to-br from-white via-white to-brand-pink/5 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/50">
+      {
+        showBookingModal && (
+          <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-md">
+            <div className="flex min-h-full items-center justify-center p-4 sm:p-8 md:py-12">
+              <div className="relative w-full max-w-6xl">
+                <div className="bg-gradient-to-br from-white via-white to-brand-pink/5 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/50">
+                  <button
+                    onClick={() => {
+                      setShowBookingModal(false);
+                      setShowPaymentOptions(false);
+                    }}
+                    className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 p-2.5 rounded-full bg-white sm:bg-brand-gray-light/80 hover:bg-brand-gray-light transition-colors shadow-lg"
+                  >
+                    <XMarkIcon className="h-6 w-6 text-brand-text" />
+                  </button>
+
+                  <div className="p-4 pt-16 sm:p-8 sm:pt-12 lg:p-10">
+                    {/* Header */}
+                    <div className="text-center mb-6 sm:mb-8 lg:mb-10">
+                      <div className="inline-flex items-center gap-2.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 px-4 sm:px-5 py-2 sm:py-2.5 mb-3 sm:mb-4">
+                        <CalendarDaysIcon className="h-4 w-4 text-brand-pink" />
+                        <span className="text-[10px] sm:text-xs font-bold text-brand-pink uppercase tracking-[0.2em]">
+                          Paso Final
+                        </span>
+                      </div>
+                      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-brand-text mb-2 sm:mb-3 px-4">
+                        Selecciona tus fechas
+                      </h2>
+                      <p className="text-sm sm:text-base lg:text-lg text-brand-text-light font-light max-w-2xl mx-auto px-4">
+                        Selecciona una fecha disponible (Sáb, Dom o Lun) para cada mentoría en tu carrito.
+                      </p>
+                    </div>
+
+                    <div className="space-y-8 mb-6 sm:mb-8">
+                      {finalCart.map((item, index) => {
+                        const selectedDateForThisCourse = bookingDates[item.id]
+                          ? new Date(`${bookingDates[item.id]}T12:00:00`)
+                          : null;
+                        const selectedDatesByOthers = Object.entries(bookingDates)
+                          .filter(([id, date]) => id !== item.id && date)
+                          .map(([, date]) => date);
+                        const blockedDates = new Set([
+                          ...bookedDates,
+                          ...selectedDatesByOthers,
+                        ]);
+
+                        return (
+                          <div
+                            key={item.id}
+                            className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl border-2 border-brand-gray-light/40"
+                          >
+                            <div className="lg:self-center space-y-2">
+                              <span className="text-xs font-bold text-brand-pink uppercase tracking-wide">
+                                Curso {index + 1} de {finalCart.length}
+                              </span>
+                              <h3 className="text-2xl font-black text-brand-text">{item.title}</h3>
+                              {item.price === 0 && item.isMarketingCourse && (
+                                <span className="inline-block bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-full text-sm">
+                                  ¡Curso gratis 2+1!
+                                </span>
+                              )}
+                              <p className="text-sm text-brand-text-light">
+                                Selecciona la fecha disponible para esta mentoría.
+                              </p>
+                            </div>
+
+                            <div>
+                              <CalendarPicker
+                                selectedDate={selectedDateForThisCourse}
+                                onSelectDate={(date) => {
+                                  const dateString = date.toISOString().split('T')[0];
+                                  setBookingDates(prev => ({ ...prev, [item.id]: dateString }));
+                                }}
+                                bookedDates={blockedDates}
+                                presencialDates={presencialDates} // Pass the new prop
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {allDatesSelected && (
+                      <div className="bg-white rounded-2xl p-4 sm:p-6 mb-6 border-2 border-brand-pink/20 shadow-lg">
+                        <h3 className="text-base sm:text-lg font-black text-brand-text mb-3 sm:mb-4 flex items-center gap-2">
+                          <CheckCircleIcon className="h-5 w-5 sm:h-6 sm:w-6 text-brand-pink" />
+                          Resumen de tu reserva
+                        </h3>
+                        <div className="space-y-3">
+                          {finalCart.map(item => (
+                            <div key={item.id} className="flex justify-between items-center pb-2 border-b border-brand-gray-light/20">
+                              <span className="text-sm font-bold text-brand-text-light">{item.title}</span>
+                              <span className="text-sm sm:text-base font-black text-brand-text capitalize">
+                                {formatearFechaSimple(bookingPayload[item.id])}
+                              </span>
+                            </div>
+                          ))}
+                          <div className="flex justify-between items-center pt-2">
+                            <span className="text-sm font-bold text-brand-text-light uppercase">Total a pagar</span>
+                            <span className="text-xl sm:text-2xl font-black text-brand-pink">
+                              ${totalPrice.toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {!showPaymentOptions ? (
+                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-4 sm:p-0 border-t sm:border-t-0 border-brand-gray-light/20">
+                        <button
+                          onClick={() => {
+                            setShowBookingModal(false);
+                            setShowPaymentOptions(false);
+                          }}
+                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl border-2 border-brand-text/20 bg-white px-6 py-4 text-base font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30 order-2 sm:order-1"
+                        >
+                          Volver
+                        </button>
+
+                        <button
+                          onClick={handleConfirmBooking}
+                          disabled={!allDatesSelected}
+                          className={`flex-1 flex items-center justify-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all duration-300 order-1 sm:order-2 ${allDatesSelected
+                            ? 'bg-brand-black text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
+                            : 'bg-brand-gray-light/50 text-brand-text/40 cursor-not-allowed'
+                            }`}
+                        >
+                          <ShoppingBagIcon className="h-6 w-6" />
+                          Continuar al Pago
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-4 p-4 sm:p-0 border-t sm:border-t-0 border-brand-gray-light/20">
+                        <div className="text-center mb-4">
+                          <h3 className="text-xl sm:text-2xl font-black text-brand-text mb-2">
+                            Elige tu opción de pago
+                          </h3>
+                          <p className="text-sm text-brand-text-light">
+                            Selecciona cómo deseas realizar el pago de tu mentoría
+                          </p>
+                        </div>
+
+                        {/* Opción 1: Pago Completo */}
+                        <div className="bg-gradient-to-br from-emerald-50 to-white border-2 border-emerald-200 rounded-2xl p-6 space-y-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="text-lg font-black text-brand-text mb-2">
+                                💳 Pago Completo
+                              </h4>
+                              <p className="text-sm text-brand-text-light mb-3">
+                                Paga el monto total ahora. <strong>Aceptamos pagos en cuotas con Afterpay y Klarna.</strong>
+                              </p>
+                              <div className="text-2xl font-black text-emerald-600">
+                                ${totalPrice.toFixed(2)}
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handlePaymentChoice('full')}
+                            className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-4 text-base font-black text-white shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-300 active:scale-95"
+                          >
+                            <CheckCircleIcon className="h-5 w-5" />
+                            Pagar Completo
+                          </button>
+                        </div>
+
+                        {/* Opción 2: Pago de Reserva */}
+                        <div className="bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-6 space-y-3">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="text-lg font-black text-brand-text mb-2">
+                                🎯 Reserva tu Cupo
+                              </h4>
+                              <p className="text-sm text-brand-text-light mb-3">
+                                Asegura tu lugar con el <strong>30% del total</strong>. El saldo restante <strong>(${(totalPrice * 0.7).toFixed(2)})</strong> se paga el día de la clase presencialmente.
+                              </p>
+                              <div className="text-2xl font-black text-blue-600">
+                                ${(totalPrice * 0.3).toFixed(2)}
+                              </div>
+                              <p className="text-xs text-brand-text-light mt-2 italic">
+                                * El cobro presencial lo gestiona mariajesus el día de la mentoría
+                              </p>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handlePaymentChoice('reservation')}
+                            className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 text-base font-black text-white shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-300 active:scale-95"
+                          >
+                            <CalendarDaysIcon className="h-5 w-5" />
+                            Reservar con 30%
+                          </button>
+                        </div>
+
+                        {/* Botón para volver */}
+                        <button
+                          onClick={() => setShowPaymentOptions(false)}
+                          className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-brand-text/20 bg-white px-6 py-3 text-sm font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30"
+                        >
+                          ← Volver a fechas
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="h-4 sm:hidden" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* === Modal de Detalles del Curso === */}
+      {
+        showModal && selectedCourse && (
+          <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm">
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative w-full max-w-4xl rounded-3xl bg-white shadow-2xl max-h-[90vh] overflow-y-auto">
                 <button
-                  onClick={() => {
-                    setShowBookingModal(false);
-                    setShowPaymentOptions(false);
-                  }}
-                  className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 p-2.5 rounded-full bg-white sm:bg-brand-gray-light/80 hover:bg-brand-gray-light transition-colors shadow-lg"
+                  onClick={() => setShowModal(false)}
+                  className="absolute top-6 right-6 z-10 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
                 >
                   <XMarkIcon className="h-6 w-6 text-brand-text" />
                 </button>
 
-                <div className="p-4 pt-16 sm:p-8 sm:pt-12 lg:p-10">
-                  {/* Header */}
-                  <div className="text-center mb-6 sm:mb-8 lg:mb-10">
-                    <div className="inline-flex items-center gap-2.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 px-4 sm:px-5 py-2 sm:py-2.5 mb-3 sm:mb-4">
-                      <CalendarDaysIcon className="h-4 w-4 text-brand-pink" />
-                      <span className="text-[10px] sm:text-xs font-bold text-brand-pink uppercase tracking-[0.2em]">
-                        Paso Final
+                <div className="flex flex-col lg:flex-row">
+                  <div className="relative w-full lg:w-1/2 h-64 lg:h-auto overflow-hidden">
+                    <Image
+                      src={selectedCourse.imageUrl}
+                      alt={selectedCourse.title}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black/60 via-transparent to-transparent" />
+                    <div className="absolute bottom-6 left-6 right-6 lg:top-6 lg:left-6 lg:bottom-auto">
+                      <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-4 py-2 text-xs font-black text-brand-text uppercase tracking-wider shadow-xl">
+                        {selectedCourse.format}
                       </span>
                     </div>
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-brand-text mb-2 sm:mb-3 px-4">
-                      Selecciona tus fechas
-                    </h2>
-                    <p className="text-sm sm:text-base lg:text-lg text-brand-text-light font-light max-w-2xl mx-auto px-4">
-                      Selecciona una fecha disponible (Sáb, Dom o Lun) para cada mentoría en tu carrito.
-                    </p>
                   </div>
 
-                  <div className="space-y-8 mb-6 sm:mb-8">
-                    {finalCart.map((item, index) => {
-                      const selectedDateForThisCourse = bookingDates[item.id]
-                        ? new Date(`${bookingDates[item.id]}T12:00:00`)
-                        : null;
-                      const selectedDatesByOthers = Object.entries(bookingDates)
-                        .filter(([id, date]) => id !== item.id && date)
-                        .map(([, date]) => date);
-                      const blockedDates = new Set([
-                        ...bookedDates,
-                        ...selectedDatesByOthers,
-                      ]);
-
-                      return (
-                        <div
-                          key={item.id}
-                          className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl border-2 border-brand-gray-light/40"
-                        >
-                          <div className="lg:self-center space-y-2">
-                            <span className="text-xs font-bold text-brand-pink uppercase tracking-wide">
-                              Curso {index + 1} de {finalCart.length}
-                            </span>
-                            <h3 className="text-2xl font-black text-brand-text">{item.title}</h3>
-                            {item.price === 0 && item.isMarketingCourse && (
-                              <span className="inline-block bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-full text-sm">
-                                ¡Curso gratis 2+1!
-                              </span>
-                            )}
-                            <p className="text-sm text-brand-text-light">
-                              Selecciona la fecha disponible para esta mentoría.
-                            </p>
-                          </div>
-
-                          <div>
-                            <CalendarPicker
-                              selectedDate={selectedDateForThisCourse}
-                              onSelectDate={(date) => {
-                                const dateString = date.toISOString().split('T')[0];
-                                setBookingDates(prev => ({ ...prev, [item.id]: dateString }));
-                              }}
-                              bookedDates={blockedDates}
-                              presencialDates={presencialDates} // Pass the new prop
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {allDatesSelected && (
-                    <div className="bg-white rounded-2xl p-4 sm:p-6 mb-6 border-2 border-brand-pink/20 shadow-lg">
-                      <h3 className="text-base sm:text-lg font-black text-brand-text mb-3 sm:mb-4 flex items-center gap-2">
-                        <CheckCircleIcon className="h-5 w-5 sm:h-6 sm:w-6 text-brand-pink" />
-                        Resumen de tu reserva
-                      </h3>
-                      <div className="space-y-3">
-                        {finalCart.map(item => (
-                          <div key={item.id} className="flex justify-between items-center pb-2 border-b border-brand-gray-light/20">
-                            <span className="text-sm font-bold text-brand-text-light">{item.title}</span>
-                            <span className="text-sm sm:text-base font-black text-brand-text capitalize">
-                              {formatearFechaSimple(bookingPayload[item.id])}
-                            </span>
-                          </div>
-                        ))}
-                        <div className="flex justify-between items-center pt-2">
-                          <span className="text-sm font-bold text-brand-text-light uppercase">Total a pagar</span>
-                          <span className="text-xl sm:text-2xl font-black text-brand-pink">
-                            ${totalPrice.toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
+                  <div className="flex-1 p-6 md:p-8 space-y-4 md:space-y-5">
+                    <div>
+                      <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-brand-text leading-tight mb-3">
+                        {selectedCourse.title}
+                      </h2>
+                      <p className="text-base md:text-lg text-brand-text-light leading-relaxed font-light">
+                        {selectedCourse.description}
+                      </p>
                     </div>
-                  )}
 
-                  {!showPaymentOptions ? (
-                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-4 sm:p-0 border-t sm:border-t-0 border-brand-gray-light/20">
-                      <button
-                        onClick={() => {
-                          setShowBookingModal(false);
-                          setShowPaymentOptions(false);
-                        }}
-                        className="flex-1 flex items-center justify-center gap-2 rounded-2xl border-2 border-brand-text/20 bg-white px-6 py-4 text-base font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30 order-2 sm:order-1"
-                      >
-                        Volver
-                      </button>
-
-                      <button
-                        onClick={handleConfirmBooking}
-                        disabled={!allDatesSelected}
-                        className={`flex-1 flex items-center justify-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all duration-300 order-1 sm:order-2 ${allDatesSelected
-                          ? 'bg-brand-black text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
-                          : 'bg-brand-gray-light/50 text-brand-text/40 cursor-not-allowed'
-                          }`}
-                      >
-                        <ShoppingBagIcon className="h-6 w-6" />
-                        Continuar al Pago
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="space-y-4 p-4 sm:p-0 border-t sm:border-t-0 border-brand-gray-light/20">
-                      <div className="text-center mb-4">
-                        <h3 className="text-xl sm:text-2xl font-black text-brand-text mb-2">
-                          Elige tu opción de pago
-                        </h3>
-                        <p className="text-sm text-brand-text-light">
-                          Selecciona cómo deseas realizar el pago de tu mentoría
-                        </p>
-                      </div>
-
-                      {/* Opción 1: Pago Completo */}
-                      <div className="bg-gradient-to-br from-emerald-50 to-white border-2 border-emerald-200 rounded-2xl p-6 space-y-3">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h4 className="text-lg font-black text-brand-text mb-2">
-                              💳 Pago Completo
-                            </h4>
-                            <p className="text-sm text-brand-text-light mb-3">
-                              Paga el monto total ahora. <strong>Aceptamos pagos en cuotas con Afterpay y Klarna.</strong>
-                            </p>
-                            <div className="text-2xl font-black text-emerald-600">
-                              ${totalPrice.toFixed(2)}
-                            </div>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => handlePaymentChoice('full')}
-                          className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-4 text-base font-black text-white shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-300 active:scale-95"
+                    <div className="flex flex-wrap gap-2">
+                      {selectedCourse.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="inline-flex items-center rounded-full bg-brand-gray-light/60 px-3 py-1.5 text-xs md:text-sm font-bold uppercase tracking-wider text-brand-text"
                         >
-                          <CheckCircleIcon className="h-5 w-5" />
-                          Pagar Completo
-                        </button>
-                      </div>
-
-                      {/* Opción 2: Pago de Reserva */}
-                      <div className="bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-6 space-y-3">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <h4 className="text-lg font-black text-brand-text mb-2">
-                              🎯 Reserva tu Cupo
-                            </h4>
-                            <p className="text-sm text-brand-text-light mb-3">
-                              Asegura tu lugar con el <strong>30% del total</strong>. El saldo restante <strong>(${(totalPrice * 0.7).toFixed(2)})</strong> se paga el día de la clase presencialmente.
-                            </p>
-                            <div className="text-2xl font-black text-blue-600">
-                              ${(totalPrice * 0.3).toFixed(2)}
-                            </div>
-                            <p className="text-xs text-brand-text-light mt-2 italic">
-                              * El cobro presencial lo gestiona mariajesus el día de la mentoría
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => handlePaymentChoice('reservation')}
-                          className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 text-base font-black text-white shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-300 active:scale-95"
-                        >
-                          <CalendarDaysIcon className="h-5 w-5" />
-                          Reservar con 30%
-                        </button>
-                      </div>
-
-                      {/* Botón para volver */}
-                      <button
-                        onClick={() => setShowPaymentOptions(false)}
-                        className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-brand-text/20 bg-white px-6 py-3 text-sm font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30"
-                      >
-                        ← Volver a fechas
-                      </button>
-                    </div>
-                  )}
-
-                  <div className="h-4 sm:hidden" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* === Modal de Detalles del Curso === */}
-      {showModal && selectedCourse && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm">
-          <div className="flex min-h-full items-center justify-center p-4">
-            <div className="relative w-full max-w-4xl rounded-3xl bg-white shadow-2xl max-h-[90vh] overflow-y-auto">
-              <button
-                onClick={() => setShowModal(false)}
-                className="absolute top-6 right-6 z-10 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
-              >
-                <XMarkIcon className="h-6 w-6 text-brand-text" />
-              </button>
-
-              <div className="flex flex-col lg:flex-row">
-                <div className="relative w-full lg:w-1/2 h-64 lg:h-auto overflow-hidden">
-                  <Image
-                    src={selectedCourse.imageUrl}
-                    alt={selectedCourse.title}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black/60 via-transparent to-transparent" />
-                  <div className="absolute bottom-6 left-6 right-6 lg:top-6 lg:left-6 lg:bottom-auto">
-                    <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-4 py-2 text-xs font-black text-brand-text uppercase tracking-wider shadow-xl">
-                      {selectedCourse.format}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex-1 p-6 md:p-8 space-y-4 md:space-y-5">
-                  <div>
-                    <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-brand-text leading-tight mb-3">
-                      {selectedCourse.title}
-                    </h2>
-                    <p className="text-base md:text-lg text-brand-text-light leading-relaxed font-light">
-                      {selectedCourse.description}
-                    </p>
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    {selectedCourse.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="inline-flex items-center rounded-full bg-brand-gray-light/60 px-3 py-1.5 text-xs md:text-sm font-bold uppercase tracking-wider text-brand-text"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="pt-3 border-t border-brand-gray-light/20">
-                    <div className="flex items-baseline gap-3 mb-4">
-                      <span className="text-3xl md:text-4xl font-black text-[#32CD32]">
-                        ${(selectedCourse.displayPrice || selectedCourse.price).toFixed(0)}
-                      </span>
-                      {selectedCourse.originalPrice && selectedCourse.originalPrice !== selectedCourse.price && (
-                        <span className="text-lg md:text-xl font-medium text-brand-text-light/70 line-through">
-                          ${selectedCourse.originalPrice.toFixed(0)}
+                          {tag}
                         </span>
-                      )}
+                      ))}
                     </div>
 
-                    <div className="space-y-2 mb-4">
-                      <p className="text-xs md:text-sm font-bold text-brand-text uppercase tracking-wide">Duración</p>
-                      <p className="text-sm md:text-base text-brand-text-light">{selectedCourse.duration}</p>
-                    </div>
+                    <div className="pt-3 border-t border-brand-gray-light/20">
+                      <div className="flex items-baseline gap-3 mb-4">
+                        <span className="text-3xl md:text-4xl font-black text-[#32CD32]">
+                          ${(selectedCourse.displayPrice || selectedCourse.price).toFixed(0)}
+                        </span>
+                        {selectedCourse.originalPrice && selectedCourse.originalPrice !== selectedCourse.price && (
+                          <span className="text-lg md:text-xl font-medium text-brand-text-light/70 line-through">
+                            ${selectedCourse.originalPrice.toFixed(0)}
+                          </span>
+                        )}
+                      </div>
 
-                    {courseTemarios[selectedCourse.id] && (
-                      <button
-                        onClick={() => {
-                          setSelectedTemario(courseTemarios[selectedCourse.id]);
-                          setShowTemarioModal(true);
-                        }}
-                        className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-blue-500 px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-black text-blue-600 transition-all duration-300 hover:bg-blue-50 mb-3"
-                      >
-                        <DocumentTextIcon className="h-4 md:h-5 w-4 md:w-5" />
-                        Ver Temario Completo
-                      </button>
-                    )}
+                      <div className="space-y-2 mb-4">
+                        <p className="text-xs md:text-sm font-bold text-brand-text uppercase tracking-wide">Duración</p>
+                        <p className="text-sm md:text-base text-brand-text-light">{selectedCourse.duration}</p>
+                      </div>
 
-                    <div className="flex gap-3 md:gap-4 pb-8 md:pb-12">
-                      {cart.some((item) => item.id === selectedCourse.id) ? (
+                      {courseTemarios[selectedCourse.id] && (
                         <button
-                          onClick={() => removeFromCart(selectedCourse.id)}
-                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-black text-red-600 transition-all duration-300 hover:bg-red-100"
+                          onClick={() => {
+                            setSelectedTemario(courseTemarios[selectedCourse.id]);
+                            setShowTemarioModal(true);
+                          }}
+                          className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-blue-500 px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-black text-blue-600 transition-all duration-300 hover:bg-blue-50 mb-3"
                         >
-                          <TrashIcon className="h-4 md:h-5 w-4 md:w-5" />
-                          Quitar
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => addToCart(selectedCourse)}
-                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-black text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                        >
-                          <ShoppingBagIcon className="h-4 md:h-5 w-4 md:w-5" />
-                          Añadir al carrito
+                          <DocumentTextIcon className="h-4 md:h-5 w-4 md:w-5" />
+                          Ver Temario Completo
                         </button>
                       )}
+
+                      <div className="flex gap-3 md:gap-4 pb-8 md:pb-12">
+                        {cart.some((item) => item.id === selectedCourse.id) ? (
+                          <button
+                            onClick={() => removeFromCart(selectedCourse.id)}
+                            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-black text-red-600 transition-all duration-300 hover:bg-red-100"
+                          >
+                            <TrashIcon className="h-4 md:h-5 w-4 md:w-5" />
+                            Quitar
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => addToCart(selectedCourse)}
+                            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-black text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                          >
+                            <ShoppingBagIcon className="h-4 md:h-5 w-4 md:w-5" />
+                            Añadir al carrito
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* === Floating Cart Widget === */}
-      {finalCart.length > 0 && (
-        <>
-          <button
-            onClick={() => setShowCart(!showCart)}
-            className="fixed bottom-20 right-6 md:bottom-8 md:right-8 z-[9999] flex h-16 w-16 md:h-20 md:w-20 items-center justify-center rounded-full bg-blue-600 text-white shadow-2xl shadow-blue-600/50 ring-4 ring-white transition-all duration-300 hover:scale-110 hover:bg-blue-700 hover:shadow-blue-600/70 active:scale-95"
-          >
-            <ShoppingBagIcon className="h-8 w-8 md:h-10 md:w-10 text-white stroke-[2.5]" />
-            <span className="absolute -top-2 -right-2 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-emerald-500 border-4 border-white text-xs md:text-sm font-black text-white shadow-xl animate-pulse">
-              {totalItems}
-            </span>
-          </button>
+      {
+        finalCart.length > 0 && (
+          <>
+            <button
+              onClick={() => setShowCart(!showCart)}
+              className="fixed bottom-20 right-6 md:bottom-8 md:right-8 z-[9999] flex h-16 w-16 md:h-20 md:w-20 items-center justify-center rounded-full bg-blue-600 text-white shadow-2xl shadow-blue-600/50 ring-4 ring-white transition-all duration-300 hover:scale-110 hover:bg-blue-700 hover:shadow-blue-600/70 active:scale-95"
+            >
+              <ShoppingBagIcon className="h-8 w-8 md:h-10 md:w-10 text-white stroke-[2.5]" />
+              <span className="absolute -top-2 -right-2 flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-full bg-emerald-500 border-4 border-white text-xs md:text-sm font-black text-white shadow-xl animate-pulse">
+                {totalItems}
+              </span>
+            </button>
 
-          {/* Cart Dropdown */}
-          {showCart && (
-            <div className="fixed bottom-40 right-6 md:bottom-32 md:right-8 z-[9998] w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border-2 border-brand-gray-light/20 overflow-hidden animate-fadeInUp">
-              <div className="bg-gradient-to-r from-brand-pink to-pink-400 px-6 py-4 flex items-center justify-between">
-                <h3 className="text-lg font-black text-white">Tu Carrito</h3>
-                <button
-                  onClick={() => setShowCart(false)}
-                  className="p-1 rounded-full hover:bg-white/20 transition-colors"
-                >
-                  <XMarkIcon className="h-6 w-6 text-white" />
-                </button>
-              </div>
+            {/* Cart Dropdown */}
+            {showCart && (
+              <div className="fixed bottom-40 right-6 md:bottom-32 md:right-8 z-[9998] w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border-2 border-brand-gray-light/20 overflow-hidden animate-fadeInUp">
+                <div className="bg-gradient-to-r from-brand-pink to-pink-400 px-6 py-4 flex items-center justify-between">
+                  <h3 className="text-lg font-black text-white">Tu Carrito</h3>
+                  <button
+                    onClick={() => setShowCart(false)}
+                    className="p-1 rounded-full hover:bg-white/20 transition-colors"
+                  >
+                    <XMarkIcon className="h-6 w-6 text-white" />
+                  </button>
+                </div>
 
-              <div className="max-h-96 overflow-y-auto p-4 space-y-3">
-                {finalCart.map((item) => (
-                  <div key={item.id} className="flex gap-3 bg-brand-gray-light/30 rounded-xl p-3">
-                    <div className="relative h-16 w-16 flex-shrink-0 rounded-lg overflow-hidden">
-                      <Image
-                        src={item.imageUrl}
-                        alt={item.title}
-                        fill
-                        className="object-cover"
-                      />
+                <div className="max-h-96 overflow-y-auto p-4 space-y-3">
+                  {finalCart.map((item) => (
+                    <div key={item.id} className="flex gap-3 bg-brand-gray-light/30 rounded-xl p-3">
+                      <div className="relative h-16 w-16 flex-shrink-0 rounded-lg overflow-hidden">
+                        <Image
+                          src={item.imageUrl}
+                          alt={item.title}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-black text-sm text-brand-text truncate">
+                          {item.title}
+                        </h4>
+                        <p className="text-xs text-brand-text-light font-medium mt-0.5">
+                          {item.format}
+                        </p>
+                        <p className={`text-base font-black mt-1 ${item.price === 0 ? 'text-emerald-600' : 'text-brand-pink'}`}>
+                          {item.price === 0 ? 'GRATIS' : `$${item.price}`}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="flex-shrink-0 self-start p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors"
+                      >
+                        <TrashIcon className="h-5 w-5" />
+                      </button>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-black text-sm text-brand-text truncate">
-                        {item.title}
-                      </h4>
-                      <p className="text-xs text-brand-text-light font-medium mt-0.5">
-                        {item.format}
-                      </p>
-                      <p className={`text-base font-black mt-1 ${item.price === 0 ? 'text-emerald-600' : 'text-brand-pink'}`}>
-                        {item.price === 0 ? 'GRATIS' : `$${item.price}`}
-                      </p>
-                    </div>
-                    <button
-                      onClick={() => removeFromCart(item.id)}
-                      className="flex-shrink-0 self-start p-2 rounded-lg hover:bg-red-50 text-red-500 transition-colors"
-                    >
-                      <TrashIcon className="h-5 w-5" />
-                    </button>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
 
-              <div className="border-t-2 border-brand-gray-light/20 p-4 space-y-3 bg-brand-gray-light/10">
-                {packageType && (
-                  <div className={`flex items-center justify-center gap-2 rounded-lg px-4 py-2 ${packageType === 'GOLD'
-                    ? 'bg-gradient-to-r from-yellow-400 to-yellow-500'
-                    : packageType === 'PLATINUM'
-                      ? 'bg-gradient-to-r from-gray-300 to-gray-400'
-                      : 'bg-gradient-to-r from-black to-gray-800'
-                    }`}>
-                    <SparklesIcon className="h-4 w-4 text-white" />
-                    <span className="text-xs font-black text-white uppercase tracking-wider">
-                      {packageType === 'DIAMOND' ? `${packageType} VIP` : packageType} - {discount}% OFF
+                <div className="border-t-2 border-brand-gray-light/20 p-4 space-y-3 bg-brand-gray-light/10">
+                  {packageType && (
+                    <div className={`flex items-center justify-center gap-2 rounded-lg px-4 py-2 ${packageType === 'GOLD'
+                      ? 'bg-gradient-to-r from-yellow-400 to-yellow-500'
+                      : packageType === 'PLATINUM'
+                        ? 'bg-gradient-to-r from-gray-300 to-gray-400'
+                        : 'bg-gradient-to-r from-black to-gray-800'
+                      }`}>
+                      <SparklesIcon className="h-4 w-4 text-white" />
+                      <span className="text-xs font-black text-white uppercase tracking-wider">
+                        {packageType === 'DIAMOND' ? `${packageType} VIP` : packageType} - {discount}% OFF
+                      </span>
+                    </div>
+                  )}
+                  {offerApplied && (
+                    <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600">
+                      <SparklesIcon className="h-4 w-4" />
+                      Marketing GRATIS ({marketingFormat === 'presencial' ? 'Presencial' : 'Online'})
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-bold text-brand-text uppercase tracking-wide">
+                      Total
+                    </span>
+                    <span className="text-2xl font-black text-brand-pink">
+                      ${totalPrice.toFixed(2)}
                     </span>
                   </div>
-                )}
-                {offerApplied && (
-                  <div className="flex items-center gap-2 text-xs font-semibold text-emerald-600">
-                    <SparklesIcon className="h-4 w-4" />
-                    Marketing GRATIS ({marketingFormat === 'presencial' ? 'Presencial' : 'Online'})
-                  </div>
-                )}
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-bold text-brand-text uppercase tracking-wide">
-                    Total
-                  </span>
-                  <span className="text-2xl font-black text-brand-pink">
-                    ${totalPrice.toFixed(2)}
-                  </span>
+                  <button
+                    onClick={() => {
+                      setShowCart(false);
+                      handleCheckout();
+                    }}
+                    className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-black px-6 py-4 text-base font-black text-white shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95"
+                  >
+                    <CalendarDaysIcon className="h-5 w-5" />
+                    Seleccionar Fecha
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        )
+      }
+
+      {/* Modal de Temario */}
+      {
+        showTemarioModal && selectedTemario && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-3 md:p-4 animate-fadeIn">
+            <div className="relative max-w-4xl w-full max-h-[85vh] md:max-h-[90vh] overflow-y-auto bg-white rounded-2xl md:rounded-3xl shadow-2xl animate-scaleIn">
+              <div className="sticky top-0 z-10 flex items-center justify-between p-4 md:p-6 bg-gradient-to-r from-blue-900 to-blue-800 text-white rounded-t-2xl md:rounded-t-3xl">
+                <div className="flex-1 pr-2">
+                  <h2 className="text-lg md:text-2xl lg:text-3xl font-black leading-tight">{selectedTemario.title}</h2>
+                  <p className="text-xs md:text-sm lg:text-base font-light mt-1">{selectedTemario.subtitle}</p>
                 </div>
                 <button
                   onClick={() => {
-                    setShowCart(false);
-                    handleCheckout();
+                    setShowTemarioModal(false);
+                    setSelectedTemario(null);
                   }}
-                  className="w-full flex items-center justify-center gap-2 rounded-xl bg-brand-black px-6 py-4 text-base font-black text-white shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95"
+                  className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all duration-300 hover:rotate-90"
                 >
-                  <CalendarDaysIcon className="h-5 w-5" />
-                  Seleccionar Fecha
+                  <XMarkIcon className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7" />
                 </button>
               </div>
-            </div>
-          )}
-        </>
-      )}
 
-      {/* Modal de Temario */}
-      {showTemarioModal && selectedTemario && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-3 md:p-4 animate-fadeIn">
-          <div className="relative max-w-4xl w-full max-h-[85vh] md:max-h-[90vh] overflow-y-auto bg-white rounded-2xl md:rounded-3xl shadow-2xl animate-scaleIn">
-            <div className="sticky top-0 z-10 flex items-center justify-between p-4 md:p-6 bg-gradient-to-r from-blue-900 to-blue-800 text-white rounded-t-2xl md:rounded-t-3xl">
-              <div className="flex-1 pr-2">
-                <h2 className="text-lg md:text-2xl lg:text-3xl font-black leading-tight">{selectedTemario.title}</h2>
-                <p className="text-xs md:text-sm lg:text-base font-light mt-1">{selectedTemario.subtitle}</p>
-              </div>
-              <button
-                onClick={() => {
-                  setShowTemarioModal(false);
-                  setSelectedTemario(null);
-                }}
-                className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all duration-300 hover:rotate-90"
-              >
-                <XMarkIcon className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7" />
-              </button>
-            </div>
-
-            <div className="p-4 md:p-6 lg:p-8 pb-16 md:pb-24 space-y-8 md:space-y-12">
-              {selectedTemario.sections.map((section, idx) => (
-                <div key={idx} className="space-y-5">
-                  <div className="bg-gradient-to-r from-brand-black to-gray-800 rounded-2xl p-4 md:p-5 border-l-4 border-brand-pink shadow-lg">
-                    <h3 className="text-lg md:text-xl font-black text-white flex items-center gap-2">
-                      <SparklesIcon className="h-5 w-5 text-brand-pink" />
-                      {section.title}
-                    </h3>
+              <div className="p-4 md:p-6 lg:p-8 pb-16 md:pb-24 space-y-8 md:space-y-12">
+                {selectedTemario.sections.map((section, idx) => (
+                  <div key={idx} className="space-y-5">
+                    <div className="bg-gradient-to-r from-brand-black to-gray-800 rounded-2xl p-4 md:p-5 border-l-4 border-brand-pink shadow-lg">
+                      <h3 className="text-lg md:text-xl font-black text-white flex items-center gap-2">
+                        <SparklesIcon className="h-5 w-5 text-brand-pink" />
+                        {section.title}
+                      </h3>
+                    </div>
+                    <ul className="space-y-4 md:space-y-5 ml-2 md:ml-4 pb-4 md:pb-6">
+                      {section.items.map((item, itemIdx) => (
+                        <li key={itemIdx} className="flex items-start gap-3">
+                          <CheckCircleIcon className="h-5 w-5 text-brand-pink flex-shrink-0 mt-0.5" />
+                          <span className="text-sm md:text-base text-brand-text font-medium leading-relaxed">{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="space-y-4 md:space-y-5 ml-2 md:ml-4 pb-4 md:pb-6">
-                    {section.items.map((item, itemIdx) => (
-                      <li key={itemIdx} className="flex items-start gap-3">
-                        <CheckCircleIcon className="h-5 w-5 text-brand-pink flex-shrink-0 mt-0.5" />
-                        <span className="text-sm md:text-base text-brand-text font-medium leading-relaxed">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
-    </div>
+    </div >
   );
 }
