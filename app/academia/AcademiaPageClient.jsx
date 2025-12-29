@@ -38,6 +38,13 @@ import {
   ArrowRightIcon, // Added ArrowRightIcon
 } from '@heroicons/react/24/solid';
 import { Button } from '@/components/ui/button'; // Import Shadcn Button
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
 
 // --- Helper de pago con Stripe (Pago Completo) ---
 async function iniciarPago(cart, bookingDates, packageInfo = null) {
@@ -1732,325 +1739,329 @@ export default function AcademiaPage() {
       </section >
 
       {/* === Modal de Reserva (Calendarios por curso) === */}
-      {
-        showBookingModal && (
-          <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-md">
-            <div className="flex min-h-full items-center justify-center p-4 sm:p-8 md:py-12">
-              <div className="relative w-full max-w-6xl">
-                <div className="bg-gradient-to-br from-white via-white to-brand-pink/5 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/50">
+      <Dialog open={showBookingModal} onOpenChange={(open) => {
+        setShowBookingModal(open);
+        if (!open) setShowPaymentOptions(false);
+      }}>
+        <DialogContent className="max-w-6xl w-full max-h-[90vh] overflow-y-auto p-0 border-0 bg-transparent shadow-none focus:outline-none [&>button]:hidden">
+          <div className="bg-gradient-to-br from-white via-white to-brand-pink/5 rounded-2xl sm:rounded-3xl shadow-2xl border border-white/50 relative">
+            <button
+              onClick={() => {
+                setShowBookingModal(false);
+                setShowPaymentOptions(false);
+              }}
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 p-2.5 rounded-full bg-white sm:bg-brand-gray-light/80 hover:bg-brand-gray-light transition-colors shadow-lg"
+            >
+              <XMarkIcon className="h-6 w-6 text-brand-text" />
+            </button>
+
+            <div className="p-4 pt-16 sm:p-8 sm:pt-12 lg:p-10">
+              {/* Header */}
+              <div className="text-center mb-6 sm:mb-8 lg:mb-10">
+                <div className="inline-flex items-center gap-2.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 px-4 sm:px-5 py-2 sm:py-2.5 mb-3 sm:mb-4">
+                  <CalendarDaysIcon className="h-4 w-4 text-brand-pink" />
+                  <span className="text-[10px] sm:text-xs font-bold text-brand-pink uppercase tracking-[0.2em]">
+                    Paso Final
+                  </span>
+                </div>
+                <DialogTitle className="text-2xl sm:text-3xl lg:text-4xl font-black text-brand-text mb-2 sm:mb-3 px-4 text-center">
+                  Selecciona tus fechas
+                </DialogTitle>
+                <DialogDescription className="text-sm sm:text-base lg:text-lg text-brand-text-light font-light max-w-2xl mx-auto px-4 text-center">
+                  Selecciona una fecha disponible (Sáb, Dom o Lun) para cada mentoría en tu carrito.
+                </DialogDescription>
+              </div>
+
+              <div className="space-y-8 mb-6 sm:mb-8">
+                {finalCart.map((item, index) => {
+                  const selectedDateForThisCourse = bookingDates[item.id]
+                    ? new Date(`${bookingDates[item.id]}T12:00:00`)
+                    : null;
+                  const selectedDatesByOthers = Object.entries(bookingDates)
+                    .filter(([id, date]) => id !== item.id && date)
+                    .map(([, date]) => date);
+                  const blockedDates = new Set([
+                    ...bookedDates,
+                    ...selectedDatesByOthers,
+                  ]);
+
+                  return (
+                    <div
+                      key={item.id}
+                      className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl border-2 border-brand-gray-light/40"
+                    >
+                      <div className="lg:self-center space-y-2">
+                        <span className="text-xs font-bold text-brand-pink uppercase tracking-wide">
+                          Curso {index + 1} de {finalCart.length}
+                        </span>
+                        <h3 className="text-2xl font-black text-brand-text">{item.title}</h3>
+                        {item.price === 0 && item.isMarketingCourse && (
+                          <span className="inline-block bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-full text-sm">
+                            ¡Curso gratis 2+1!
+                          </span>
+                        )}
+                        <p className="text-sm text-brand-text-light">
+                          Selecciona la fecha disponible para esta mentoría.
+                        </p>
+                      </div>
+
+                      <div>
+                        <CalendarPicker
+                          selectedDate={selectedDateForThisCourse}
+                          onSelectDate={(date) => {
+                            const dateString = date.toISOString().split('T')[0];
+                            setBookingDates(prev => ({ ...prev, [item.id]: dateString }));
+                          }}
+                          bookedDates={blockedDates}
+                          presencialDates={presencialDates} // Pass the new prop
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {allDatesSelected && (
+                <div className="bg-white rounded-2xl p-4 sm:p-6 mb-6 border-2 border-brand-pink/20 shadow-lg">
+                  <h3 className="text-base sm:text-lg font-black text-brand-text mb-3 sm:mb-4 flex items-center gap-2">
+                    <CheckCircleIcon className="h-5 w-5 sm:h-6 sm:w-6 text-brand-pink" />
+                    Resumen de tu reserva
+                  </h3>
+                  <div className="space-y-3">
+                    {finalCart.map(item => (
+                      <div key={item.id} className="flex justify-between items-center pb-2 border-b border-brand-gray-light/20">
+                        <span className="text-sm font-bold text-brand-text-light">{item.title}</span>
+                        <span className="text-sm sm:text-base font-black text-brand-text capitalize">
+                          {formatearFechaSimple(bookingPayload[item.id])}
+                        </span>
+                      </div>
+                    ))}
+                    <div className="flex justify-between items-center pt-2">
+                      <span className="text-sm font-bold text-brand-text-light uppercase">Total a pagar</span>
+                      <span className="text-xl sm:text-2xl font-black text-brand-pink">
+                        ${totalPrice.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!showPaymentOptions ? (
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-4 sm:p-0 border-t sm:border-t-0 border-brand-gray-light/20">
                   <button
                     onClick={() => {
                       setShowBookingModal(false);
                       setShowPaymentOptions(false);
                     }}
-                    className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10 p-2.5 rounded-full bg-white sm:bg-brand-gray-light/80 hover:bg-brand-gray-light transition-colors shadow-lg"
+                    className="flex-1 flex items-center justify-center gap-2 rounded-2xl border-2 border-brand-text/20 bg-white px-6 py-4 text-base font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30 order-2 sm:order-1"
                   >
-                    <XMarkIcon className="h-6 w-6 text-brand-text" />
+                    Volver
                   </button>
 
-                  <div className="p-4 pt-16 sm:p-8 sm:pt-12 lg:p-10">
-                    {/* Header */}
-                    <div className="text-center mb-6 sm:mb-8 lg:mb-10">
-                      <div className="inline-flex items-center gap-2.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 px-4 sm:px-5 py-2 sm:py-2.5 mb-3 sm:mb-4">
-                        <CalendarDaysIcon className="h-4 w-4 text-brand-pink" />
-                        <span className="text-[10px] sm:text-xs font-bold text-brand-pink uppercase tracking-[0.2em]">
-                          Paso Final
-                        </span>
-                      </div>
-                      <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-brand-text mb-2 sm:mb-3 px-4">
-                        Selecciona tus fechas
-                      </h2>
-                      <p className="text-sm sm:text-base lg:text-lg text-brand-text-light font-light max-w-2xl mx-auto px-4">
-                        Selecciona una fecha disponible (Sáb, Dom o Lun) para cada mentoría en tu carrito.
-                      </p>
-                    </div>
-
-                    <div className="space-y-8 mb-6 sm:mb-8">
-                      {finalCart.map((item, index) => {
-                        const selectedDateForThisCourse = bookingDates[item.id]
-                          ? new Date(`${bookingDates[item.id]}T12:00:00`)
-                          : null;
-                        const selectedDatesByOthers = Object.entries(bookingDates)
-                          .filter(([id, date]) => id !== item.id && date)
-                          .map(([, date]) => date);
-                        const blockedDates = new Set([
-                          ...bookedDates,
-                          ...selectedDatesByOthers,
-                        ]);
-
-                        return (
-                          <div
-                            key={item.id}
-                            className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl border-2 border-brand-gray-light/40"
-                          >
-                            <div className="lg:self-center space-y-2">
-                              <span className="text-xs font-bold text-brand-pink uppercase tracking-wide">
-                                Curso {index + 1} de {finalCart.length}
-                              </span>
-                              <h3 className="text-2xl font-black text-brand-text">{item.title}</h3>
-                              {item.price === 0 && item.isMarketingCourse && (
-                                <span className="inline-block bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-full text-sm">
-                                  ¡Curso gratis 2+1!
-                                </span>
-                              )}
-                              <p className="text-sm text-brand-text-light">
-                                Selecciona la fecha disponible para esta mentoría.
-                              </p>
-                            </div>
-
-                            <div>
-                              <CalendarPicker
-                                selectedDate={selectedDateForThisCourse}
-                                onSelectDate={(date) => {
-                                  const dateString = date.toISOString().split('T')[0];
-                                  setBookingDates(prev => ({ ...prev, [item.id]: dateString }));
-                                }}
-                                bookedDates={blockedDates}
-                                presencialDates={presencialDates} // Pass the new prop
-                              />
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {allDatesSelected && (
-                      <div className="bg-white rounded-2xl p-4 sm:p-6 mb-6 border-2 border-brand-pink/20 shadow-lg">
-                        <h3 className="text-base sm:text-lg font-black text-brand-text mb-3 sm:mb-4 flex items-center gap-2">
-                          <CheckCircleIcon className="h-5 w-5 sm:h-6 sm:w-6 text-brand-pink" />
-                          Resumen de tu reserva
-                        </h3>
-                        <div className="space-y-3">
-                          {finalCart.map(item => (
-                            <div key={item.id} className="flex justify-between items-center pb-2 border-b border-brand-gray-light/20">
-                              <span className="text-sm font-bold text-brand-text-light">{item.title}</span>
-                              <span className="text-sm sm:text-base font-black text-brand-text capitalize">
-                                {formatearFechaSimple(bookingPayload[item.id])}
-                              </span>
-                            </div>
-                          ))}
-                          <div className="flex justify-between items-center pt-2">
-                            <span className="text-sm font-bold text-brand-text-light uppercase">Total a pagar</span>
-                            <span className="text-xl sm:text-2xl font-black text-brand-pink">
-                              ${totalPrice.toFixed(2)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {!showPaymentOptions ? (
-                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-4 sm:p-0 border-t sm:border-t-0 border-brand-gray-light/20">
-                        <button
-                          onClick={() => {
-                            setShowBookingModal(false);
-                            setShowPaymentOptions(false);
-                          }}
-                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl border-2 border-brand-text/20 bg-white px-6 py-4 text-base font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30 order-2 sm:order-1"
-                        >
-                          Volver
-                        </button>
-
-                        <button
-                          onClick={handleConfirmBooking}
-                          disabled={!allDatesSelected}
-                          className={`flex-1 flex items-center justify-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all duration-300 order-1 sm:order-2 ${allDatesSelected
-                            ? 'bg-brand-black text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
-                            : 'bg-brand-gray-light/50 text-brand-text/40 cursor-not-allowed'
-                            }`}
-                        >
-                          <ShoppingBagIcon className="h-6 w-6" />
-                          Continuar al Pago
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="space-y-4 p-4 sm:p-0 border-t sm:border-t-0 border-brand-gray-light/20">
-                        <div className="text-center mb-4">
-                          <h3 className="text-xl sm:text-2xl font-black text-brand-text mb-2">
-                            Elige tu opción de pago
-                          </h3>
-                          <p className="text-sm text-brand-text-light">
-                            Selecciona cómo deseas realizar el pago de tu mentoría
-                          </p>
-                        </div>
-
-                        {/* Opción 1: Pago Completo */}
-                        <div className="bg-gradient-to-br from-emerald-50 to-white border-2 border-emerald-200 rounded-2xl p-6 space-y-3">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h4 className="text-lg font-black text-brand-text mb-2">
-                                💳 Pago Completo
-                              </h4>
-                              <p className="text-sm text-brand-text-light mb-3">
-                                Paga el monto total ahora. <strong>Aceptamos pagos en cuotas con Afterpay y Klarna.</strong>
-                              </p>
-                              <div className="text-2xl font-black text-emerald-600">
-                                ${totalPrice.toFixed(2)}
-                              </div>
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => handlePaymentChoice('full')}
-                            className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-4 text-base font-black text-white shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-300 active:scale-95"
-                          >
-                            <CheckCircleIcon className="h-5 w-5" />
-                            Pagar Completo
-                          </button>
-                        </div>
-
-                        {/* Opción 2: Pago de Reserva */}
-                        <div className="bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-6 space-y-3">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h4 className="text-lg font-black text-brand-text mb-2">
-                                🎯 Reserva tu Cupo
-                              </h4>
-                              <p className="text-sm text-brand-text-light mb-3">
-                                Asegura tu lugar con el <strong>30% del total</strong>. El saldo restante <strong>(${(totalPrice * 0.7).toFixed(2)})</strong> se paga el día de la clase presencialmente.
-                              </p>
-                              <div className="text-2xl font-black text-blue-600">
-                                ${(totalPrice * 0.3).toFixed(2)}
-                              </div>
-                              <p className="text-xs text-brand-text-light mt-2 italic">
-                                * El cobro presencial lo gestiona mariajesus el día de la mentoría
-                              </p>
-                            </div>
-                          </div>
-                          <button
-                            onClick={() => handlePaymentChoice('reservation')}
-                            className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 text-base font-black text-white shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-300 active:scale-95"
-                          >
-                            <CalendarDaysIcon className="h-5 w-5" />
-                            Reservar con 30%
-                          </button>
-                        </div>
-
-                        {/* Botón para volver */}
-                        <button
-                          onClick={() => setShowPaymentOptions(false)}
-                          className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-brand-text/20 bg-white px-6 py-3 text-sm font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30"
-                        >
-                          ← Volver a fechas
-                        </button>
-                      </div>
-                    )}
-
-                    <div className="h-4 sm:hidden" />
-                  </div>
+                  <button
+                    onClick={handleConfirmBooking}
+                    disabled={!allDatesSelected}
+                    className={`flex-1 flex items-center justify-center gap-2 rounded-2xl px-6 py-4 text-base font-black transition-all duration-300 order-1 sm:order-2 ${allDatesSelected
+                      ? 'bg-brand-black text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95'
+                      : 'bg-brand-gray-light/50 text-brand-text/40 cursor-not-allowed'
+                      }`}
+                  >
+                    <ShoppingBagIcon className="h-6 w-6" />
+                    Continuar al Pago
+                  </button>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-4 p-4 sm:p-0 border-t sm:border-t-0 border-brand-gray-light/20">
+                  <div className="text-center mb-4">
+                    <h3 className="text-xl sm:text-2xl font-black text-brand-text mb-2">
+                      Elige tu opción de pago
+                    </h3>
+                    <p className="text-sm text-brand-text-light">
+                      Selecciona cómo deseas realizar el pago de tu mentoría
+                    </p>
+                  </div>
+
+                  {/* Opción 1: Pago Completo */}
+                  <div className="bg-gradient-to-br from-emerald-50 to-white border-2 border-emerald-200 rounded-2xl p-6 space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="text-lg font-black text-brand-text mb-2">
+                          💳 Pago Completo
+                        </h4>
+                        <p className="text-sm text-brand-text-light mb-3">
+                          Paga el monto total ahora. <strong>Aceptamos pagos en cuotas con Afterpay y Klarna.</strong>
+                        </p>
+                        <div className="text-2xl font-black text-emerald-600">
+                          ${totalPrice.toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handlePaymentChoice('full')}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-6 py-4 text-base font-black text-white shadow-lg hover:bg-emerald-700 hover:shadow-xl transition-all duration-300 active:scale-95"
+                    >
+                      <CheckCircleIcon className="h-5 w-5" />
+                      Pagar Completo
+                    </button>
+                  </div>
+
+                  {/* Opción 2: Pago de Reserva */}
+                  <div className="bg-gradient-to-br from-blue-50 to-white border-2 border-blue-200 rounded-2xl p-6 space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="text-lg font-black text-brand-text mb-2">
+                          🎯 Reserva tu Cupo
+                        </h4>
+                        <p className="text-sm text-brand-text-light mb-3">
+                          Asegura tu lugar con el <strong>30% del total</strong>. El saldo restante <strong>(${(totalPrice * 0.7).toFixed(2)})</strong> se paga el día de la clase presencialmente.
+                        </p>
+                        <div className="text-2xl font-black text-blue-600">
+                          ${(totalPrice * 0.3).toFixed(2)}
+                        </div>
+                        <p className="text-xs text-brand-text-light mt-2 italic">
+                          * El cobro presencial lo gestiona mariajesus el día de la mentoría
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => handlePaymentChoice('reservation')}
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-4 text-base font-black text-white shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-300 active:scale-95"
+                    >
+                      <CalendarDaysIcon className="h-5 w-5" />
+                      Reservar con 30%
+                    </button>
+                  </div>
+
+                  {/* Botón para volver */}
+                  <button
+                    onClick={() => setShowPaymentOptions(false)}
+                    className="w-full flex items-center justify-center gap-2 rounded-xl border-2 border-brand-text/20 bg-white px-6 py-3 text-sm font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30"
+                  >
+                    ← Volver a fechas
+                  </button>
+                </div>
+              )}
+
+              <div className="h-4 sm:hidden" />
             </div>
           </div>
-        )
-      }
+        </DialogContent>
+      </Dialog>
 
       {/* === Modal de Detalles del Curso === */}
-      {
-        showModal && selectedCourse && (
-          <div className="fixed inset-0 z-50 overflow-y-auto bg-black/50 backdrop-blur-sm">
-            <div className="flex min-h-full items-center justify-center p-4">
-              <div className="relative w-full max-w-4xl rounded-3xl bg-white shadow-2xl max-h-[90vh] overflow-y-auto">
+      {/* === Modal de Detalles del Curso (SHADCN) === */}
+      <Dialog open={showModal} onOpenChange={(open) => {
+        setShowModal(open);
+        if (!open) setSelectedCourse(null);
+      }}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0 gap-0 border-0 rounded-3xl focus:outline-none [&>button]:hidden">
+          {selectedCourse && (
+            <div className="flex flex-col lg:flex-row relative">
+              <button
+                onClick={() => setShowModal(false)}
+                className="absolute top-6 right-6 z-10 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors lg:hidden"
+              >
+                <XMarkIcon className="h-6 w-6 text-brand-text" />
+              </button>
+              <div className="relative w-full lg:w-1/2 h-64 lg:h-auto overflow-hidden">
+                <Image
+                  src={selectedCourse.imageUrl}
+                  alt={selectedCourse.title}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black/60 via-transparent to-transparent" />
+                <div className="absolute bottom-6 left-6 right-6 lg:top-6 lg:left-6 lg:bottom-auto">
+                  <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-4 py-2 text-xs font-black text-brand-text uppercase tracking-wider shadow-xl">
+                    {selectedCourse.format}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex-1 p-6 md:p-8 space-y-4 md:space-y-5 bg-white relative">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="absolute top-6 right-6 z-10 p-2 rounded-full bg-white/90 backdrop-blur-sm shadow-lg hover:bg-white transition-colors"
+                  className="absolute top-6 right-6 z-10 p-2 rounded-full bg-brand-gray-light/20 hover:bg-brand-gray-light/40 transition-colors hidden lg:block"
                 >
                   <XMarkIcon className="h-6 w-6 text-brand-text" />
                 </button>
+                <DialogHeader>
+                  <DialogTitle className="text-2xl md:text-3xl lg:text-4xl font-black text-brand-text leading-tight mb-2 text-left pr-10">
+                    {selectedCourse.title}
+                  </DialogTitle>
+                  <DialogDescription className="text-base md:text-lg text-brand-text-light leading-relaxed font-light text-left">
+                    {selectedCourse.description}
+                  </DialogDescription>
+                </DialogHeader>
 
-                <div className="flex flex-col lg:flex-row">
-                  <div className="relative w-full lg:w-1/2 h-64 lg:h-auto overflow-hidden">
-                    <Image
-                      src={selectedCourse.imageUrl}
-                      alt={selectedCourse.title}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t lg:bg-gradient-to-r from-black/60 via-transparent to-transparent" />
-                    <div className="absolute bottom-6 left-6 right-6 lg:top-6 lg:left-6 lg:bottom-auto">
-                      <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-4 py-2 text-xs font-black text-brand-text uppercase tracking-wider shadow-xl">
-                        {selectedCourse.format}
+                <div className="flex flex-wrap gap-2">
+                  {selectedCourse.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center rounded-full bg-brand-gray-light/60 px-3 py-1.5 text-xs md:text-sm font-bold uppercase tracking-wider text-brand-text"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                <div className="pt-3 border-t border-brand-gray-light/20">
+                  <div className="flex items-baseline gap-3 mb-4">
+                    <span className="text-3xl md:text-4xl font-black text-[#32CD32]">
+                      ${(selectedCourse.displayPrice || selectedCourse.price).toFixed(0)}
+                    </span>
+                    {selectedCourse.originalPrice && selectedCourse.originalPrice !== selectedCourse.price && (
+                      <span className="text-lg md:text-xl font-medium text-brand-text-light/70 line-through">
+                        ${selectedCourse.originalPrice.toFixed(0)}
                       </span>
-                    </div>
+                    )}
                   </div>
 
-                  <div className="flex-1 p-6 md:p-8 space-y-4 md:space-y-5">
-                    <div>
-                      <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-brand-text leading-tight mb-3">
-                        {selectedCourse.title}
-                      </h2>
-                      <p className="text-base md:text-lg text-brand-text-light leading-relaxed font-light">
-                        {selectedCourse.description}
-                      </p>
-                    </div>
+                  <div className="space-y-2 mb-4">
+                    <p className="text-xs md:text-sm font-bold text-brand-text uppercase tracking-wide">Duración</p>
+                    <p className="text-sm md:text-base text-brand-text-light">{selectedCourse.duration}</p>
+                  </div>
 
-                    <div className="flex flex-wrap gap-2">
-                      {selectedCourse.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="inline-flex items-center rounded-full bg-brand-gray-light/60 px-3 py-1.5 text-xs md:text-sm font-bold uppercase tracking-wider text-brand-text"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
+                  {courseTemarios[selectedCourse.id] && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSelectedTemario(courseTemarios[selectedCourse.id]);
+                        setShowTemarioModal(true);
+                      }}
+                      className="w-full justify-center gap-2 rounded-2xl border-2 border-blue-500 py-6 text-sm md:text-base font-black text-blue-600 hover:bg-blue-50 hover:text-blue-700 mb-3"
+                    >
+                      <DocumentTextIcon className="h-4 md:h-5 w-4 md:w-5" />
+                      Ver Temario Completo
+                    </Button>
+                  )}
 
-                    <div className="pt-3 border-t border-brand-gray-light/20">
-                      <div className="flex items-baseline gap-3 mb-4">
-                        <span className="text-3xl md:text-4xl font-black text-[#32CD32]">
-                          ${(selectedCourse.displayPrice || selectedCourse.price).toFixed(0)}
-                        </span>
-                        {selectedCourse.originalPrice && selectedCourse.originalPrice !== selectedCourse.price && (
-                          <span className="text-lg md:text-xl font-medium text-brand-text-light/70 line-through">
-                            ${selectedCourse.originalPrice.toFixed(0)}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="space-y-2 mb-4">
-                        <p className="text-xs md:text-sm font-bold text-brand-text uppercase tracking-wide">Duración</p>
-                        <p className="text-sm md:text-base text-brand-text-light">{selectedCourse.duration}</p>
-                      </div>
-
-                      {courseTemarios[selectedCourse.id] && (
-                        <button
-                          onClick={() => {
-                            setSelectedTemario(courseTemarios[selectedCourse.id]);
-                            setShowTemarioModal(true);
-                          }}
-                          className="w-full flex items-center justify-center gap-2 rounded-2xl border-2 border-blue-500 px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-black text-blue-600 transition-all duration-300 hover:bg-blue-50 mb-3"
-                        >
-                          <DocumentTextIcon className="h-4 md:h-5 w-4 md:w-5" />
-                          Ver Temario Completo
-                        </button>
-                      )}
-
-                      <div className="flex gap-3 md:gap-4 pb-8 md:pb-12">
-                        {cart.some((item) => item.id === selectedCourse.id) ? (
-                          <button
-                            onClick={() => removeFromCart(selectedCourse.id)}
-                            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-black text-red-600 transition-all duration-300 hover:bg-red-100"
-                          >
-                            <TrashIcon className="h-4 md:h-5 w-4 md:w-5" />
-                            Quitar
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => addToCart(selectedCourse)}
-                            className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-4 md:px-6 py-3 md:py-4 text-sm md:text-base font-black text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                          >
-                            <ShoppingBagIcon className="h-4 md:h-5 w-4 md:w-5" />
-                            Añadir al carrito
-                          </button>
-                        )}
-                      </div>
-                    </div>
+                  <div className="flex gap-3 md:gap-4 pb-0">
+                    {cart.some((item) => item.id === selectedCourse.id) ? (
+                      <Button
+                        variant="destructive"
+                        onClick={() => removeFromCart(selectedCourse.id)}
+                        className="flex-1 rounded-2xl h-14 text-sm md:text-base font-black"
+                      >
+                        <TrashIcon className="h-4 md:h-5 w-4 md:w-5 mr-2" />
+                        Quitar
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={() => addToCart(selectedCourse)}
+                        className="flex-1 rounded-2xl h-14 bg-brand-black hover:bg-gray-800 text-sm md:text-base font-black shadow-lg"
+                      >
+                        <ShoppingBagIcon className="h-4 md:h-5 w-4 md:w-5 mr-2" />
+                        Añadir al carrito
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )
-      }
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* === Floating Cart Widget === */}
       {
@@ -2157,14 +2168,17 @@ export default function AcademiaPage() {
       }
 
       {/* Modal de Temario */}
-      {
-        showTemarioModal && selectedTemario && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-3 md:p-4 animate-fadeIn">
-            <div className="relative max-w-4xl w-full max-h-[85vh] md:max-h-[90vh] overflow-y-auto bg-white rounded-2xl md:rounded-3xl shadow-2xl animate-scaleIn">
-              <div className="sticky top-0 z-10 flex items-center justify-between p-4 md:p-6 bg-gradient-to-r from-blue-900 to-blue-800 text-white rounded-t-2xl md:rounded-t-3xl">
+      <Dialog open={showTemarioModal} onOpenChange={(open) => {
+        setShowTemarioModal(open);
+        if (!open) setSelectedTemario(null);
+      }}>
+        <DialogContent className="max-w-4xl w-full max-h-[90vh] overflow-y-auto p-0 gap-0 border-0 rounded-3xl bg-white focus:outline-none [&>button]:hidden">
+          {selectedTemario && (
+            <div className="relative">
+              <div className="sticky top-0 z-10 flex items-center justify-between p-4 md:p-6 bg-gradient-to-r from-blue-900 to-blue-800 text-white shadow-md">
                 <div className="flex-1 pr-2">
-                  <h2 className="text-lg md:text-2xl lg:text-3xl font-black leading-tight">{selectedTemario.title}</h2>
-                  <p className="text-xs md:text-sm lg:text-base font-light mt-1">{selectedTemario.subtitle}</p>
+                  <DialogTitle className="text-lg md:text-2xl lg:text-3xl font-black leading-tight text-white mb-1">{selectedTemario.title}</DialogTitle>
+                  <DialogDescription className="text-xs md:text-sm lg:text-base font-light text-blue-100">{selectedTemario.subtitle}</DialogDescription>
                 </div>
                 <button
                   onClick={() => {
@@ -2173,7 +2187,7 @@ export default function AcademiaPage() {
                   }}
                   className="flex-shrink-0 w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all duration-300 hover:rotate-90"
                 >
-                  <XMarkIcon className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7" />
+                  <XMarkIcon className="h-5 w-5 md:h-6 md:w-6 lg:h-7 lg:w-7 text-white" />
                 </button>
               </div>
 
@@ -2198,9 +2212,9 @@ export default function AcademiaPage() {
                 ))}
               </div>
             </div>
-          </div>
-        )
-      }
+          )}
+        </DialogContent>
+      </Dialog>
 
     </div >
   );

@@ -64,7 +64,7 @@ export default function PresencialPage() {
 
     if (loading) {
         return (
-            <div className="flex h-screen items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+            <div className="flex h-[100svh] items-center justify-center bg-zinc-50 dark:bg-zinc-950">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
         );
@@ -80,7 +80,7 @@ export default function PresencialPage() {
     };
 
     return (
-        <div className="min-h-screen bg-brand-white text-zinc-900 pb-20 font-sans">
+        <div className="min-h-[100svh] bg-brand-white text-zinc-900 pb-20 font-sans">
             {/* Hero Section */}
             <section className="relative py-20 lg:py-32 overflow-hidden bg-zinc-900 text-white">
                 <div className="absolute inset-0 opacity-20 bg-[url('/pattern.png')] bg-repeat opacity-5"></div>

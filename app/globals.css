@@ -270,10 +270,10 @@ html {
       min-height: calc(var(--vh, 1vh) * 100);
     }
 
-    /* Fallback con dvh si está disponible */
-    @supports (min-height: 100dvh) {
+    /* Fallback con svh si está disponible - svh es más estable que dvh para evitar saltos */
+    @supports (min-height: 100svh) {
       .mobile-viewport-fix {
-        min-height: 100dvh;
+        min-height: 100svh;
       }
     }
 
@@ -288,9 +288,9 @@ html {
     min-height: calc(var(--vh, 1vh) * 100);
   }
 
-  @supports (min-height: 100dvh) {
+  @supports (min-height: 100svh) {
     .min-h-screen-mobile {
-      min-height: 100dvh;
+      min-height: 100svh;
     }
   }
 
@@ -300,9 +300,9 @@ html {
     height: calc(var(--vh, 1vh) * 100);
   }
 
-  @supports (height: 100dvh) {
+  @supports (height: 100svh) {
     .h-screen-mobile {
-      height: 100dvh;
+      height: 100svh;
     }
   }
 
