@@ -5,6 +5,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline"; // Iconos para el menú móvil
+import '../app/navbar-tree.css';
 
 // Componente interno que usa useSearchParams
 function NavbarContent() {

@@ -1,5 +1,4 @@
-// app/layout.jsx
-import { Inter, Playfair_Display, Crimson_Text } from "next/font/google";
+import { Inter, Playfair_Display, Crimson_Text, Lato } from "next/font/google";
 import "./globals.css";
 import MainLayout from "../components/MainLayout";
 
@@ -18,6 +17,12 @@ const crimsonText = Crimson_Text({
   variable: "--font-crimson",
   subsets: ["latin"],
   weight: ["400", "600"],
+});
+
+const lato = Lato({
+  variable: "--font-lato",
+  subsets: ["latin"],
+  weight: ["100", "300", "400", "700", "900"],
 });
 
 export const viewport = {
@@ -136,7 +141,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body
-        className={`${inter.variable} ${playfairDisplay.variable} ${crimsonText.variable} antialiased bg-brand-white text-brand-text`}
+        className={`${inter.variable} ${playfairDisplay.variable} ${crimsonText.variable} ${lato.variable} antialiased bg-brand-white text-brand-text`}
       >
         <MainLayout>{children}</MainLayout>
       </body>

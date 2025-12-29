@@ -4,6 +4,7 @@ export const runtime = 'nodejs'; // Stripe webhooks requieren node runtime
 import { NextResponse } from 'next/server';
 import stripe from '@/lib/stripe';
 import { adminDb } from '@/lib/firebaseAdmin';
+import { FieldValue } from 'firebase-admin/firestore';
 import { Resend } from 'resend';
 
 // ===== Configuración Resend =====
@@ -31,7 +32,7 @@ function formatearFecha(dateStr) {
   try {
     const [y, m, d] = dateStr.split('-');
     const f = new Date(y, m - 1, d);
-    return f.toLocaleDateString('es-ES', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+    return f.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   } catch { return dateStr; }
 }
 
@@ -54,7 +55,7 @@ async function enviarEmails({ comprador, items, totalCents, currency, orderId, c
   }
 
   // Dueña
-  if ( OWNER_EMAIL ) {
+  if (OWNER_EMAIL) {
     try {
       await resend.emails.send({
         from: EMAIL_FROM,
@@ -90,10 +91,10 @@ function htmlComprador({ comprador, items, totalCents, currency, cartSummary = [
     <div style="background:#f8f9fa;padding:16px;border-radius:10px;margin:12px 0">
       <h3 style="margin:0 0 8px;color:#E91E63">📅 Tus Fechas</h3>
       ${cartSummary.map(item => {
-        const fecha = bookingDates?.[item.id] ? formatearFecha(bookingDates[item.id]) : 'Fecha pendiente';
-        const precio = item.price === 0 ? ' (GRATIS)' : '';
-        return `<p style="margin:4px 0"><strong>${item.title}${precio}:</strong> ${fecha}</p>`;
-      }).join('')}
+    const fecha = bookingDates?.[item.id] ? formatearFecha(bookingDates[item.id]) : 'Fecha pendiente';
+    const precio = item.price === 0 ? ' (GRATIS)' : '';
+    return `<p style="margin:4px 0"><strong>${item.title}${precio}:</strong> ${fecha}</p>`;
+  }).join('')}
       <p style="margin:12px 0 4px; font-size:12px; color:#555">Horario a confirmar. (Todas las clases inician aprox. 9:00 AM EST)</p>
     </div>
 
@@ -122,10 +123,10 @@ function htmlDueno({ comprador, items, totalCents, currency, orderId, cartSummar
     <div style="background:#fff3e0;padding:12px;border-radius:8px;margin:10px 0">
       <h3 style="margin:0 0 8px;color:#E91E63">Calendario</h3>
       ${cartSummary.map(item => {
-        const fecha = bookingDates?.[item.id] ? formatearFecha(bookingDates[item.id]) : 'Fecha pendiente';
-        const precio = item.price === 0 ? ' (GRATIS)' : '';
-        return `<p style="margin:4px 0"><strong>${item.title}${precio}:</strong> ${fecha}</p>`;
-      }).join('')}
+    const fecha = bookingDates?.[item.id] ? formatearFecha(bookingDates[item.id]) : 'Fecha pendiente';
+    const precio = item.price === 0 ? ' (GRATIS)' : '';
+    return `<p style="margin:4px 0"><strong>${item.title}${precio}:</strong> ${fecha}</p>`;
+  }).join('')}
     </div>
     <h3>Items</h3>
     <ul style="list-style:none;padding:0;margin:0">
@@ -240,8 +241,22 @@ export async function POST(req) {
     // Reconstruir cart summary desde formato compacto
     let cartSummary = null;
     const paymentType = session.metadata?.payment_type || 'full';
+    const isPresencialClass = session.metadata?.type === 'presencial_class';
 
-    if (session.metadata?.course_ids) {
+    if (isPresencialClass) {
+      cartSummary = [{
+        id: session.metadata.courseId,
+        title: session.metadata.courseTitle,
+        price: session.amount_total / 100,
+        quantity: 1,
+        // These fields help with email consistency
+        dateText: session.metadata.dateText,
+        bookingDate: session.metadata.bookingDate
+      }];
+      bookingDates = {
+        [session.metadata.courseId]: session.metadata.bookingDate
+      };
+    } else if (session.metadata?.course_ids) {
       const ids = session.metadata.course_ids.split(',');
       const titles = session.metadata.course_titles?.split('|') || [];
 
@@ -298,7 +313,37 @@ export async function POST(req) {
       source: 'stripe-webhook',
     });
 
-    if (bookingDates && cartSummary) {
+    if (isPresencialClass && cartSummary) {
+      console.log('Procesando reserva Presencial para', orderId);
+      for (const item of cartSummary) {
+        // Increment enrolled
+        const courseRef = adminDb.collection('presencial_courses').doc(item.id);
+        await courseRef.update({
+          enrolled: FieldValue.increment(1)
+        });
+
+        // Add booking
+        await adminDb.collection('bookings').add({
+          orderId,
+          userId: comprador.email || 'guest',
+          clientName: comprador.name,
+          clientEmail: comprador.email,
+          clientPhone: comprador.phone,
+          serviceId: item.id,
+          serviceName: `Clase Grupal: ${item.title}`,
+          bookingDate: item.bookingDate,
+          dateText: item.dateText,
+          status: 'paid',
+          createdAt: FieldValue.serverTimestamp(),
+          paymentType: 'full',
+          amount: (item.price || 0) * 100,
+          currency,
+          source: 'stripe-webhook'
+        });
+      }
+    }
+
+    if (!isPresencialClass && bookingDates && cartSummary) {
       console.log('Iniciando transacción de reserva para', orderId);
 
       await adminDb.runTransaction(async (transaction) => {

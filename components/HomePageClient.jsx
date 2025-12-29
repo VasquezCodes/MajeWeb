@@ -174,7 +174,7 @@ export default function HomePageClient({ sanityData }) {
                         <div className="relative h-96 md:h-[500px] lg:h-[600px] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
                             <Image
                                 src="/historia.png"
-                                alt="María Jesús Matos"
+                                alt="Mariajesus Matos"
                                 fill
                                 className="object-cover"
                             />

@@ -35,7 +35,9 @@ import {
   ChevronRightIcon,
   StarIcon,
   DocumentTextIcon,
+  ArrowRightIcon, // Added ArrowRightIcon
 } from '@heroicons/react/24/solid';
+import { Button } from '@/components/ui/button'; // Import Shadcn Button
 
 // --- Helper de pago con Stripe (Pago Completo) ---
 async function iniciarPago(cart, bookingDates, packageInfo = null) {
@@ -955,7 +957,7 @@ export default function AcademiaPage() {
               </h1>
 
               <p className="text-lg md:text-xl text-white lg:text-brand-text-light leading-relaxed max-w-xl font-light drop-shadow-lg lg:drop-shadow-none">
-                Consigue clientes de alto valor en 90 días. Muchas profesionales se frustran ❌ con malos cortes, esmalte corrido o clientas que no regresan. ¡Es momento de tomar acción!
+                Consigue clientes de alto valor en 90 días. Muchas profesionales se frustran con malos cortes, esmalte corrido o clientas que no regresan. ¡Es momento de tomar acción!
               </p>
 
               {/* Stats */}
@@ -988,30 +990,220 @@ export default function AcademiaPage() {
           </div>
         </div>
 
-        {/* Botón CTA Simple */}
-        <div className="absolute bottom-8 left-0 right-0 z-20 px-6 lg:relative lg:bottom-auto lg:w-full lg:max-w-7xl lg:mx-auto lg:px-6 lg:mt-16">
+        {/* Botón CTA Shadcn */}
+        <div className="mt-12 px-6 lg:mt-14 lg:px-0">
           <div className="w-full flex justify-center lg:justify-start">
-            <a
-              href="#mentorias"
+            <Button
+              size="lg"
+              className="w-full sm:w-auto text-lg font-bold bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-xl rounded-full py-6 px-8 transition-all duration-300 transform hover:scale-105"
               onClick={(e) => {
                 e.preventDefault();
                 const target = document.getElementById('mentorias');
                 if (target) {
-                  // Usar scroll nativo con offset
                   const yOffset = -80;
                   const y = target.getBoundingClientRect().top + window.scrollY + yOffset;
                   window.scrollTo({ top: y, behavior: 'smooth' });
                 }
               }}
-              className="inline-flex items-center gap-3 px-8 py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-black text-lg rounded-full shadow-xl cursor-pointer"
             >
-              <SparklesIcon className="h-6 w-6" />
-              <span>¡Asegura tu lugar ahora!</span>
-              <span className="text-sm font-semibold bg-white/20 px-3 py-1 rounded-full">
-                Últimos espacios disponibles
-              </span>
-            </a>
+              <SparklesIcon className="mr-2 h-5 w-5" />
+              Descubre nuestros programas
+              <ArrowRightIcon className="ml-2 h-5 w-5 opacity-75" />
+            </Button>
           </div>
+        </div>
+      </section>
+
+      {/* === Sección 2: Módulos Disponibles (Movido aquí) === */}
+      <section id="mentorias" className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 scroll-mt-20 my-16 md:my-24">
+        <div className="text-center max-w-3xl mx-auto space-y-5 mb-16">
+          <div className="inline-flex items-center gap-2.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 px-5 py-2.5">
+            <AcademicCapIcon className="h-4 w-4 text-brand-pink" />
+            <span className="text-xs font-bold text-brand-pink uppercase tracking-[0.2em]">
+              Formación Profesional
+            </span>
+          </div>
+
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-brand-text leading-tight">
+            Módulos Disponibles a Elegir
+          </h2>
+
+          <p className="text-lg md:text-xl text-brand-text-light font-light leading-relaxed">
+            Elige la capacitación intensiva (8 horas) que transformará tu carrera. Todos los módulos incluyen el kit completo y soporte post-curso.
+          </p>
+        </div>
+
+        {/* Cards de Cursos */}
+        <div className="space-y-8">
+          {displayCourses.map((course, index) => {
+            const isInCart = cart.some(item => item.id === course.id);
+
+            return (
+              <div
+                key={course.id}
+                className="group animate-fadeInUp"
+                style={{ animationDelay: `${index * 100}ms` }}
+              >
+                {/* Mobile Layout */}
+                <div className="md:hidden bg-white rounded-3xl overflow-hidden shadow-lg border border-gray-100">
+                  <div className="relative h-64 overflow-hidden">
+                    <Image
+                      src={course.imageUrl}
+                      alt={course.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+                    <div className="absolute top-4 left-4 right-4 flex justify-between items-start gap-3">
+                      <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-3 py-1 text-[10px] font-black text-brand-text uppercase tracking-wider shadow-md">
+                        {course.format}
+                      </span>
+                      {course.discountPct > 0 && (
+                        <span className="inline-flex items-center rounded-full bg-red-500 text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-md animate-pulse">
+                          {course.discountPct}% OFF
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="p-5 space-y-4">
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-black text-brand-text leading-tight">
+                        {course.title}
+                      </h3>
+                      {/* Precio Mobile */}
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-black text-emerald-600">
+                          ${course.displayPrice.toFixed(0)}
+                        </span>
+                        {course.displayOriginalPrice && (
+                          <span className="text-sm text-gray-400 line-through font-medium">
+                            ${course.displayOriginalPrice.toFixed(0)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-2 pt-2">
+                      {isInCart ? (
+                        <Button
+                          variant="destructive"
+                          onClick={() => removeFromCart(course.id)}
+                          className="flex-1 rounded-xl h-12"
+                        >
+                          <TrashIcon className="mr-2 h-4 w-4" />
+                          Quitar
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={() => addToCart(course)}
+                          className="flex-1 rounded-xl h-12 bg-brand-black hover:bg-gray-800"
+                        >
+                          <ShoppingBagIcon className="mr-2 h-4 w-4" />
+                          Añadir
+                        </Button>
+                      )}
+
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedCourse(course);
+                          setShowModal(true);
+                        }}
+                        className="flex-1 rounded-xl h-12 border-2"
+                      >
+                        Ver detalle
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Desktop Layout */}
+                <div className="hidden md:block bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 border border-gray-100">
+                  <div className="flex">
+                    <div className="relative w-1/2 max-w-md overflow-hidden">
+                      <Image
+                        src={course.imageUrl}
+                        alt={course.title}
+                        width={600}
+                        height={600}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/10" />
+
+                      <div className="absolute top-6 left-6 right-6 flex justify-between items-start">
+                        <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-4 py-1.5 text-xs font-black uppercase tracking-wider text-brand-text shadow-xl">
+                          {course.format}
+                        </span>
+                        {course.discountPct > 0 && (
+                          <span className="inline-flex items-center rounded-full bg-red-500 text-white px-4 py-1.5 text-xs font-black uppercase tracking-wider shadow-xl animate-pulse">
+                            {course.discountPct}% OFF
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex-1 flex flex-col justify-center p-8 lg:p-12 space-y-6">
+                      <div className="space-y-4">
+                        <h3 className="text-3xl lg:text-4xl font-black text-brand-text leading-tight">
+                          {course.title}
+                        </h3>
+                        {/* Precio Desktop */}
+                        <div className="flex items-baseline gap-4">
+                          <span className="text-4xl lg:text-5xl font-black text-emerald-600">
+                            ${course.displayPrice.toFixed(0)}
+                          </span>
+                          {course.displayOriginalPrice && (
+                            <span className="text-xl lg:text-2xl text-gray-400 line-through font-medium">
+                              ${course.displayOriginalPrice.toFixed(0)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="space-y-4 pt-4 w-full max-w-lg">
+                        <div className="flex gap-4">
+                          {isInCart ? (
+                            <Button
+                              variant="destructive"
+                              size="lg"
+                              onClick={() => removeFromCart(course.id)}
+                              className="flex-1 rounded-2xl h-14 text-base"
+                            >
+                              <TrashIcon className="mr-2 h-5 w-5" />
+                              Quitar
+                            </Button>
+                          ) : (
+                            <Button
+                              size="lg"
+                              onClick={() => addToCart(course)}
+                              className="flex-1 rounded-2xl h-14 text-base bg-brand-black hover:bg-gray-800 shadow-lg hover:shadow-xl"
+                            >
+                              <ShoppingBagIcon className="mr-2 h-5 w-5" />
+                              Añadir al carrito
+                            </Button>
+                          )}
+
+                          <Button
+                            variant="outline"
+                            size="lg"
+                            onClick={() => {
+                              setSelectedCourse(course);
+                              setShowModal(true);
+                            }}
+                            className="flex-1 rounded-2xl h-14 text-base border-2 hover:bg-gray-50"
+                          >
+                            Ver detalle
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -1300,191 +1492,7 @@ export default function AcademiaPage() {
 
 
 
-      {/* === Sección 3: Lista de Mentorías === */}
-      <section id="mentorias" className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 scroll-mt-20">
-        <div className="text-center max-w-3xl mx-auto space-y-5 mb-16">
-          <div className="inline-flex items-center gap-2.5 rounded-full bg-brand-pink/10 border border-brand-pink/20 px-5 py-2.5">
-            <AcademicCapIcon className="h-4 w-4 text-brand-pink" />
-            <span className="text-xs font-bold text-brand-pink uppercase tracking-[0.2em]">
-              Formación Profesional
-            </span>
-          </div>
 
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-brand-text leading-tight">
-            Módulos Disponibles a Elegir
-          </h2>
-
-          <p className="text-lg md:text-xl text-brand-text-light font-light leading-relaxed">
-            Elige la capacitación intensiva (8 horas) que transformará tu carrera. Todos los módulos incluyen el kit completo y soporte post-curso.
-          </p>
-        </div>
-
-        {/* Cards de Cursos */}
-        <div className="space-y-8">
-          {displayCourses.map((course, index) => {
-            const isInCart = cart.some(item => item.id === course.id);
-
-            return (
-              <div
-                key={course.id}
-                className="group animate-fadeInUp"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                {/* Mobile Layout */}
-                <div className="md:hidden bg-white rounded-3xl overflow-hidden shadow-lg">
-                  <div className="relative h-80 overflow-hidden">
-                    <Image
-                      src={course.imageUrl}
-                      alt={course.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/80" />
-
-                    <div className="absolute top-4 left-4 right-4 flex justify-between items-start gap-3">
-                      <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-4 py-2 text-[11px] font-black text-brand-text uppercase tracking-wider shadow-xl">
-                        {course.format}
-                      </span>
-                      {course.discountPct > 0 && (
-                        <span className="inline-flex items-center rounded-full bg-red-500 text-white px-3 py-1 text-[10px] font-black uppercase tracking-wider shadow-xl animate-pulse">
-                          {course.discountPct}% OFF
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="p-6 space-y-5">
-                    <div className="space-y-3">
-                      <h3 className="text-2xl font-black text-brand-text leading-tight">
-                        {course.title}
-                      </h3>
-                      {/* Precio Mobile */}
-                      <div className="flex items-baseline gap-3">
-                        <span className="text-3xl font-black text-emerald-600">
-                          ${course.displayPrice.toFixed(0)}
-                        </span>
-                        {course.displayOriginalPrice && (
-                          <span className="text-lg text-gray-400 line-through font-medium">
-                            ${course.displayOriginalPrice.toFixed(0)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex gap-3 pt-2">
-                      {isInCart ? (
-                        <button
-                          onClick={() => removeFromCart(course.id)}
-                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-5 py-4 text-sm font-black text-red-600 transition-all duration-300 active:scale-95"
-                        >
-                          <TrashIcon className="h-5 w-5" />
-                          Quitar
-                        </button>
-                      ) : (
-                        <button
-                          onClick={() => addToCart(course)} // Nota: addToCart usa el objeto original, pero el ID es el mismo
-                          className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-5 py-4 text-sm font-black text-white shadow-lg transition-all duration-300 active:scale-95"
-                        >
-                          <ShoppingBagIcon className="h-5 w-5" />
-                          Añadir
-                        </button>
-                      )}
-
-                      <button
-                        onClick={() => {
-                          setSelectedCourse(course);
-                          setShowModal(true);
-                        }}
-                        className="flex-1 flex items-center justify-center rounded-2xl border-2 border-brand-text/20 px-5 py-4 text-sm font-black text-brand-text transition-all duration-300 active:scale-95"
-                      >
-                        Ver detalle
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Desktop Layout */}
-                <div className="hidden md:block bg-white rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500">
-                  <div className="flex">
-                    <div className="relative w-1/2 overflow-hidden">
-                      <Image
-                        src={course.imageUrl}
-                        alt={course.title}
-                        width={600}
-                        height={600}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-black/20 to-black/60" />
-
-                      <div className="absolute top-6 left-6 right-6 flex justify-between items-start">
-                        <span className="inline-flex items-center rounded-full bg-white/95 backdrop-blur-sm px-5 py-2.5 text-xs font-black uppercase tracking-wider text-brand-text shadow-xl">
-                          {course.format}
-                        </span>
-                        {course.discountPct > 0 && (
-                          <span className="inline-flex items-center rounded-full bg-red-500 text-white px-4 py-2 text-xs font-black uppercase tracking-wider shadow-xl animate-pulse">
-                            {course.discountPct}% OFF
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="flex-1 flex flex-col p-10 space-y-6">
-                      <div className="space-y-4">
-                        <h3 className="text-3xl lg:text-4xl font-black text-brand-text leading-tight">
-                          {course.title}
-                        </h3>
-                        {/* Precio Desktop */}
-                        <div className="flex items-baseline gap-4">
-                          <span className="text-4xl lg:text-5xl font-black text-emerald-600">
-                            ${course.displayPrice.toFixed(0)}
-                          </span>
-                          {course.displayOriginalPrice && (
-                            <span className="text-xl lg:text-2xl text-gray-400 line-through font-medium">
-                              ${course.displayOriginalPrice.toFixed(0)}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="space-y-4 pt-4">
-                        <div className="flex gap-4">
-                          {isInCart ? (
-                            <button
-                              onClick={() => removeFromCart(course.id)}
-                              className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-red-50 border-2 border-red-200 px-6 py-4 text-base font-black text-red-600 transition-all duration-300 hover:bg-red-100"
-                            >
-                              <TrashIcon className="h-5 w-5" />
-                              Quitar del carrito
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => addToCart(course)}
-                              className="flex-1 flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-6 py-4 text-base font-black text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                            >
-                              <ShoppingBagIcon className="h-5 w-5" />
-                              Añadir al carrito
-                            </button>
-                          )}
-
-                          <button
-                            onClick={() => {
-                              setSelectedCourse(course);
-                              setShowModal(true);
-                            }}
-                            className="flex-1 flex items-center justify-center rounded-2xl border-2 border-brand-text/20 px-6 py-4 text-base font-black text-brand-text transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30"
-                          >
-                            Ver detalle
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
 
       {/* === Sección 4: Testimonios === */}
       <section className="relative py-20 md:py-32 bg-gradient-to-b from-white via-brand-pink/5 to-white">

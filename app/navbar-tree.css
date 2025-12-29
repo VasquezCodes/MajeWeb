@@ -1,0 +1,113 @@
+/* === CHRISTMAS TREE NAVBAR === */
+@keyframes star-grow {
+  0% {
+    transform: scale(0);
+    animation-timing-function: cubic-bezier(.74,1.72,.57,1.01)
+  }
+  10% {
+    transform: scale(1);
+  }
+  65% {
+    transform: translateY(0px) scale(1);
+  }
+  75% {
+    transform: translateY(50px) scale(0);
+  }
+  100% {
+    transform: translateY( 0px ) scale(0);
+  }
+}
+
+@keyframes tree-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.christmas-tree-navbar {
+  position: absolute;
+  left: -70px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 60px;
+  height: 60px;
+  pointer-events: none;
+  z-index: 10;
+  filter: drop-shadow(0 2px 8px rgba(34, 139, 34, 0.4));
+  opacity: 0;
+  animation: tree-fade-in 0.5s ease-in forwards;
+  animation-delay: 0.3s;
+  will-change: transform, opacity;
+}
+
+.christmas-tree-navbar svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.christmas-tree-navbar path {
+  fill: #2d8b3d;
+  stroke: #228B22;
+  stroke-width: 0.3;
+  transform: scale(0);
+  transform-origin: 50% 50%;
+  animation: star-grow 8s ease-in-out infinite;
+  animation-delay: calc( var(--no) * .025s );
+  transform-box: fill-box;
+}
+
+/* Estrella en la punta del árbol - color dorado */
+.christmas-tree-navbar path:first-child {
+  fill: #FFD700;
+  stroke: #FFA500;
+  filter: drop-shadow(0 0 3px rgba(255, 215, 0, 0.8));
+}
+
+/* Algunas estrellas rojas para variedad */
+.christmas-tree-navbar path:nth-child(3n) {
+  fill: #c41e3a;
+  stroke: #8B0000;
+}
+
+/* Algunas estrellas doradas */
+.christmas-tree-navbar path:nth-child(5n) {
+  fill: #FFD700;
+  stroke: #DAA520;
+}
+
+/* Responsive - en móvil mover a la derecha del logo y mejorar animaciones */
+@media (max-width: 768px) {
+  .christmas-tree-navbar {
+    left: auto;
+    right: -50px;
+    width: 45px;
+    height: 45px;
+  }
+
+  /* Hacer las animaciones más suaves y menos intensas en móvil */
+  .christmas-tree-navbar path {
+    animation-duration: 10s; /* Más lento en móvil */
+  }
+
+  /* Reducir el drop shadow en móvil */
+  .christmas-tree-navbar {
+    filter: drop-shadow(0 1px 4px rgba(34, 139, 34, 0.3));
+  }
+
+  /* Hacer la animación de fade-in más rápida en móvil */
+  .christmas-tree-navbar {
+    animation-duration: 0.3s;
+    animation-delay: 0.2s;
+  }
+}
+
+/* Reducir animaciones en modo de bajo rendimiento */
+@media (prefers-reduced-motion: reduce) {
+  .christmas-tree-navbar {
+    animation: none !important;
+  }
+}
