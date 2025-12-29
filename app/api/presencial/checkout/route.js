@@ -38,6 +38,7 @@ export async function POST(req) {
         // 2. Crear sesión de Stripe
         const session = await stripe.checkout.sessions.create({
             mode: "payment",
+            automatic_payment_methods: { enabled: true },
             line_items: [
                 {
                     price_data: {
@@ -59,10 +60,10 @@ export async function POST(req) {
             cancel_url,
             metadata: {
                 type: "presencial_class",
-                courseId: courseId,
-                courseTitle: title,
-                bookingDate: courseData.startDate || new Date().toISOString().split('T')[0],
-                dateText: courseData.dates || ''
+                courseId: courseId.slice(0, 500),
+                courseTitle: title.slice(0, 500),
+                bookingDate: (courseData.startDate || new Date().toISOString().split('T')[0]).slice(0, 500),
+                dateText: (courseData.dates || '').slice(0, 500)
             },
             phone_number_collection: {
                 enabled: true,

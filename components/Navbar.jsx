@@ -65,7 +65,7 @@ function NavbarContent() {
 
   return (
     <nav className="bg-brand-white shadow-lg sticky top-0 z-50 border-b border-brand-gray-light">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-24">
 
           {/* Logo */}
@@ -169,8 +169,8 @@ function NavbarContent() {
             </Link>
           </div>
 
-          {/* Links del Menú (Escritorio) */}
-          <div className="hidden md:flex md:items-center md:space-x-10">
+          {/* Links del Menú (Escritorio) - Changed md to lg to prevent overcrowding on tablets */}
+          <div className="hidden lg:flex lg:items-center lg:space-x-6 xl:space-x-8">
             {links.map((link) => (
               <Link
                 key={link.name}
@@ -189,7 +189,7 @@ function NavbarContent() {
           </div>
 
           {/* Botón de Menú Móvil */}
-          <div className="md:hidden flex items-center">
+          <div className="lg:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-brand-text focus:outline-none p-2 rounded-lg hover:bg-brand-gray-light/50 transition-all duration-300 transform hover:scale-105"
@@ -205,7 +205,7 @@ function NavbarContent() {
       </div>
 
       {/* Menú Desplegable (Móvil) - Siempre renderizado para animaciones */}
-      <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[85vh] opacity-100' : 'max-h-0 opacity-0'
+      <div className={`lg:hidden overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[85vh] opacity-100' : 'max-h-0 opacity-0'
         }`}>
         <div className="bg-brand-white pb-6 space-y-3 px-4 border-t border-brand-gray-light transform transition-transform duration-300 delay-100">
           {links.map((link, index) => (
