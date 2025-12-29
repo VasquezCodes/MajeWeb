@@ -38,7 +38,18 @@ export async function POST(req) {
         // 2. Crear sesión de Stripe
         const session = await stripe.checkout.sessions.create({
             mode: "payment",
-            automatic_payment_methods: { enabled: true },
+            payment_method_types: [
+                "card",
+                "cashapp",
+                "affirm",
+                "afterpay_clearpay",
+                "klarna",
+            ],
+            payment_method_options: {
+                afterpay_clearpay: { setup_future_usage: "none" },
+                affirm: {},
+                cashapp: {},
+            },
             line_items: [
                 {
                     price_data: {
