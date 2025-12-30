@@ -3,6 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { AnimatedText } from '@/components/ui/AnimatedText';
 import getStripe from '@/lib/getStripe';
 import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
@@ -991,13 +992,17 @@ export default function AcademiaPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             {/* Texto */}
             <div className="text-left space-y-8 lg:space-y-10">
+
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1]">
-                <span className="text-white lg:text-brand-text drop-shadow-2xl lg:drop-shadow-none">
-                  Convierte tu pasión en un{' '}
-                </span>
-                <span className="block mt-2 drop-shadow-2xl lg:drop-shadow-none bg-gradient-to-r from-emerald-400 via-lime-400 to-emerald-500 bg-clip-text text-transparent">
-                  negocio rentable
-                </span>
+                <AnimatedText
+                  text="Convierte tu pasión en un "
+                  className="text-white lg:text-brand-text drop-shadow-2xl lg:drop-shadow-none"
+                />
+                <AnimatedText
+                  text="negocio rentable"
+                  split={false}
+                  className="block mt-2 drop-shadow-2xl lg:drop-shadow-none bg-gradient-to-r from-emerald-400 via-lime-400 to-emerald-500 bg-clip-text text-transparent"
+                />
               </h1>
 
               <p className="text-lg md:text-xl text-white lg:text-brand-text-light leading-relaxed max-w-xl font-light drop-shadow-lg lg:drop-shadow-none">

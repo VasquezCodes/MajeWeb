@@ -55,6 +55,13 @@ function SuccessPageContent() {
     }
   };
 
+  // Helper para formatear dinero (sin decimales si es entero)
+  const formatMoney = (amount) => {
+    const val = Number(amount);
+    if (isNaN(val)) return '0';
+    return val % 1 === 0 ? val.toFixed(0) : val.toFixed(2);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6 py-20 font-sans bg-gradient-to-br from-green-50 via-white to-brand-pink-light/20">
       <div className="max-w-2xl w-full">
@@ -96,6 +103,7 @@ function SuccessPageContent() {
                 </>
               )}
             </p>
+
 
             {/* Detalles del participante y curso (para clases presenciales) */}
             {!loading && sessionData && (isPresencialClass || courseTitle) && (
@@ -149,7 +157,7 @@ function SuccessPageContent() {
                     <div className="bg-green-50 border border-green-200 rounded-xl p-4">
                       <p className="text-sm text-green-700 font-bold uppercase tracking-wide mb-1">✓ Pagado Hoy</p>
                       <p className="text-2xl font-black text-green-600">
-                        ${reservationAmount || (isPresencialClass ? reservationAmount : cartSummary.reduce((sum, item) => sum + 250 * (item.qty || 1), 0)).toFixed(2)} USD
+                        ${formatMoney(reservationAmount || (isPresencialClass ? reservationAmount : cartSummary.reduce((sum, item) => sum + 250 * (item.qty || 1), 0)))} USD
                       </p>
                     </div>
 
@@ -158,10 +166,10 @@ function SuccessPageContent() {
                       <p className="text-sm text-brand-text font-bold flex items-start gap-2">
                         <span className="text-xl">💰</span>
                         <span>
-                          <strong>Saldo pendiente:</strong> ${remainingBalance || (isPresencialClass ? remainingBalance : cartSummary.reduce((sum, item) => sum + (item.remaining_balance || 0) * (item.qty || 1), 0)).toFixed(2)} USD
+                          <strong>Saldo pendiente:</strong> ${formatMoney(remainingBalance || (isPresencialClass ? remainingBalance : cartSummary.reduce((sum, item) => sum + (item.remaining_balance || 0) * (item.qty || 1), 0)))} USD
                           <br />
                           <span className="text-xs text-brand-text-light mt-1 block">
-                            Este monto se paga el día de la clase presencialmente.
+                            Este monto se debe abonar 3 días antes de la clase. Se te comunicará por interno.
                           </span>
                         </span>
                       </p>
@@ -171,7 +179,7 @@ function SuccessPageContent() {
                   <div className="bg-green-50 border border-green-200 rounded-xl p-4">
                     <p className="text-sm text-green-700 font-bold uppercase tracking-wide mb-1">✓ Pago Total Completado</p>
                     <p className="text-2xl font-black text-green-600">
-                      ${fullPrice || (isPresencialClass ? fullPrice : cartSummary.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 1), 0)).toFixed(2)} USD
+                      ${formatMoney(fullPrice || (isPresencialClass ? fullPrice : cartSummary.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 1), 0)))} USD
                     </p>
                     <p className="text-sm text-green-600 mt-1 font-medium">¡Todo listo para tu capacitación!</p>
                   </div>

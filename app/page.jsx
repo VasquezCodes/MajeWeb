@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import PassarelaCard from '../components/PassarelaCard';
 import { ArrowDownIcon } from '@heroicons/react/24/outline';
+import { AnimatedText } from '@/components/ui/AnimatedText';
 
 // --- Contenido de las Secciones ---
 const pasarelas = [
@@ -92,8 +93,10 @@ export default function HomePage() {
 
           {/* Content */}
           <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6 animate-fade-in-up">
+
+
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold text-white leading-tight drop-shadow-md">
-              Un espacio para manicuristas que quieren más
+              <AnimatedText text="Un espacio para manicuristas que quieren más" />
             </h1>
 
             <div className="max-w-2xl mx-auto space-y-6 text-white/90 text-lg md:text-xl font-light font-sans leading-relaxed drop-shadow-sm">

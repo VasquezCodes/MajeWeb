@@ -103,7 +103,7 @@ function htmlComprador({ comprador, items, totalCents, currency, cartSummary = [
       ${items.map(i => `<li style="padding:8px 0;border-bottom:1px solid #eee"><strong>${i.name}</strong> × ${i.quantity} — ${money(i.amount_total, currency)}</li>`).join('')}
     </ul>
     <p style="font-size:18px;margin-top:12px"><strong>${paymentType === 'reservation' ? 'Reserva Pagada (30%):' : 'Total Pagado:'}</strong> ${money(totalCents, currency)}</p>
-    ${paymentType === 'reservation' && cartSummary.length > 0 ? `<p style="font-size:14px;color:#666;margin:8px 0">El saldo restante se paga presencialmente el día de la clase.</p>` : ''}
+    ${paymentType === 'reservation' && cartSummary.length > 0 ? `<p style="font-size:14px;color:#666;margin:8px 0">El saldo restante se debe abonar 3 días antes de la clase. Se te comunicará por interno.</p>` : ''}
     <p style="margin-top:18px">En breve te contactaremos para coordinar detalles. 💅</p>
   </div>`;
 }
@@ -118,7 +118,7 @@ function htmlDueno({ comprador, items, totalCents, currency, orderId, cartSummar
       <p style="margin:4px 0"><strong>Email:</strong> ${comprador?.email || '-'}</p>
       <p style="margin:4px 0"><strong>Teléfono:</strong> ${comprador?.phone || '-'}</p>
       ${packageInfo ? `<p style="margin:4px 0"><strong>Paquete:</strong> ${packageInfo.type} (${packageInfo.discount}% OFF)${packageInfo.marketingFormat ? ` + Marketing ${packageInfo.marketingFormat}` : ''}</p>` : ''}
-      ${paymentType === 'reservation' ? `<p style="margin:4px 0;color:#ff6600"><strong>Tipo de pago:</strong> RESERVA 30% - Saldo pendiente presencial</p>` : ''}
+      ${paymentType === 'reservation' ? `<p style="margin:4px 0;color:#ff6600"><strong>Tipo de pago:</strong> RESERVA 30% - Saldo pendiente 3 días antes</p>` : ''}
     </div>
     <div style="background:#fff3e0;padding:12px;border-radius:8px;margin:10px 0">
       <h3 style="margin:0 0 8px;color:#E91E63">Calendario</h3>

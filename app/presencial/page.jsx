@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { AnimatedText } from "@/components/ui/AnimatedText";
 import {
     Dialog,
     DialogContent,
@@ -112,7 +113,7 @@ export default function PresencialPage() {
     // fallback images mapping in case DB isn't updated instantly for the user's session
     const getImage = (course) => {
         // Enforce the new images based on ID if the DB one is old or missing
-        if (course.id.includes('manicura')) return '/carruselMaje/manicuraRusaHighLevel.jpg';
+        if (course.id.includes('manicura')) return '/carruselMaje/2312_2.jpg';
         if (course.id.includes('dual')) return '/carruselMaje/sistemaDualGelPro.jpg';
         if (course.id.includes('poly')) return '/carruselMaje/polygelLevelUp.jpg';
         return course.image || '/placeholder.jpg';
@@ -128,7 +129,7 @@ export default function PresencialPage() {
                         Formación Experta
                     </Badge>
                     <h1 className="text-4xl md:text-7xl font-serif font-bold tracking-tight mb-6">
-                        Clases Grupales <span className="italic text-white/80">2026</span>
+                        <AnimatedText text="Clases Grupales" className="inline-block" /> <span className="italic text-white/80">2026</span>
                     </h1>
                     <p className="max-w-2xl mx-auto text-lg md:text-xl text-zinc-300 font-light leading-relaxed">
                         Entrenamientos intensivos diseñados para perfeccionar tu técnica en un ambiente profesional y exclusivo.
@@ -197,7 +198,7 @@ export default function PresencialPage() {
                                             <div className="space-y-3">
                                                 <div className="flex items-center gap-3 text-zinc-600">
                                                     <CheckIcon className="h-5 w-5 text-zinc-900" />
-                                                    <span>Capacidad exclusiva: 10 alumnas</span>
+                                                    <span>Capacidad exclusiva: <AnimatedText text="Cupos limitados" className="text-orange-600 font-bold font-serif italic tracking-wider text-lg" duration={4} stagger={0.1} /></span>
                                                 </div>
                                                 <div className="flex items-center gap-3 text-zinc-600">
                                                     <CheckIcon className="h-5 w-5 text-zinc-900" />
@@ -330,9 +331,13 @@ export default function PresencialPage() {
             }}>
                 <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0 gap-0 border-0 rounded-3xl focus:outline-none [&>button]:hidden">
                     {selectedCourse && (() => {
-                        const priceUSD = (selectedCourse.price / 100).toFixed(2);
-                        const reservationUSD = (selectedCourse.price / 100 * 0.3).toFixed(2);
-                        const remainingUSD = (selectedCourse.price / 100 * 0.7).toFixed(2);
+                        const rawPrice = selectedCourse.price / 100;
+                        const rawRes = rawPrice * 0.3;
+                        const rawRem = rawPrice * 0.7;
+
+                        const priceUSD = rawPrice % 1 === 0 ? rawPrice.toFixed(0) : rawPrice.toFixed(2);
+                        const reservationUSD = rawRes % 1 === 0 ? rawRes.toFixed(0) : rawRes.toFixed(2);
+                        const remainingUSD = rawRem % 1 === 0 ? rawRem.toFixed(0) : rawRem.toFixed(2);
 
                         return (
                             <div className="relative">
@@ -401,13 +406,13 @@ export default function PresencialPage() {
                                                     Reserva tu Cupo
                                                 </h4>
                                                 <p className="text-sm text-zinc-600 mb-2">
-                                                    Asegura tu lugar con el <strong>30% del total</strong>. El saldo restante <strong>(${remainingUSD} USD)</strong> se paga el día de la clase presencialmente.
+                                                    Asegura tu lugar con el <strong>30% del total</strong>. El saldo restante <strong>(${remainingUSD} USD)</strong> se debe abonar 3 días antes de la clase. Se te comunicará por interno.
                                                 </p>
                                                 <div className="text-2xl font-serif font-bold text-zinc-900">
                                                     ${reservationUSD} USD
                                                 </div>
                                                 <p className="text-xs text-zinc-500 mt-1 italic">
-                                                    * El saldo pendiente se paga presencialmente
+                                                    * El saldo pendiente se abona 3 días antes
                                                 </p>
                                             </div>
                                         </div>
