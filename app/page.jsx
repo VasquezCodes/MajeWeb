@@ -75,7 +75,7 @@ export default function HomePage() {
       <div className="bg-brand-white">
 
         {/* === HERO SECTION === */}
-        <section className="relative h-[100svh] min-h-[600px] flex flex-col items-center justify-end pb-12 overflow-hidden">
+        <section className="relative min-h-[700px] md:min-h-[800px] lg:min-h-[850px] flex flex-col items-center justify-end pb-12 overflow-hidden">
           {/* Background Image */}
           <div className="absolute inset-0">
             <Image
