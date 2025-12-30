@@ -72,7 +72,7 @@ const pasarelas = [
 export default function HomePage() {
   return (
     <>
-      <div className="bg-brand-white min-h-screen">
+      <div className="bg-brand-white">
 
         {/* === HERO SECTION === */}
         <section className="relative h-[100svh] min-h-[600px] flex flex-col items-center justify-end pb-12 overflow-hidden">
