@@ -5,66 +5,66 @@ import stripe from "@/lib/stripe";
 
 // Helper para convertir imágenes locales a URLs absolutas (si es necesario)
 function toHttpsAbsolute(url) {
-  if (!url || typeof url !== "string") return undefined;
-  if (url.startsWith("https://")) return url;
-  if (url.startsWith("/")) {
+  if (!url || typeof url !== "string") return undefined;
+  if (url.startsWith("https://")) return url;
+  if (url.startsWith("/")) {
     // Reemplaza esto con tu URL de producción o una URL de ngrok/tunnel para pruebas
-    const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"; 
-    return `${base}${url}`;
-  }
-  return undefined;
+    const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    return `${base}${url}`;
+  }
+  return undefined;
 }
 
 // Handler para crear sesión de checkout
 export async function POST(req) {
-  try {
-    const { cart, bookingDates, packageInfo } = await req.json(); // <-- MODIFICADO
-    
-    if (!Array.isArray(cart) || cart.length === 0) {
-      return NextResponse.json({ error: "El carrito está vacío." }, { status: 400 });
-    }
+  try {
+    const { cart, bookingDates, packageInfo } = await req.json(); // <-- MODIFICADO
 
-    // --- VALIDACIÓN MODIFICADA ---
+    if (!Array.isArray(cart) || cart.length === 0) {
+      return NextResponse.json({ error: "El carrito está vacío." }, { status: 400 });
+    }
+
+    // --- VALIDACIÓN MODIFICADA ---
     // Revisa que bookingDates sea un objeto y que cada item del carrito tenga una fecha
-    if (!bookingDates || typeof bookingDates !== 'object' || cart.some(item => !bookingDates[item.id])) {
-      return NextResponse.json({ 
-        error: "Debe seleccionar una fecha para CADA mentoría." 
-      }, { status: 400 });
-    }
-    // --- FIN VALIDACIÓN ---
+    if (!bookingDates || typeof bookingDates !== 'object' || cart.some(item => !bookingDates[item.id])) {
+      return NextResponse.json({
+        error: "Debe seleccionar una fecha para CADA mentoría."
+      }, { status: 400 });
+    }
+    // --- FIN VALIDACIÓN ---
 
-    const currency = process.env.STRIPE_CURRENCY || "usd";
+    const currency = process.env.STRIPE_CURRENCY || "usd";
 
-    const line_items = cart.map((item) => {
+    const line_items = cart.map((item) => {
       // El precio ya viene en 0 si es la oferta 2+1
-      const unitAmount = Math.round(Number(item.price) * 100); 
-      const image = toHttpsAbsolute(item.imageUrl);
-      
-      return {
-        price_data: {
-          currency,
-          product_data: {
-            name: item.title,
-            description: item.description?.slice(0, 200) || "Mentoría VIP",
-            images: image ? [image] : undefined,
-            metadata: {
-              id: String(item.id),
-              format: item.format || "",
-            },
-          },
-          unit_amount: unitAmount,
-        },
-        quantity: item.quantity || 1,
-      };
-    });
+      const unitAmount = Math.round(Number(item.price) * 100);
+      const image = toHttpsAbsolute(item.imageUrl);
 
-    const origin = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    const success_url = `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
-    const cancel_url = `${origin}/checkout/cancel`;
+      return {
+        price_data: {
+          currency,
+          product_data: {
+            name: item.title,
+            description: item.description?.slice(0, 200) || "Mentoría VIP",
+            images: image ? [image] : undefined,
+            metadata: {
+              id: String(item.id),
+              format: item.format || "",
+            },
+          },
+          unit_amount: unitAmount,
+        },
+        quantity: item.quantity || 1,
+      };
+    });
 
-     // Optimizar metadata para cumplir con límite de 500 caracteres por campo
+    const origin = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const success_url = `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`;
+    const cancel_url = `${origin}/checkout/cancel`;
+
+    // Optimizar metadata para cumplir con límite de 500 caracteres por campo
     // Stripe permite hasta 50 campos de metadata, cada uno con máximo 500 caracteres
-    
+
     const metadata = {
       payment_type: "full",
       total_items: String(cart.length),
@@ -72,15 +72,15 @@ export async function POST(req) {
 
     // Guardar IDs de cursos (compacto)
     metadata.course_ids = cart.map(item => item.id).join(',');
-    
+
     // Guardar precios (compacto)
     metadata.prices = cart.map(item => item.price).join(',');
-    
+
     // Guardar fechas de reserva de forma compacta
     const datesCompact = Object.entries(bookingDates)
       .map(([id, date]) => `${id}:${date}`)
       .join('|');
-    
+
     // Si las fechas son muy largas, dividirlas en múltiples campos
     if (datesCompact.length > 500) {
       const chunks = datesCompact.match(/.{1,450}/g) || [];
@@ -90,7 +90,7 @@ export async function POST(req) {
     } else {
       metadata.booking_dates = datesCompact;
     }
-    
+
     // Guardar títulos de forma compacta (solo si cabe)
     const titlesCompact = cart.map(item => item.title.substring(0, 30)).join('|');
     if (titlesCompact.length <= 500) {
@@ -102,7 +102,7 @@ export async function POST(req) {
       metadata.package = `${packageInfo.type}|${packageInfo.discount}|${packageInfo.marketingFormat || 'none'}`;
     }
 
-     const session = await stripe.checkout.sessions.create({
+    const session = await stripe.checkout.sessions.create({
       mode: "payment",
       line_items,
       success_url,
@@ -137,31 +137,50 @@ export async function POST(req) {
       },
     });
 
-    return NextResponse.json({ url: session.url, sessionId: session.id });
-  } catch (err) {
-    console.error("Error creando sesión de checkout:", err);
-    return NextResponse.json({ 
-      error: "No se pudo crear la sesión",
-      details: err.message 
-    }, { status: 500 });
-  }
+    return NextResponse.json({ url: session.url, sessionId: session.id });
+  } catch (err) {
+    console.error("Error creando sesión de checkout:", err);
+    return NextResponse.json({
+      error: "No se pudo crear la sesión",
+      details: err.message
+    }, { status: 500 });
+  }
 }
 
 // Handler para verificar sesión (GET)
 export async function GET(req) {
-  try {
-    const { searchParams } = new URL(req.url);
-    const sessionId = searchParams.get("session_id");
+  try {
+    const { searchParams } = new URL(req.url);
+    const sessionId = searchParams.get("session_id");
 
-    if (!sessionId) {
-      return NextResponse.json({ error: "Session ID requerido" }, { status: 400 });
-    }
+    if (!sessionId) {
+      return NextResponse.json({ error: "Session ID requerido" }, { status: 400 });
+    }
 
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
 
-     // Reconstruir datos desde metadata optimizada
+    // Reconstruir datos desde metadata optimizada
     const paymentType = session.metadata?.payment_type || "full";
-    
+    const type = session.metadata?.type || null; // "presencial_class" si aplica
+
+    // Obtener nombre del cliente desde custom_fields
+    let customerName = "";
+    if (session.custom_fields && session.custom_fields.length > 0) {
+      const nameField = session.custom_fields.find(f => f.key === 'customer_name');
+      if (nameField && nameField.text) {
+        customerName = nameField.text.value || "";
+      }
+    }
+
+    // Datos específicos para clases presenciales
+    const courseTitle = session.metadata?.courseTitle || "";
+    const courseId = session.metadata?.courseId || "";
+    const dateText = session.metadata?.dateText || "";
+    const bookingDate = session.metadata?.bookingDate || "";
+    const fullPrice = parseFloat(session.metadata?.full_price || 0);
+    const presencialReservation = parseFloat(session.metadata?.reservation_amount || 0);
+    const presencialRemaining = parseFloat(session.metadata?.remaining_balance || 0);
+
     // Reconstruir fechas de reserva
     let bookingDates = null;
     if (session.metadata?.booking_dates) {
@@ -189,19 +208,19 @@ export async function GET(req) {
         });
       }
     }
-    
+
     // Reconstruir resumen del carrito
     let cartSummary = null;
     if (session.metadata?.course_ids) {
       const ids = session.metadata.course_ids.split(',');
       const titles = session.metadata.course_titles?.split('|') || [];
-      
+
       // Detectar si es reserva o pago completo
       if (paymentType === 'reservation') {
         const fullPrices = session.metadata.full_prices?.split(',') || [];
         const remaining = session.metadata.remaining?.split(',') || [];
         const reservationAmount = parseFloat(session.metadata?.reservation_amount || 250);
-        
+
         cartSummary = ids.map((id, index) => ({
           id,
           full_price: parseFloat(fullPrices[index] || 0),
@@ -212,7 +231,7 @@ export async function GET(req) {
         }));
       } else {
         const prices = session.metadata.prices?.split(',') || [];
-        
+
         cartSummary = ids.map((id, index) => ({
           id,
           price: parseFloat(prices[index] || 0),
@@ -222,16 +241,56 @@ export async function GET(req) {
       }
     }
 
+    // Calcular totales
+    let totalPaid = 0;
+    let totalRemaining = 0;
+    let totalFull = 0;
+
+    if (type === 'presencial_class') {
+      if (paymentType === 'reservation') {
+        totalPaid = presencialReservation;
+        totalRemaining = presencialRemaining;
+        totalFull = fullPrice;
+      } else {
+        totalPaid = fullPrice;
+        totalFull = fullPrice;
+      }
+    } else if (cartSummary && cartSummary.length > 0) {
+      if (paymentType === 'reservation') {
+        totalPaid = cartSummary.reduce((sum, item) => sum + (item.reservation_paid || 0), 0);
+        totalRemaining = cartSummary.reduce((sum, item) => sum + (item.remaining_balance || 0), 0);
+        totalFull = cartSummary.reduce((sum, item) => sum + (item.full_price || 0), 0);
+      } else {
+        totalPaid = cartSummary.reduce((sum, item) => sum + (item.price || 0), 0);
+        totalFull = totalPaid;
+      }
+    }
+
     return NextResponse.json({
       status: session.status,
       customer_email: session.customer_details?.email,
+      customer_phone: session.customer_details?.phone,
       payment_status: session.payment_status,
       payment_type: paymentType,
+      type: type,
+      customer_name: customerName,
+      course_title: courseTitle,
+      course_id: courseId,
+      date_text: dateText,
+      booking_date: bookingDate,
+      full_price: fullPrice || totalFull,
+      reservation_amount: presencialReservation || totalPaid,
+      remaining_balance: presencialRemaining || totalRemaining,
       booking_dates: bookingDates,
       cart_summary: cartSummary,
+      totals: {
+        paid: totalPaid,
+        remaining: totalRemaining,
+        full: totalFull
+      }
     });
-  } catch (err) {
-    console.error("Error recuperando sesión:", err);
-    return NextResponse.json({ error: "Error al recuperar sesión" }, { status: 500 });
-  }
+  } catch (err) {
+    console.error("Error recuperando sesión:", err);
+    return NextResponse.json({ error: "Error al recuperar sesión" }, { status: 500 });
+  }
 }

@@ -123,18 +123,24 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
 
-        {/* Script para fix de viewport height en mobile */}
+        {/* Script para fix de viewport height en mobile - NO actualiza en resize para evitar saltos con barras de Instagram/iOS */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                function setVH() {
-                  let vh = window.innerHeight * 0.01;
-                  document.documentElement.style.setProperty('--vh', vh + 'px');
-                }
-                setVH();
-                window.addEventListener('resize', setVH);
-                window.addEventListener('orientationchange', setVH);
+                // Capturar altura inicial UNA sola vez
+                var initialVh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', initialVh + 'px');
+                document.documentElement.style.setProperty('--initial-vh', initialVh + 'px');
+                
+                // Solo actualizar en cambio de orientación (no en resize normal)
+                window.addEventListener('orientationchange', function() {
+                  setTimeout(function() {
+                    var vh = window.innerHeight * 0.01;
+                    document.documentElement.style.setProperty('--vh', vh + 'px');
+                    document.documentElement.style.setProperty('--initial-vh', vh + 'px');
+                  }, 100);
+                });
               })();
             `,
           }}

@@ -262,6 +262,16 @@ html {
 
   /* Prevenir scroll horizontal */
   overflow-x: hidden;
+
+  /* Fix para iOS/Instagram: usar altura inicial fija, no dinámica */
+  height: 100%;
+  height: -webkit-fill-available;
+}
+
+/* Fix para iOS Safari/Instagram viewport */
+body {
+  min-height: 100%;
+  min-height: -webkit-fill-available;
 }
 
     /* Usar min-height en lugar de height para evitar el problema de viewport */

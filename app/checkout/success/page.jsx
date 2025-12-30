@@ -3,7 +3,7 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { CheckCircleIcon, SparklesIcon, AcademicCapIcon, HomeIcon, CreditCardIcon, CalendarDaysIcon } from '@heroicons/react/24/solid';
+import { CheckCircleIcon, SparklesIcon, AcademicCapIcon, HomeIcon, CreditCardIcon, CalendarDaysIcon, UserIcon } from '@heroicons/react/24/solid';
 
 function SuccessPageContent() {
   const searchParams = useSearchParams();
@@ -13,10 +13,11 @@ function SuccessPageContent() {
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
     if (sessionId) {
+      // Try checkout endpoint first (for mentorías VIP)
       fetch(`/api/checkout?session_id=${sessionId}`)
         .then(res => res.json())
         .then(data => {
-          console.log('Session data:', data);
+          console.log('Session data from checkout:', data);
           setSessionData(data);
           setLoading(false);
         })
@@ -30,8 +31,29 @@ function SuccessPageContent() {
   }, [searchParams]);
 
   const isReservation = sessionData?.payment_type === 'reservation';
+  const isPresencialClass = sessionData?.type === 'presencial_class';
   const cartSummary = sessionData?.cart_summary || [];
   const bookingDates = sessionData?.booking_dates || {};
+
+  // Datos específicos para clases presenciales
+  const customerName = sessionData?.customer_name || '';
+  const courseTitle = sessionData?.course_title || '';
+  const courseDate = sessionData?.date_text || sessionData?.booking_date || '';
+  const fullPrice = sessionData?.full_price || 0;
+  const reservationAmount = sessionData?.reservation_amount || 0;
+  const remainingBalance = sessionData?.remaining_balance || 0;
+
+  // Función para formatear fecha
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '';
+    try {
+      const [y, m, d] = dateStr.split('-');
+      const f = new Date(y, m - 1, d);
+      return f.toLocaleDateString('es-ES', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+    } catch {
+      return dateStr;
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-6 py-20 font-sans bg-gradient-to-br from-green-50 via-white to-brand-pink-light/20">
@@ -56,7 +78,7 @@ function SuccessPageContent() {
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white leading-tight">
-              ¡Inscripción Confirmada!
+              {isReservation ? '¡Reserva Confirmada!' : '¡Inscripción Confirmada!'}
             </h1>
           </div>
 
@@ -75,42 +97,89 @@ function SuccessPageContent() {
               )}
             </p>
 
+            {/* Detalles del participante y curso (para clases presenciales) */}
+            {!loading && sessionData && (isPresencialClass || courseTitle) && (
+              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border-2 border-purple-200 rounded-2xl p-6 space-y-4">
+                <div className="flex items-center justify-center gap-2 text-purple-700 mb-3">
+                  <UserIcon className="h-5 w-5" />
+                  <span className="text-sm font-black uppercase tracking-wide">
+                    Detalles de tu Inscripción
+                  </span>
+                </div>
+
+                {customerName && (
+                  <div className="bg-white rounded-xl p-4 border border-purple-100">
+                    <p className="text-sm text-brand-text-light uppercase tracking-wide font-bold mb-1">Participante</p>
+                    <p className="text-xl font-black text-brand-text">{customerName}</p>
+                  </div>
+                )}
+
+                {courseTitle && (
+                  <div className="bg-white rounded-xl p-4 border border-purple-100">
+                    <p className="text-sm text-brand-text-light uppercase tracking-wide font-bold mb-1">Curso</p>
+                    <p className="text-lg font-bold text-brand-text">{courseTitle}</p>
+                  </div>
+                )}
+
+                {courseDate && (
+                  <div className="bg-white rounded-xl p-4 border border-purple-100 flex items-center justify-center gap-3">
+                    <CalendarDaysIcon className="h-6 w-6 text-purple-600" />
+                    <div>
+                      <p className="text-sm text-brand-text-light uppercase tracking-wide font-bold">Fecha</p>
+                      <p className="text-lg font-bold text-brand-text">{courseDate}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Información del tipo de pago */}
             {!loading && sessionData && (
               <div className="bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-2xl p-6 space-y-3">
                 <div className="flex items-center justify-center gap-2 text-blue-700 mb-3">
                   <CreditCardIcon className="h-5 w-5" />
                   <span className="text-sm font-black uppercase tracking-wide">
-                    {isReservation ? 'Pago de Reserva' : 'Pago Completo'}
+                    {isReservation ? 'Pago de Reserva (30%)' : 'Pago Completo'}
                   </span>
                 </div>
-                
+
                 {isReservation ? (
                   <div className="space-y-3">
-                    <p className="text-base text-brand-text font-medium">
-                      Has pagado <strong className="text-blue-600">${cartSummary.reduce((sum, item) => sum + 250 * (item.qty || 1), 0).toFixed(2)}</strong> para asegurar tu cupo.
-                    </p>
+                    {/* Monto pagado */}
+                    <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                      <p className="text-sm text-green-700 font-bold uppercase tracking-wide mb-1">✓ Pagado Hoy</p>
+                      <p className="text-2xl font-black text-green-600">
+                        ${reservationAmount || (isPresencialClass ? reservationAmount : cartSummary.reduce((sum, item) => sum + 250 * (item.qty || 1), 0)).toFixed(2)} USD
+                      </p>
+                    </div>
+
+                    {/* Saldo pendiente */}
                     <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-4">
                       <p className="text-sm text-brand-text font-bold flex items-start gap-2">
                         <span className="text-xl">💰</span>
                         <span>
-                          <strong>Saldo pendiente:</strong> ${cartSummary.reduce((sum, item) => sum + (item.remaining_balance || 0) * (item.qty || 1), 0).toFixed(2)}
+                          <strong>Saldo pendiente:</strong> ${remainingBalance || (isPresencialClass ? remainingBalance : cartSummary.reduce((sum, item) => sum + (item.remaining_balance || 0) * (item.qty || 1), 0)).toFixed(2)} USD
                           <br />
                           <span className="text-xs text-brand-text-light mt-1 block">
-                            Este monto se paga el día de la clase presencialmente con mariajesus.
+                            Este monto se paga el día de la clase presencialmente.
                           </span>
                         </span>
                       </p>
                     </div>
                   </div>
                 ) : (
-                  <p className="text-base text-brand-text font-medium">
-                    Has completado el pago total de tu mentoría. <strong>¡Todo listo para comenzar!</strong>
-                  </p>
+                  <div className="bg-green-50 border border-green-200 rounded-xl p-4">
+                    <p className="text-sm text-green-700 font-bold uppercase tracking-wide mb-1">✓ Pago Total Completado</p>
+                    <p className="text-2xl font-black text-green-600">
+                      ${fullPrice || (isPresencialClass ? fullPrice : cartSummary.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 1), 0)).toFixed(2)} USD
+                    </p>
+                    <p className="text-sm text-green-600 mt-1 font-medium">¡Todo listo para tu capacitación!</p>
+                  </div>
                 )}
               </div>
             )}
 
+            {/* Próximos pasos */}
             <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-6 space-y-3">
               <div className="flex items-center justify-center gap-2 text-green-700">
                 <CheckCircleIcon className="h-5 w-5" />
@@ -124,7 +193,7 @@ function SuccessPageContent() {
                     1
                   </span>
                   <span className="font-medium">
-                    Recibirás un correo de confirmación con todos los detalles de tu mentoría
+                    Recibirás un correo de confirmación con todos los detalles de tu {isPresencialClass ? 'clase' : 'mentoría'}
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -132,9 +201,9 @@ function SuccessPageContent() {
                     2
                   </span>
                   <span className="font-medium">
-                    {isReservation 
+                    {isReservation
                       ? 'Nuestro equipo te contactará en las próximas 24-48 horas para confirmar los detalles y recordarte el saldo pendiente'
-                      : 'Nuestro equipo te contactará en las próximas 24-48 horas para confirmar los detalles de tu mentoría'}
+                      : 'Nuestro equipo te contactará en las próximas 24-48 horas para confirmar todos los detalles'}
                   </span>
                 </li>
                 <li className="flex items-start gap-3">
@@ -164,13 +233,13 @@ function SuccessPageContent() {
                   <HomeIcon className="h-5 w-5" />
                   Volver al Inicio
                 </Link>
-                
+
                 <Link
-                  href="/academia"
+                  href={isPresencialClass ? "/presencial" : "/academia"}
                   className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-brand-text/20 bg-white text-brand-text px-8 py-4 text-base font-black transition-all duration-300 hover:border-brand-text/40 hover:bg-brand-gray-light/30"
                 >
                   <AcademicCapIcon className="h-5 w-5" />
-                  Ver Más Mentorías
+                  {isPresencialClass ? 'Ver Más Clases' : 'Ver Más Mentorías'}
                 </Link>
               </div>
             </div>

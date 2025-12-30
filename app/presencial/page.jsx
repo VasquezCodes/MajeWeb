@@ -16,12 +16,15 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import Image from 'next/image';
-import { CheckIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
+import { CheckIcon, ArrowRightIcon, CreditCardIcon, CalendarDaysIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon, XMarkIcon } from '@heroicons/react/24/solid';
 
 export default function PresencialPage() {
     const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(true);
     const [processing, setProcessing] = useState(null);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState(null);
 
     useEffect(() => {
         const q = query(collection(db, 'presencial_courses'));
@@ -39,10 +42,41 @@ export default function PresencialPage() {
         return () => unsubscribe();
     }, []);
 
-    const handleBooking = async (courseId) => {
+    // Open payment options modal
+    const openPaymentOptions = (course) => {
+        setSelectedCourse(course);
+        setShowPaymentModal(true);
+    };
+
+    // Handle full payment
+    const handleFullPayment = async (courseId) => {
         setProcessing(courseId);
         try {
             const response = await fetch('/api/presencial/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ courseId }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Error al iniciar pago');
+            }
+
+            window.location.href = data.url;
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+            setProcessing(null);
+        }
+    };
+
+    // Handle 30% reservation payment
+    const handleReservationPayment = async (courseId) => {
+        setProcessing(courseId);
+        try {
+            const response = await fetch('/api/presencial/checkout-reservation', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ courseId }),
@@ -60,6 +94,11 @@ export default function PresencialPage() {
             alert(error.message);
             setProcessing(null);
         }
+    };
+
+    // Legacy handler for backwards compatibility (now opens modal)
+    const handleBooking = (course) => {
+        openPaymentOptions(course);
     };
 
     if (loading) {
@@ -173,7 +212,7 @@ export default function PresencialPage() {
                                             <div className="flex flex-col sm:flex-row gap-4 pt-4">
                                                 <Button
                                                     className="h-14 px-8 text-base font-bold uppercase tracking-widest bg-zinc-900 hover:bg-black text-white shadow-lg w-full sm:w-auto"
-                                                    onClick={() => handleBooking(course.id)}
+                                                    onClick={() => handleBooking(course)}
                                                     disabled={isFull || processing === course.id}
                                                 >
                                                     {processing === course.id ? 'Procesando...' : isFull ? 'Lista de Espera' : 'Reservar Cupo'}
@@ -246,7 +285,7 @@ export default function PresencialPage() {
                                                         <div className="sticky bottom-0 bg-white pt-4 pb-2 border-t mt-4 z-20">
                                                             <Button
                                                                 className="w-full h-12 text-base font-bold uppercase"
-                                                                onClick={() => handleBooking(course.id)}
+                                                                onClick={() => handleBooking(course)}
                                                                 disabled={isFull || processing === course.id}
                                                             >
                                                                 {processing === course.id ? 'Procesando...' : isFull ? 'Sold Out' : `Reservar Cupo - $${course.price / 100} USD`}
@@ -264,6 +303,128 @@ export default function PresencialPage() {
                     );
                 })}
             </div>
+
+            {/* === Imagen Final === */}
+            <section className="w-full px-4 md:px-6 lg:px-8 py-12 md:py-16">
+                <div className="max-w-4xl mx-auto">
+                    <div className="relative w-full overflow-hidden rounded-3xl shadow-xl">
+                        <Image
+                            src="/carruselMaje/2312_8.jpg"
+                            alt="Maje Nails Academy - Formación Profesional"
+                            width={1200}
+                            height={800}
+                            className="w-full h-auto"
+                            sizes="(max-width: 768px) 100vw, 896px"
+                        />
+                    </div>
+                </div>
+            </section>
+
+            {/* === Modal de Opciones de Pago === */}
+            <Dialog open={showPaymentModal} onOpenChange={(open) => {
+                setShowPaymentModal(open);
+                if (!open) {
+                    setSelectedCourse(null);
+                    setProcessing(null);
+                }
+            }}>
+                <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0 gap-0 border-0 rounded-3xl focus:outline-none [&>button]:hidden">
+                    {selectedCourse && (() => {
+                        const priceUSD = (selectedCourse.price / 100).toFixed(2);
+                        const reservationUSD = (selectedCourse.price / 100 * 0.3).toFixed(2);
+                        const remainingUSD = (selectedCourse.price / 100 * 0.7).toFixed(2);
+
+                        return (
+                            <div className="relative">
+                                {/* Header */}
+                                <div className="sticky top-0 z-10 flex items-center justify-between p-6 bg-zinc-900 text-white">
+                                    <div className="flex-1 pr-4">
+                                        <DialogTitle className="text-xl font-bold text-white mb-1">
+                                            Elige tu forma de pago
+                                        </DialogTitle>
+                                        <DialogDescription className="text-sm text-zinc-300">
+                                            {selectedCourse.title}
+                                        </DialogDescription>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowPaymentModal(false)}
+                                        className="flex-shrink-0 w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition-all"
+                                    >
+                                        <XMarkIcon className="h-5 w-5 text-white" />
+                                    </button>
+                                </div>
+
+                                {/* Contenido */}
+                                <div className="p-6 space-y-4">
+                                    {/* Info del curso */}
+                                    <div className="bg-zinc-50 rounded-2xl p-4 text-center">
+                                        <p className="text-sm text-zinc-500 mb-1">Fecha</p>
+                                        <p className="text-lg font-bold text-zinc-900">{selectedCourse.dates?.replace('-', ' y ')}</p>
+                                        <p className="text-2xl font-bold text-zinc-900 mt-2">Total: ${priceUSD} USD</p>
+                                    </div>
+
+                                    {/* Opción 1: Pago Completo */}
+                                    <div className="bg-zinc-50 border-2 border-zinc-200 rounded-2xl p-5 space-y-3">
+                                        <div className="flex items-start gap-3">
+                                            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center">
+                                                <CreditCardIcon className="h-5 w-5 text-zinc-700" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h4 className="text-lg font-serif font-bold text-zinc-900 mb-1">
+                                                    Pago Completo
+                                                </h4>
+                                                <p className="text-sm text-zinc-600 mb-2">
+                                                    Paga el monto total ahora. <strong>Aceptamos Afterpay y Klarna.</strong>
+                                                </p>
+                                                <div className="text-2xl font-serif font-bold text-zinc-900">
+                                                    ${priceUSD} USD
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <Button
+                                            onClick={() => handleFullPayment(selectedCourse.id)}
+                                            disabled={processing === selectedCourse.id}
+                                            className="w-full h-12 bg-zinc-900 hover:bg-black text-white font-bold uppercase tracking-widest"
+                                        >
+                                            {processing === selectedCourse.id ? 'Procesando...' : 'Pagar Completo'}
+                                        </Button>
+                                    </div>
+
+                                    {/* Opción 2: Reserva 30% */}
+                                    <div className="bg-zinc-50 border-2 border-zinc-200 rounded-2xl p-5 space-y-3">
+                                        <div className="flex items-start gap-3">
+                                            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-zinc-100 flex items-center justify-center">
+                                                <CalendarDaysIcon className="h-5 w-5 text-zinc-700" />
+                                            </div>
+                                            <div className="flex-1">
+                                                <h4 className="text-lg font-serif font-bold text-zinc-900 mb-1">
+                                                    Reserva tu Cupo
+                                                </h4>
+                                                <p className="text-sm text-zinc-600 mb-2">
+                                                    Asegura tu lugar con el <strong>30% del total</strong>. El saldo restante <strong>(${remainingUSD} USD)</strong> se paga el día de la clase presencialmente.
+                                                </p>
+                                                <div className="text-2xl font-serif font-bold text-zinc-900">
+                                                    ${reservationUSD} USD
+                                                </div>
+                                                <p className="text-xs text-zinc-500 mt-1 italic">
+                                                    * El saldo pendiente se paga presencialmente
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <Button
+                                            onClick={() => handleReservationPayment(selectedCourse.id)}
+                                            disabled={processing === selectedCourse.id}
+                                            className="w-full h-12 bg-zinc-900 hover:bg-black text-white font-bold uppercase tracking-widest"
+                                        >
+                                            {processing === selectedCourse.id ? 'Procesando...' : 'Reservar con 30%'}
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })()}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
