@@ -8,6 +8,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { AnimatedText } from "@/components/ui/AnimatedText";
+import { MorphText } from '@/components/ui/MorphText';
 import {
     Dialog,
     DialogContent,
@@ -198,7 +199,7 @@ export default function PresencialPage() {
                                             <div className="space-y-3">
                                                 <div className="flex items-center gap-3 text-zinc-600">
                                                     <CheckIcon className="h-5 w-5 text-zinc-900" />
-                                                    <span>Capacidad exclusiva: <AnimatedText text="Cupos limitados" className="text-orange-600 font-bold font-serif italic tracking-wider text-lg" duration={4} stagger={0.1} /></span>
+                                                    <span>Capacidad exclusiva: <MorphText className="inline-block w-48 h-auto align-middle" /></span>
                                                 </div>
                                                 <div className="flex items-center gap-3 text-zinc-600">
                                                     <CheckIcon className="h-5 w-5 text-zinc-900" />
