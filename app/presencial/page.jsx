@@ -113,9 +113,9 @@ export default function PresencialPage() {
     // fallback images mapping in case DB isn't updated instantly for the user's session
     const getImage = (course) => {
         // Enforce the new images based on ID if the DB one is old or missing
-        if (course.id.includes('manicura')) return '/carruselMaje/2312_2.jpg';
-        if (course.id.includes('dual')) return '/carruselMaje/sistemaDualGelPro.jpg';
-        if (course.id.includes('poly')) return '/carruselMaje/polygelLevelUp.jpg';
+        if (course.id.includes('manicura')) return '/carruselMaje/manicuraRusa.jpg';
+        if (course.id.includes('dual')) return '/carruselMaje/sistemaDual.jpg';
+        if (course.id.includes('poly')) return '/carruselMaje/polyGel.jpg';
         return course.image || '/placeholder.jpg';
     };
 
