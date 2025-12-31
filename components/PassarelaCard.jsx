@@ -69,23 +69,26 @@ export default function PassarelaCard({
                                     )}
                                 </div>
 
-                                {/* CTA con Shadcn Button */}
+                                {/* CTA con Shadcn Button - Diseño Premium */}
                                 {cta && ctaUrl && (
-                                    <div className="pt-6">
+                                    <div className="pt-8">
                                         <Button
                                             asChild
                                             variant="outline"
-                                            className="w-full md:w-auto h-auto py-4 px-6 border-brand-black/10 text-brand-black hover:bg-brand-black hover:text-brand-white transition-all duration-300 rounded-xl group justify-between gap-6"
+                                            className="relative w-full md:w-auto h-auto py-4 px-6 md:py-5 md:px-8 border-2 border-brand-black text-brand-black bg-transparent overflow-hidden rounded-2xl group flex items-center justify-center md:justify-between gap-4 md:gap-6 hover:text-brand-white transition-colors duration-500"
                                         >
                                             <Link
                                                 href={ctaUrl}
                                                 target={ctaUrl.startsWith('http') ? '_blank' : undefined}
                                                 rel={ctaUrl.startsWith('http') ? 'noopener noreferrer' : undefined}
                                             >
-                                                <span className="uppercase tracking-widest text-xs md:text-sm font-bold truncate">
+                                                {/* Fondo animado que se desliza */}
+                                                <span className="absolute inset-0 bg-brand-black transform -translate-x-full group-hover:translate-x-0 transition-transform duration-500 ease-out" />
+
+                                                <span className="relative z-10 uppercase tracking-[0.12em] md:tracking-[0.15em] text-[11px] md:text-sm font-bold">
                                                     {cta}
                                                 </span>
-                                                <ArrowRightIcon className="w-4 h-4 transform group-hover:translate-x-1 transition-transform flex-shrink-0" />
+                                                <ArrowRightIcon className="relative z-10 w-4 h-4 md:w-5 md:h-5 transform group-hover:translate-x-2 transition-transform duration-300 flex-shrink-0" />
                                             </Link>
                                         </Button>
                                     </div>

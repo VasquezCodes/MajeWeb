@@ -16,7 +16,7 @@ const pasarelas = [
       "Cada programa está enfocado en perfeccionar la técnica, ganar seguridad en mesa y desarrollar un criterio profesional que se refleja en resultados, confianza y valor.",
       "Aquí no vienes a improvisar. Vienes a formarte con intención."
     ],
-    cta: "Ver fechas y programas disponibles",
+    cta: "Ver programas 2026",
     ctaUrl: "/presencial",
     image: "/carruselMaje/2312_1.jpg",
     imagePosition: "right"
