@@ -248,6 +248,7 @@ export async function POST(req) {
         id: session.metadata.courseId,
         title: session.metadata.courseTitle,
         price: session.amount_total / 100,
+        full_price: session.metadata.full_price ? parseFloat(session.metadata.full_price) : undefined,
         quantity: 1,
         // These fields help with email consistency
         dateText: session.metadata.dateText,
@@ -335,8 +336,10 @@ export async function POST(req) {
           dateText: item.dateText,
           status: 'paid',
           createdAt: FieldValue.serverTimestamp(),
-          paymentType: 'full',
           amount: (item.price || 0) * 100,
+          price: (item.full_price || item.price || 0) * 100,
+          pricePaid: (item.price || 0) * 100,
+          paymentType: paymentType || 'full',
           currency,
           source: 'stripe-webhook'
         });
