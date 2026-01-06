@@ -75,7 +75,7 @@ export async function POST(req) {
                         currency,
                         product_data: {
                             name: `Reserva 30%: ${title} ${originalPrice !== price ? '(PREVENTA)' : ''}`,
-                            description: `Pago de reserva ($${reservationUSD.toFixed(2)}). Saldo restante: $${remainingUSD.toFixed(2)} USD (pago presencial el día de la clase).`,
+                            description: `Pago de reserva ($${reservationUSD.toFixed(2)}). Saldo restante: $${remainingUSD.toFixed(2)} USD (pago 3 días antes de la clase).`,
                             metadata: {
                                 courseId: courseId,
                                 type: "presencial_class_reservation",
