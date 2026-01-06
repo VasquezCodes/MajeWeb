@@ -145,6 +145,16 @@ export default function PresencialPage() {
                     const isImageRight = index % 2 === 0; // Alternate layout
                     const courseImage = getImage(course);
 
+                    // Logic for Presale
+                    const now = new Date();
+                    const cutoffDate = new Date('2026-01-17T00:00:00-05:00');
+                    let displayPrice = course.price;
+                    let isPresale = false;
+                    if (course.price === 80000 && now < cutoffDate) {
+                        displayPrice = 75000;
+                        isPresale = true;
+                    }
+
                     return (
                         <section key={course.id} className="w-full px-4 md:px-6 lg:px-8">
                             <Card className="w-full max-w-7xl mx-auto overflow-hidden rounded-3xl shadow-xl border-zinc-100 bg-white">
@@ -164,6 +174,7 @@ export default function PresencialPage() {
                                                 {course.dates}
                                             </Badge>
                                             {isFull && <Badge variant="destructive">SOLD OUT</Badge>}
+                                            {isPresale && !isFull && <Badge className="bg-indigo-600 text-white border-0">PREVENTA: USD $750</Badge>}
                                             {!isFull && spotsLeft <= 5 && <Badge className="bg-amber-500 hover:bg-amber-600 text-white border-0">¡Últimos cupos!</Badge>}
                                         </div>
                                     </div>
@@ -188,7 +199,17 @@ export default function PresencialPage() {
                                             <div className="grid grid-cols-2 gap-6 text-sm md:text-base font-light text-zinc-600">
                                                 <div className="flex flex-col gap-1">
                                                     <span className="font-bold text-zinc-900 uppercase tracking-wider text-xs">Inversión</span>
-                                                    <span className="text-2xl font-serif text-zinc-900">${course.price / 100} USD</span>
+                                                    <div className="flex flex-col">
+                                                        {isPresale ? (
+                                                            <>
+                                                                <span className="text-sm text-zinc-400 line-through">${course.price / 100} USD</span>
+                                                                <span className="text-2xl font-serif text-indigo-700 font-bold">${displayPrice / 100} USD</span>
+                                                                <span className="text-xs text-indigo-600 font-semibold">Disponible hasta el 17 de Enero</span>
+                                                            </>
+                                                        ) : (
+                                                            <span className="text-2xl font-serif text-zinc-900">${course.price / 100} USD</span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                                 <div className="flex flex-col gap-1">
                                                     <span className="font-bold text-zinc-900 uppercase tracking-wider text-xs">Duración</span>
@@ -290,7 +311,7 @@ export default function PresencialPage() {
                                                                 onClick={() => handleBooking(course)}
                                                                 disabled={isFull || processing === course.id}
                                                             >
-                                                                {processing === course.id ? 'Procesando...' : isFull ? 'Sold Out' : `Reservar Cupo - $${course.price / 100} USD`}
+                                                                {processing === course.id ? 'Procesando...' : isFull ? 'Sold Out' : `Reservar Cupo - $${displayPrice / 100} USD`}
                                                             </Button>
                                                         </div>
                                                     </DialogContent>
@@ -332,7 +353,17 @@ export default function PresencialPage() {
             }}>
                 <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-0 gap-0 border-0 rounded-3xl focus:outline-none [&>button]:hidden">
                     {selectedCourse && (() => {
-                        const rawPrice = selectedCourse.price / 100;
+                        // Presale Logic for Modal
+                        const now = new Date();
+                        const cutoffDate = new Date('2026-01-17T00:00:00-05:00');
+                        let finalPrice = selectedCourse.price;
+                        let isPresaleModal = false;
+                        if (selectedCourse.price === 80000 && now < cutoffDate) {
+                            finalPrice = 75000;
+                            isPresaleModal = true;
+                        }
+
+                        const rawPrice = finalPrice / 100;
                         const rawRes = rawPrice * 0.3;
                         const rawRem = rawPrice * 0.7;
 

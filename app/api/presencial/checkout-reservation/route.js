@@ -26,7 +26,16 @@ export async function POST(req) {
         }
 
         const courseData = courseDoc.data();
-        const { title, price, capacity, enrolled } = courseData;
+        const { title, price: originalPrice, capacity, enrolled } = courseData;
+
+        // Lógica de Preventa: Si es antes del 17 de Enero 2026 y el precio es $800, bajar a $750 base
+        const now = new Date();
+        const cutoffDate = new Date('2026-01-17T00:00:00-05:00');
+
+        let price = originalPrice;
+        if (originalPrice === 80000 && now < cutoffDate) {
+            price = 75000;
+        }
 
         if (enrolled >= capacity) {
             return NextResponse.json({ error: "Lo sentimos, el cupo para este curso está lleno." }, { status: 409 });
@@ -65,7 +74,7 @@ export async function POST(req) {
                     price_data: {
                         currency,
                         product_data: {
-                            name: `Reserva 30%: ${title}`,
+                            name: `Reserva 30%: ${title} ${originalPrice !== price ? '(PREVENTA)' : ''}`,
                             description: `Pago de reserva ($${reservationUSD.toFixed(2)}). Saldo restante: $${remainingUSD.toFixed(2)} USD (pago presencial el día de la clase).`,
                             metadata: {
                                 courseId: courseId,

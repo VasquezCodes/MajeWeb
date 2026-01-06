@@ -24,7 +24,19 @@ export async function POST(req) {
         }
 
         const courseData = courseDoc.data();
-        const { title, price, capacity, enrolled } = courseData;
+        const { title, price: originalPrice, capacity, enrolled } = courseData;
+
+        // Lógica de Preventa: Si es antes del 17 de Enero 2026 y el precio es $800, cobrar $750
+        const now = new Date();
+        const cutoffDate = new Date('2026-01-17T00:00:00-05:00'); // Assuming EST or consistent timezone, or just use generic ISO
+        // Let's use generic local check or UTC. Given the context, likely local.
+        // Safer to use a specific string comparison or simple timestamp.
+        // User said "antes del 17 de enero".
+
+        let price = originalPrice;
+        if (originalPrice === 80000 && now < cutoffDate) {
+            price = 75000;
+        }
 
         if (enrolled >= capacity) {
             return NextResponse.json({ error: "Lo sentimos, el cupo para este curso está lleno." }, { status: 409 });
@@ -55,7 +67,7 @@ export async function POST(req) {
                     price_data: {
                         currency,
                         product_data: {
-                            name: `Reserva: ${title}`,
+                            name: `Reserva: ${title} ${originalPrice !== price ? '(PREVENTA)' : ''}`,
                             description: "Formación Presencial 2026 - Maje Nail Spa",
                             metadata: {
                                 courseId: courseId,
