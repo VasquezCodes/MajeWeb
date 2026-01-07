@@ -2145,7 +2145,11 @@ export default function AcademiaPage() {
                       </Button>
                     ) : (
                       <Button
-                        onClick={() => addToCart(selectedCourse)}
+                        onClick={() => {
+                          addToCart(selectedCourse);
+                          setShowModal(false);
+                          setShowCart(true);
+                        }}
                         className="flex-1 rounded-2xl h-14 bg-brand-black hover:bg-gray-800 text-sm md:text-base font-black shadow-lg"
                       >
                         <ShoppingBagIcon className="h-4 md:h-5 w-4 md:w-5 mr-2" />

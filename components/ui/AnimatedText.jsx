@@ -9,11 +9,15 @@ export function AnimatedText({ text, className = '', duration = 1, stagger = 0.0
     const containerRef = useRef(null);
 
     useLayoutEffect(() => {
+        // Safe check for window
+        if (typeof window === 'undefined') return;
+
         gsap.registerPlugin(ScrollTrigger, SplitText);
 
         const element = containerRef.current;
         if (!element) return;
 
+        const isMobile = window.matchMedia("(max-width: 768px)").matches;
         let splitInstance;
 
         const ctx = gsap.context(() => {
@@ -22,7 +26,21 @@ export function AnimatedText({ text, className = '', duration = 1, stagger = 0.0
 
             if (split) {
                 splitInstance = new SplitText(element, { types: "chars" });
-                gsap.from(splitInstance.chars, {
+
+                // Mobile: Simpler animation to avoid lag (no 3D rotation, no scale)
+                const mobileAnimation = {
+                    duration: duration,
+                    opacity: 0,
+                    y: 20,
+                    scale: 1,
+                    rotationX: 0,
+                    transformOrigin: "center",
+                    ease: "power2.out",
+                    stagger: stagger,
+                };
+
+                // Desktop: Premium 3D animation
+                const desktopAnimation = {
                     duration: duration,
                     opacity: 0,
                     scale: 0,
@@ -31,6 +49,10 @@ export function AnimatedText({ text, className = '', duration = 1, stagger = 0.0
                     transformOrigin: "0% 50% -50",
                     ease: "back",
                     stagger: stagger,
+                };
+
+                gsap.from(splitInstance.chars, {
+                    ...(isMobile ? mobileAnimation : desktopAnimation),
                     scrollTrigger: {
                         trigger: element,
                         start: start,
@@ -43,8 +65,8 @@ export function AnimatedText({ text, className = '', duration = 1, stagger = 0.0
                 gsap.from(element, {
                     duration: duration,
                     opacity: 0,
-                    y: 50,
-                    ease: "back",
+                    y: isMobile ? 30 : 50,
+                    ease: isMobile ? "power2.out" : "back",
                     scrollTrigger: {
                         trigger: element,
                         start: start,
