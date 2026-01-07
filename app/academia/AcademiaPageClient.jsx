@@ -37,7 +37,14 @@ import {
   StarIcon,
   DocumentTextIcon,
   ArrowRightIcon, // Added ArrowRightIcon
+  BanknotesIcon,
 } from '@heroicons/react/24/solid';
+import {
+  MessageCircle,
+  PlayCircle,
+  Copy,
+  Check
+} from 'lucide-react';
 import { Button } from '@/components/ui/button'; // Import Shadcn Button
 import {
   Dialog,
@@ -654,6 +661,27 @@ function CalendarPicker({ selectedDate, onSelectDate, bookedDates, presencialDat
           </div>
         </div>
       </div>
+
+      {/* QR Zoom Modal */}
+      <Dialog open={showQrZoom} onOpenChange={setShowQrZoom}>
+        <DialogContent className="max-w-sm w-[90vw] p-0 overflow-hidden bg-transparent border-none shadow-none flex justify-center items-center">
+          <DialogTitle className="sr-only">Código QR Zelle Ampliado</DialogTitle>
+          <div className="relative bg-white p-4 rounded-3xl shadow-2xl">
+            <button
+              onClick={() => setShowQrZoom(false)}
+              className="absolute top-2 right-2 p-2 bg-brand-gray-light rounded-full hover:bg-gray-200 transition-colors z-10"
+            >
+              <XMarkIcon className="h-6 w-6 text-brand-text" />
+            </button>
+            <img
+              src="/qrZelle/image.png"
+              alt="QR Zelle Ampliado"
+              className="w-full h-auto max-h-[70vh] object-contain rounded-xl"
+            />
+            <p className="text-center text-sm font-bold text-brand-text mt-4">Escanea para pagar con Zelle</p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
@@ -665,12 +693,20 @@ export default function AcademiaPage() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedTemario, setSelectedTemario] = useState(null);
+  const [showTemarioModal, setShowTemarioModal] = useState(false);
+  const [showQrZoom, setShowQrZoom] = useState(false);
+  const [copiedText, setCopiedText] = useState(null);
+
+  const handleCopy = (text, type) => {
+    navigator.clipboard.writeText(text);
+    setCopiedText(type);
+    setTimeout(() => setCopiedText(null), 2000);
+  };
   const [bookingDates, setBookingDates] = useState({});
   const [bookedDates, setBookedDates] = useState(new Set());
   const [presencialDates, setPresencialDates] = useState(new Set()); // New state for group classes
   const [showPaymentOptions, setShowPaymentOptions] = useState(false);
-  const [showTemarioModal, setShowTemarioModal] = useState(false);
-  const [selectedTemario, setSelectedTemario] = useState(null);
 
   // --- Estado para manejar la promoción (Client-side only para evitar Hydration Mismatch) ---
   const [clientPromoStatus, setClientPromoStatus] = useState('STANDARD');
@@ -1935,6 +1971,81 @@ export default function AcademiaPage() {
                       <CalendarDaysIcon className="h-5 w-5" />
                       Reservar con 30%
                     </button>
+                  </div>
+
+                  {/* Opción 3: Zelle / Transferencia */}
+                  <div className="bg-gradient-to-br from-green-50 to-white border-2 border-green-200 rounded-2xl p-6 space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="text-lg font-black text-brand-text mb-2">
+                          💳 Zelle / Transferencia
+                        </h4>
+                        <div className="text-sm text-brand-text-light mb-3 space-y-1">
+                          <p>Transfiere directamente a nuestra cuenta oficial:</p>
+                          <div className="font-medium text-brand-text bg-white/50 p-2 rounded-lg border border-green-100">
+                            <p><strong>Maje Nail Spa LLC</strong></p>
+                            <button
+                              onClick={() => handleCopy('321-314-5268', 'zelle-phone')}
+                              className="hover:text-zinc-900 transition-colors flex items-center gap-1 font-medium underline decoration-zinc-300 hover:decoration-zinc-900 underline-offset-4"
+                              title="Copiar número"
+                            >
+                              321-314-5268
+                              {copiedText === 'zelle-phone' ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3 text-zinc-400" />}
+                            </button>
+                          </div>
+
+                          <div className="flex flex-col items-start mt-3">
+                            <button
+                              onClick={() => setShowQrZoom(true)}
+                              className="relative group transition-transform active:scale-95 focus:outline-none"
+                            >
+                              <div className="relative">
+                                <DialogTitle className="sr-only">Código QR Zelle</DialogTitle>
+                                <img
+                                  src="/qrZelle/image.png"
+                                  alt="QR Zelle"
+                                  className="w-28 h-28 object-contain rounded-lg border bg-white shadow-sm group-hover:shadow-md transition-shadow"
+                                />
+                                <div className="absolute inset-0 flex items-center justify-center bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                                  <span className="bg-white/90 text-[10px] px-2 py-1 rounded-full shadow-sm text-brand-text font-bold">Ampliar</span>
+                                </div>
+                              </div>
+                            </button>
+                            <span className="text-[10px] text-brand-text-light/60 mt-1 ml-1">(Toca para ampliar)</span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-brand-text-light italic">
+                          * Luego de hacer tu pago comunícate con
+                          <button
+                            onClick={() => handleCopy('info@majenailspa.com', 'email')}
+                            className="font-bold hover:text-zinc-900 transition-colors inline-flex items-center gap-1 mx-1 align-bottom underline decoration-zinc-300 hover:decoration-zinc-900 underline-offset-2"
+                            title="Copiar email"
+                          >
+                            info@majenailspa.com
+                            {copiedText === 'email' && <span className="text-[10px] text-green-500 font-normal ml-0.5 no-underline">Copiado!</span>}
+                          </button>
+                          o al
+                          <button
+                            onClick={() => handleCopy('321-314-5268', 'phone')}
+                            className="font-bold hover:text-zinc-900 transition-colors inline-flex items-center gap-1 mx-1 align-bottom underline decoration-zinc-300 hover:decoration-zinc-900 underline-offset-2"
+                            title="Copiar teléfono"
+                          >
+                            321-314-5268
+                            {copiedText === 'phone' && <span className="text-[10px] text-green-500 font-normal ml-0.5 no-underline">Copiado!</span>}
+                          </button>
+                          y envía tu comprobante de pago para ser registrada.
+                        </p>
+                      </div>
+                    </div>
+                    <a
+                      href={`https://wa.me/13213145268?text=Hola,%20adjunto%20comprobante%20de%20pago%20Zelle%20para%20el%20paquete:%20${packageType}%20Mentoria%20VIP`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#25D366] px-6 py-4 text-base font-black text-white shadow-lg hover:bg-[#20bd5a] hover:shadow-xl transition-all duration-300 active:scale-95"
+                    >
+                      <MessageCircle className="h-5 w-5" />
+                      Enviar Comprobante
+                    </a>
                   </div>
 
                   {/* Botón para volver */}

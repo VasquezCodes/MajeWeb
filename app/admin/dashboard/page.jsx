@@ -5,29 +5,81 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import AdminProtectedRoute from '@/components/AdminProtectedRoute';
 import {
-  CalendarDaysIcon,
-  UserIcon,
-  PhoneIcon,
-  EnvelopeIcon,
-  TrashIcon,
-  XMarkIcon,
-  PlusIcon,
-  ArrowRightOnRectangleIcon,
-  CheckCircleIcon,
-  ExclamationTriangleIcon,
-} from '@heroicons/react/24/solid';
+  Calendar,
+  Users,
+  Phone,
+  Mail,
+  Trash2,
+  X,
+  Plus,
+  LogOut,
+  CheckCircle2,
+  AlertTriangle,
+  Search,
+  Check,
+  Ban,
+  DollarSign
+} from 'lucide-react';
+
+// Shadcn Components
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
 
 function DashboardContent() {
   const { user, logout } = useAuth();
   const router = useRouter();
+
+  // Data State
   const [bookings, setBookings] = useState([]);
   const [blockedDays, setBlockedDays] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedMonth, setSelectedMonth] = useState(new Date());
+
+  // Actions State
+  const [actionLoading, setActionLoading] = useState(false);
+
+  // Modals State
   const [showBlockModal, setShowBlockModal] = useState(false);
+  const [showManualModal, setShowManualModal] = useState(false);
+
+  // Block Day Form
   const [blockDate, setBlockDate] = useState('');
   const [blockReason, setBlockReason] = useState('');
-  const [actionLoading, setActionLoading] = useState(false);
+
+  // Manual Booking Form
+  const [manualForm, setManualForm] = useState({
+    clientName: '',
+    clientEmail: '',
+    clientPhone: '',
+    serviceType: 'mentoria', // mentoria, presencial, custom
+    serviceName: 'Mentoria 1:1',
+
+    serviceId: 'manual_service',
+    bookingDate: '',
+    paymentType: 'full', // full, reservation
+    amountPaid: '',
+    totalPrice: '',
+    notes: ''
+  });
 
   useEffect(() => {
     loadData();
@@ -48,7 +100,6 @@ function DashboardContent() {
       setBlockedDays(blockedData.blockedDays || []);
     } catch (error) {
       console.error('Error cargando datos:', error);
-      alert('Error al cargar datos');
     } finally {
       setLoading(false);
     }
@@ -59,40 +110,87 @@ function DashboardContent() {
       await logout();
       router.push('/admin/login');
     } catch (error) {
-      console.error('Error al cerrar sesión:', error);
+      console.error('Logout error:', error);
     }
   };
 
+  // --- Handlers: Bookings ---
+
   const handleCancelBooking = async (bookingId) => {
-    if (!confirm('¿Estás segura de cancelar esta reserva?')) return;
+    if (!confirm('¿Estás segura de cancelar esta reserva? Esta acción es irreversible.')) return;
 
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/admin/bookings?id=${bookingId}`, {
-        method: 'DELETE',
-      });
-
+      const res = await fetch(`/api/admin/bookings?id=${bookingId}`, { method: 'DELETE' });
       if (res.ok) {
-        alert('Reserva cancelada exitosamente');
         loadData();
       } else {
         const data = await res.json();
-        alert(data.error || 'Error al cancelar reserva');
+        alert(data.error || 'Error al cancelar');
       }
     } catch (error) {
-      console.error('Error:', error);
-      alert('Error al cancelar reserva');
+      alert('Error de conexión');
     } finally {
       setActionLoading(false);
     }
   };
 
-  const handleBlockDay = async () => {
-    if (!blockDate) {
-      alert('Selecciona una fecha');
-      return;
-    }
+  const handleManualBookingSubmit = async () => {
+    setActionLoading(true);
+    try {
+      const finalServiceName = manualForm.serviceName;
+      const finalDate = manualForm.bookingDate || null; // Allow no date
 
+      // Convert to cents
+      const amountPaidCents = Math.round(parseFloat(manualForm.amountPaid) * 100);
+      const totalPriceCents = Math.round(parseFloat(manualForm.totalPrice) * 100);
+
+      const payload = {
+        clientName: manualForm.clientName,
+        clientEmail: manualForm.clientEmail,
+        clientPhone: manualForm.clientPhone,
+        serviceId: manualForm.serviceId || 'manual_id',
+        serviceName: finalServiceName,
+        bookingDate: finalDate,
+        paymentType: manualForm.paymentType,
+        amountPaid: amountPaidCents,
+        totalPrice: totalPriceCents,
+        notes: manualForm.notes,
+        isPresencial: manualForm.serviceType === 'presencial'
+      };
+
+      const res = await fetch('/api/admin/manual-booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        alert('Reserva manual creada exitosamente (Email enviado).');
+        setShowManualModal(false);
+        setManualForm({
+          clientName: '', clientEmail: '', clientPhone: '',
+          serviceType: 'mentoria', serviceName: 'Mentoria 1:1',
+          serviceId: 'manual_service', bookingDate: '', paymentType: 'full',
+          amountPaid: '', totalPrice: '', notes: ''
+        });
+        loadData();
+      } else {
+        const d = await res.json();
+        alert(d.error || 'Falló la creación');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Error conectando con servidor');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // --- Handlers: Block Days ---
+
+  const handleBlockDay = async () => {
+    if (!blockDate) return alert('Selecciona fecha');
     setActionLoading(true);
     try {
       const res = await fetch('/api/admin/blocked-days', {
@@ -100,21 +198,14 @@ function DashboardContent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ date: blockDate, reason: blockReason }),
       });
-
-      const data = await res.json();
-
       if (res.ok) {
-        alert('Día bloqueado exitosamente');
         setShowBlockModal(false);
         setBlockDate('');
         setBlockReason('');
         loadData();
       } else {
-        alert(data.error || 'Error al bloquear día');
+        alert('Error al bloquear');
       }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Error al bloquear día');
     } finally {
       setActionLoading(false);
     }
@@ -122,380 +213,391 @@ function DashboardContent() {
 
   const handleUnblockDay = async (date) => {
     if (!confirm('¿Desbloquear este día?')) return;
-
     setActionLoading(true);
     try {
-      const res = await fetch(`/api/admin/blocked-days?date=${date}`, {
-        method: 'DELETE',
-      });
-
-      if (res.ok) {
-        alert('Día desbloqueado exitosamente');
-        loadData();
-      } else {
-        alert('Error al desbloquear día');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      alert('Error al desbloquear día');
+      const res = await fetch(`/api/admin/blocked-days?date=${date}`, { method: 'DELETE' });
+      if (res.ok) loadData();
     } finally {
       setActionLoading(false);
     }
   };
 
+  // --- Helpers ---
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     try {
       const [y, m, d] = dateStr.split('-');
       const date = new Date(y, m - 1, d);
-      return date.toLocaleDateString('es-ES', { 
-        weekday: 'long', 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      });
-    } catch {
-      return dateStr;
-    }
+      return date.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    } catch { return dateStr; }
   };
 
-  const formatPrice = (cents, currency) => {
-    const value = (cents / 100).toFixed(2);
-    return `$${value} ${currency?.toUpperCase() || 'USD'}`;
+  const formatMoney = (cents) => {
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
   };
 
   const getPaymentStatus = (booking) => {
-    const totalPrice = booking.price || 0; // Precio total del servicio
-    const paidAmount = booking.pricePaid || 0; // Monto pagado (reserva)
-    const remaining = totalPrice - paidAmount; // Pendiente de pago
-
+    const total = booking.price || 0;
+    const paid = booking.pricePaid || 0;
+    const remaining = total - paid;
     return {
-      total: totalPrice,
-      paid: paidAmount,
-      remaining: remaining,
-      isPaidFull: remaining <= 0,
-      isReserved: paidAmount > 0 && remaining > 0,
+      total, paid, remaining,
+      isPaidFull: remaining <= 50, // tolerance for rounding
+      isReserved: paid > 0 && remaining > 50
     };
   };
 
-  // Agrupar reservas por fecha
+  // --- Processing Data ---
   const bookingsByDate = bookings.reduce((acc, booking) => {
-    const date = booking.bookingDate;
+    const date = booking.bookingDate || 'Sin Fecha';
     if (!acc[date]) acc[date] = [];
     acc[date].push(booking);
     return acc;
   }, {});
 
-  // Combinar con días bloqueados
-  const allDates = [
-    ...Object.keys(bookingsByDate),
-    ...blockedDays.map(b => b.date),
-  ].sort();
-
-  const uniqueDates = [...new Set(allDates)];
+  const allDates = [...new Set([...Object.keys(bookingsByDate), ...blockedDays.map(b => b.date)])].sort();
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando datos...</p>
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-900 border-t-transparent" />
+          <p className="font-medium text-gray-500">Cargando dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b-2 border-gray-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-            <div className="flex-1">
-              <h1 className="text-xl md:text-2xl lg:text-3xl font-black text-gray-900 leading-tight">
-                Panel de Administración
-              </h1>
-              <p className="text-xs md:text-sm text-gray-600 mt-0.5 md:mt-1 font-medium">
-                Maje Nail Spa & Academy
-              </p>
-            </div>
-            <div className="flex items-center justify-between sm:justify-end gap-3 md:gap-4">
-              <div className="text-left sm:text-right">
-                <p className="text-xs md:text-sm font-bold text-gray-900 truncate max-w-[150px] sm:max-w-none">
-                  {user?.email}
-                </p>
-                <p className="text-xs text-gray-500 font-medium">Administrador</p>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 md:py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-lg transition-colors font-semibold text-sm md:text-base"
-              >
-                <ArrowRightOnRectangleIcon className="h-4 w-4 md:h-5 md:w-5" />
-                <span className="hidden sm:inline">Cerrar</span>
-              </button>
-            </div>
+    <div className="min-h-screen bg-gray-50/50">
+      {/* Navbar */}
+      <header className="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">Admin Connect</h1>
+            <p className="text-xs text-muted-foreground">Maje Nail Spa</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium hidden sm:inline-block">{user?.email}</span>
+            <Button variant="outline" size="sm" onClick={handleLogout}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Salir
+            </Button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-md p-4 md:p-6 border-2 border-blue-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs md:text-sm font-bold text-blue-700 uppercase tracking-wide">Total Reservas</p>
-                <p className="text-3xl md:text-4xl font-black text-blue-900 mt-1 md:mt-2">{bookings.length}</p>
-              </div>
-              <CalendarDaysIcon className="h-10 w-10 md:h-12 md:w-12 text-blue-600" />
-            </div>
-          </div>
+      <main className="container mx-auto px-4 py-8 space-y-8">
 
-          <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl shadow-md p-4 md:p-6 border-2 border-orange-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs md:text-sm font-bold text-orange-700 uppercase tracking-wide">Días Bloqueados</p>
-                <p className="text-3xl md:text-4xl font-black text-orange-900 mt-1 md:mt-2">{blockedDays.length}</p>
-              </div>
-              <ExclamationTriangleIcon className="h-10 w-10 md:h-12 md:w-12 text-orange-600" />
-            </div>
-          </div>
-
-          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-md p-4 md:p-6 border-2 border-green-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs md:text-sm font-bold text-green-700 uppercase tracking-wide">Fechas Ocupadas</p>
-                <p className="text-3xl md:text-4xl font-black text-green-900 mt-1 md:mt-2">{uniqueDates.length}</p>
-              </div>
-              <CheckCircleIcon className="h-10 w-10 md:h-12 md:w-12 text-green-600" />
-            </div>
-          </div>
+        {/* Stats Row */}
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Reservas Totales</CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{bookings.length}</div>
+              <p className="text-xs text-muted-foreground">Registros activos</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Días Bloqueados</CardTitle>
+              <Ban className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{blockedDays.length}</div>
+              <p className="text-xs text-muted-foreground">No disponibles al público</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Fechas Ocupadas</CardTitle>
+              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{allDates.filter(d => d !== 'Sin Fecha').length}</div>
+              <p className="text-xs text-muted-foreground">Días con actividad</p>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Actions */}
-        <div className="mb-4 md:mb-6">
-          <button
-            onClick={() => setShowBlockModal(true)}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 md:px-6 py-3 md:py-3.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-bold text-sm md:text-base shadow-md"
-          >
-            <PlusIcon className="h-5 w-5" />
-            Bloquear Día (Vacaciones)
-          </button>
+        {/* Actions Bar */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Button onClick={() => setShowManualModal(true)} className="bg-black hover:bg-zinc-800 text-white shadow-lg">
+            <Plus className="h-4 w-4 mr-2" />
+            Nueva Reserva Manual
+          </Button>
+          <Button variant="secondary" onClick={() => setShowBlockModal(true)}>
+            <Ban className="h-4 w-4 mr-2" />
+            Bloquear Día
+          </Button>
         </div>
 
-        {/* Calendar View */}
-        <div className="bg-white rounded-xl shadow-lg border-2 border-gray-200 overflow-hidden">
-          <div className="px-4 md:px-6 py-4 md:py-5 border-b-2 border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100">
-            <h2 className="text-lg md:text-xl font-black text-gray-900">Calendario Maestro</h2>
-            <p className="text-xs md:text-sm text-gray-600 mt-1 font-medium">Todas las reservas y días bloqueados</p>
-          </div>
+        {/* Content Feed */}
+        <div className="space-y-6">
+          <h2 className="text-xl font-bold tracking-tight">Agenda & Actividad</h2>
 
-          <div className="divide-y divide-gray-200">
-            {uniqueDates.length === 0 ? (
-              <div className="px-6 py-12 text-center text-gray-500">
-                No hay reservas ni días bloqueados
-              </div>
-            ) : (
-              uniqueDates.map((date) => {
-                const dateBookings = bookingsByDate[date] || [];
-                const blocked = blockedDays.find(b => b.date === date);
+          {allDates.length === 0 ? (
+            <div className="text-center py-12 text-muted-foreground bg-white rounded-xl border border-dashed">
+              No hay actividad registrada.
+            </div>
+          ) : (
+            allDates.map(date => {
+              const dateBookings = bookingsByDate[date] || [];
+              const blocked = blockedDays.find(b => b.date === date);
 
-                return (
-                  <div key={date} className="px-4 md:px-6 py-4 md:py-5 hover:bg-gray-50 transition-colors">
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                      <div className="flex-1">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-3 md:mb-4">
-                          <div className="flex items-center gap-2 sm:gap-3">
-                            <CalendarDaysIcon className="h-5 w-5 md:h-6 md:w-6 text-gray-500 flex-shrink-0" />
-                            <h3 className="text-base md:text-lg font-black text-gray-900 capitalize">
-                              {formatDate(date)}
-                            </h3>
-                          </div>
-                          {blocked && (
-                            <span className="inline-flex items-center gap-1 px-2.5 md:px-3 py-1 md:py-1.5 bg-orange-100 text-orange-800 text-xs md:text-sm font-bold rounded-full">
-                              Bloqueado: {blocked.reason}
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Reservas en esta fecha */}
-                        {dateBookings.length > 0 && (
-                          <div className="space-y-3 ml-0 md:ml-9">
-                            {dateBookings.map((booking) => {
-                              const payment = getPaymentStatus(booking);
-                              return (
-                                <div
-                                  key={booking.id}
-                                  className="bg-white rounded-lg p-4 md:p-5 border-2 border-gray-200 shadow-sm hover:shadow-md transition-shadow"
-                                >
-                                  <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                                    <div className="flex-1 space-y-3">
-                                      {/* Servicio */}
-                                      <div>
-                                        <p className="text-base md:text-lg font-bold text-gray-900 leading-tight">
-                                          {booking.serviceName}
-                                        </p>
-                                      </div>
-
-                                      {/* Info del cliente */}
-                                      <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-sm md:text-base">
-                                          <UserIcon className="h-4 w-4 md:h-5 md:w-5 text-gray-500 flex-shrink-0" />
-                                          <span className="font-semibold text-gray-900">{booking.buyer?.name || 'Sin nombre'}</span>
-                                        </div>
-
-                                        <div className="flex items-center gap-2 text-sm md:text-base">
-                                          <PhoneIcon className="h-4 w-4 md:h-5 md:w-5 text-gray-500 flex-shrink-0" />
-                                          <a href={`tel:${booking.buyer?.phone}`} className="text-blue-600 hover:underline">
-                                            {booking.buyer?.phone || 'Sin teléfono'}
-                                          </a>
-                                        </div>
-
-                                        <div className="flex items-center gap-2 text-sm md:text-base">
-                                          <EnvelopeIcon className="h-4 w-4 md:h-5 md:w-5 text-gray-500 flex-shrink-0" />
-                                          <a href={`mailto:${booking.buyer?.email}`} className="text-blue-600 hover:underline truncate">
-                                            {booking.buyer?.email || 'Sin email'}
-                                          </a>
-                                        </div>
-                                      </div>
-
-                                      {/* Información de pago */}
-                                      <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-3 md:p-4 space-y-2 border border-gray-200">
-                                        <div className="flex items-center justify-between text-sm md:text-base">
-                                          <span className="text-gray-600 font-medium">Precio Total:</span>
-                                          <span className="font-bold text-gray-900">
-                                            {formatPrice(payment.total, booking.currency)}
-                                          </span>
-                                        </div>
-
-                                        <div className="flex items-center justify-between text-sm md:text-base">
-                                          <span className="text-gray-600 font-medium">Reserva Pagada:</span>
-                                          <span className="font-bold text-green-600">
-                                            {formatPrice(payment.paid, booking.currency)}
-                                          </span>
-                                        </div>
-
-                                        {payment.remaining > 0 && (
-                                          <div className="flex items-center justify-between text-sm md:text-base pt-2 border-t border-gray-300">
-                                            <span className="text-gray-700 font-semibold">Pendiente:</span>
-                                            <span className="font-bold text-orange-600 text-base md:text-lg">
-                                              {formatPrice(payment.remaining, booking.currency)}
-                                            </span>
-                                          </div>
-                                        )}
-                                      </div>
-
-                                      {/* Estado */}
-                                      <div className="flex items-center gap-2">
-                                        {payment.isPaidFull ? (
-                                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 text-green-800 text-xs md:text-sm font-bold rounded-full">
-                                            <CheckCircleIcon className="h-4 w-4" />
-                                            Pagado Completo
-                                          </span>
-                                        ) : (
-                                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-100 text-blue-800 text-xs md:text-sm font-bold rounded-full">
-                                            <CalendarDaysIcon className="h-4 w-4" />
-                                            Reservado
-                                          </span>
-                                        )}
-                                      </div>
-                                    </div>
-
-                                    {/* Botón eliminar */}
-                                    <button
-                                      onClick={() => handleCancelBooking(booking.id)}
-                                      disabled={actionLoading}
-                                      className="self-start sm:self-auto p-2.5 md:p-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 border border-red-200"
-                                      title="Cancelar reserva"
-                                    >
-                                      <TrashIcon className="h-5 w-5 md:h-6 md:w-6" />
-                                    </button>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-
+              return (
+                <Card key={date} className={`overflow-hidden ${blocked ? 'border-orange-200 bg-orange-50/30' : ''}`}>
+                  <div className="p-4 sm:p-6 bg-secondary/20 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-3">
+                      <Badge variant={blocked ? "destructive" : "outline"} className="h-8 text-base px-3">
+                        {formatDate(date)}
+                      </Badge>
                       {blocked && (
-                        <button
-                          onClick={() => handleUnblockDay(date)}
-                          disabled={actionLoading}
-                          className="self-start sm:self-auto px-3 md:px-4 py-2 text-xs md:text-sm text-orange-700 hover:bg-orange-100 bg-orange-50 rounded-lg transition-colors disabled:opacity-50 font-bold border border-orange-200"
-                        >
-                          Desbloquear
-                        </button>
+                        <span className="text-sm font-medium text-orange-700 flex items-center gap-1">
+                          <Ban className="h-3 w-3" />
+                          Bloqueado: {blocked.reason}
+                        </span>
                       )}
                     </div>
+                    {blocked && (
+                      <Button variant="ghost" size="sm" onClick={() => handleUnblockDay(date)} className="text-orange-600 hover:text-orange-700 hover:bg-orange-100">
+                        Desbloquear
+                      </Button>
+                    )}
                   </div>
-                );
-              })
-            )}
-          </div>
+
+                  <CardContent className="p-0">
+                    {dateBookings.length > 0 ? (
+                      <div className="divide-y">
+                        {dateBookings.map(booking => {
+                          const status = getPaymentStatus(booking);
+                          return (
+                            <div key={booking.id} className="p-4 sm:p-6 hover:bg-zinc-50 transition-colors flex flex-col md:flex-row gap-4">
+                              {/* Client Info */}
+                              <div className="flex-1 space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <h3 className="font-bold text-lg">{booking.serviceName}</h3>
+                                  {booking.source === 'manual-admin' && <Badge variant="secondary">Manual</Badge>}
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground mt-2">
+                                  <div className="flex items-center gap-2">
+                                    <Users className="h-3 w-3" />
+                                    {booking.buyer?.name || booking.clientName}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Mail className="h-3 w-3" />
+                                    {booking.buyer?.email || booking.clientEmail}
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <Phone className="h-3 w-3" />
+                                    {booking.buyer?.phone || booking.clientPhone}
+                                  </div>
+                                </div>
+                                {booking.notes && (
+                                  <p className="text-xs bg-yellow-50 p-2 rounded mt-2 text-yellow-800 border border-yellow-100">
+                                    Nota: {booking.notes}
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Payment Info */}
+                              <div className="flex flex-col gap-2 min-w-[200px] bg-secondary/10 p-3 rounded-lg border border-secondary/20">
+                                <div className="flex justify-between items-center">
+                                  <span className="text-xs font-medium uppercase text-muted-foreground">Total</span>
+                                  <span className="font-bold">{formatMoney(status.total)}</span>
+                                </div>
+                                <div className="flex justify-between items-center text-green-700">
+                                  <span className="text-xs font-medium uppercase">Pagado</span>
+                                  <span className="font-bold flex items-center gap-1">
+                                    <Check className="h-3 w-3" />
+                                    {formatMoney(status.paid)}
+                                  </span>
+                                </div>
+                                {status.remaining > 0 && (
+                                  <div className="flex justify-between items-center text-orange-600 border-t pt-2 mt-1">
+                                    <span className="text-xs font-bold uppercase">Pendiente</span>
+                                    <span className="font-bold">{formatMoney(status.remaining)}</span>
+                                  </div>
+                                )}
+                                <div className="mt-2 text-right">
+                                  <Badge variant={status.isPaidFull ? "default" : "outline"} className={status.isPaidFull ? "bg-green-600 hover:bg-green-700" : "text-blue-600 border-blue-600"}>
+                                    {status.isPaidFull ? 'COMPLETADO' : 'RESERVADO 30%'}
+                                  </Badge>
+                                </div>
+                              </div>
+
+                              {/* Actions */}
+                              <div className="flex md:flex-col justify-end gap-2">
+                                <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => handleCancelBooking(booking.id)}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          )
+                        })}
+                      </div>
+                    ) : (
+                      <div className="p-6 text-sm text-center text-muted-foreground">
+                        Sin reservas (solo día bloqueado).
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              )
+            })
+          )}
         </div>
       </main>
 
-      {/* Modal para bloquear día */}
-      {showBlockModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Bloquear Día</h3>
-              <button
-                onClick={() => setShowBlockModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <XMarkIcon className="h-6 w-6" />
-              </button>
+      {/* Manual Booking Modal */}
+      <Dialog open={showManualModal} onOpenChange={setShowManualModal}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Nueva Reserva Manual (Zelle / Cash)</DialogTitle>
+            <DialogDescription>
+              Registra un pago realizado por fuera de Stripe. Se enviará email de confirmación.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-6 py-4">
+            {/* Cliente */}
+            <div className="grid gap-4 p-4 border rounded-lg bg-gray-50/50">
+              <h3 className="font-semibold text-sm">Datos del Cliente</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label>Nombre Completo</Label>
+                  <Input placeholder="Ej: María Pérez" value={manualForm.clientName} onChange={e => setManualForm({ ...manualForm, clientName: e.target.value })} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Teléfono</Label>
+                  <Input placeholder="+1..." value={manualForm.clientPhone} onChange={e => setManualForm({ ...manualForm, clientPhone: e.target.value })} />
+                </div>
+                <div className="grid gap-2 sm:col-span-2">
+                  <Label>Email (para confirmación)</Label>
+                  <Input type="email" placeholder="cliente@email.com" value={manualForm.clientEmail} onChange={e => setManualForm({ ...manualForm, clientEmail: e.target.value })} />
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Fecha
-                </label>
-                <input
-                  type="date"
-                  value={blockDate}
-                  onChange={(e) => setBlockDate(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                />
+            {/* Servicio */}
+            <div className="grid gap-4 p-4 border rounded-lg">
+              <h3 className="font-semibold text-sm">Servicio & Fecha</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label>Tipo de Servicio</Label>
+                  <Select value={manualForm.serviceType} onValueChange={v => setManualForm({ ...manualForm, serviceType: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="mentoria">Mentoria Online (1:1)</SelectItem>
+                      <SelectItem value="presencial">Clase Presencial</SelectItem>
+                      <SelectItem value="custom">Otro / Personalizado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Nombre del Servicio</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Escribe el nombre del servicio..."
+                      value={manualForm.serviceName}
+                      onChange={e => setManualForm({ ...manualForm, serviceName: e.target.value })}
+                    />
+                    <Select
+                      onValueChange={(v) => {
+                        setManualForm({
+                          ...manualForm,
+                          serviceName: v,
+                          totalPrice: v.includes('Presencial') ? '800' : '200'
+                        });
+                      }}
+                    >
+                      <SelectTrigger className="w-[40px] px-2">
+                        <span className="sr-only">Elegir</span>
+                        <Search className="h-4 w-4 opacity-50" />
+                      </SelectTrigger>
+                      <SelectContent align="end">
+                        <SelectItem value="Mentoria 1:1 - Nail Business">Mentoria Business</SelectItem>
+                        <SelectItem value="Mentoria 1:1 - Marketing">Mentoria Marketing</SelectItem>
+                        <SelectItem value="Clase Presencial Grupal">Clase Presencial</SelectItem>
+                        <SelectItem value="Taller de Diseño">Taller de Diseño</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="grid gap-2 sm:col-span-2">
+                  <Label>Fecha de Reserva (Opcional)</Label>
+                  <Input type="date" value={manualForm.bookingDate} onChange={e => setManualForm({ ...manualForm, bookingDate: e.target.value })} />
+                  <p className="text-[10px] text-muted-foreground">Si se deja vacío, no bloquea calendario.</p>
+                </div>
               </div>
+            </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Razón (opcional)
-                </label>
-                <input
-                  type="text"
-                  value={blockReason}
-                  onChange={(e) => setBlockReason(e.target.value)}
-                  placeholder="Ej: Vacaciones, Día personal"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
-                />
+            {/* Pago */}
+            <div className="grid gap-4 p-4 border rounded-lg bg-green-50/30">
+              <h3 className="font-semibold text-sm">Detalles del Pago</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid gap-2">
+                  <Label>Tipo Pago</Label>
+                  <Select value={manualForm.paymentType} onValueChange={v => setManualForm({ ...manualForm, paymentType: v })}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="full">Pago Completo</SelectItem>
+                      <SelectItem value="reservation">Reserva (30%)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Precio Total ($)</Label>
+                  <Input type="number" placeholder="0.00" value={manualForm.totalPrice} onChange={e => setManualForm({ ...manualForm, totalPrice: e.target.value })} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Pagado Hoy ($)</Label>
+                  <Input type="number" placeholder="0.00" value={manualForm.amountPaid} onChange={e => setManualForm({ ...manualForm, amountPaid: e.target.value })} />
+                </div>
               </div>
-
-              <div className="flex gap-3 pt-4">
-                <button
-                  onClick={() => setShowBlockModal(false)}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleBlockDay}
-                  disabled={actionLoading}
-                  className="flex-1 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50"
-                >
-                  {actionLoading ? 'Bloqueando...' : 'Bloquear'}
-                </button>
+              <div className="grid gap-2">
+                <Label>Notas Internas</Label>
+                <Input placeholder="Ej: Pagó por Zelle ref 12345" value={manualForm.notes} onChange={e => setManualForm({ ...manualForm, notes: e.target.value })} />
               </div>
             </div>
           </div>
-        </div>
-      )}
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowManualModal(false)}>Cancelar</Button>
+            <Button onClick={handleManualBookingSubmit} disabled={actionLoading}>
+              {actionLoading ? 'Procesando...' : 'Crear Reserva'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Block Day Modal */}
+      <Dialog open={showBlockModal} onOpenChange={setShowBlockModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Bloquear Día</DialogTitle>
+            <DialogDescription>Selecciona una fecha para cerrar la disponibilidad.</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label>Fecha</Label>
+              <Input type="date" value={blockDate} onChange={e => setBlockDate(e.target.value)} />
+            </div>
+            <div className="grid gap-2">
+              <Label>Razón</Label>
+              <Input placeholder="Ej: Vacaciones" value={blockReason} onChange={e => setBlockReason(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowBlockModal(false)}>Cancelar</Button>
+            <Button onClick={handleBlockDay} disabled={actionLoading}>Bloquear</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
