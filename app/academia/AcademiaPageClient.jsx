@@ -662,26 +662,7 @@ function CalendarPicker({ selectedDate, onSelectDate, bookedDates, presencialDat
         </div>
       </div>
 
-      {/* QR Zoom Modal */}
-      <Dialog open={showQrZoom} onOpenChange={setShowQrZoom}>
-        <DialogContent className="max-w-sm w-[90vw] p-0 overflow-hidden bg-transparent border-none shadow-none flex justify-center items-center">
-          <DialogTitle className="sr-only">Código QR Zelle Ampliado</DialogTitle>
-          <div className="relative bg-white p-4 rounded-3xl shadow-2xl">
-            <button
-              onClick={() => setShowQrZoom(false)}
-              className="absolute top-2 right-2 p-2 bg-brand-gray-light rounded-full hover:bg-gray-200 transition-colors z-10"
-            >
-              <XMarkIcon className="h-6 w-6 text-brand-text" />
-            </button>
-            <img
-              src="/qrZelle/image.png"
-              alt="QR Zelle Ampliado"
-              className="w-full h-auto max-h-[70vh] object-contain rounded-xl"
-            />
-            <p className="text-center text-sm font-bold text-brand-text mt-4">Escanea para pagar con Zelle</p>
-          </div>
-        </DialogContent>
-      </Dialog>
+
     </div>
   );
 }
@@ -2329,6 +2310,27 @@ export default function AcademiaPage() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* QR Zoom Modal */}
+      <Dialog open={showQrZoom} onOpenChange={setShowQrZoom}>
+        <DialogContent className="max-w-sm w-[90vw] p-0 overflow-hidden bg-transparent border-none shadow-none flex justify-center items-center">
+          <DialogTitle className="sr-only">Código QR Zelle Ampliado</DialogTitle>
+          <div className="relative bg-white p-4 rounded-3xl shadow-2xl">
+            <button
+              onClick={() => setShowQrZoom(false)}
+              className="absolute top-2 right-2 p-2 bg-brand-gray-light rounded-full hover:bg-gray-200 transition-colors z-10"
+            >
+              <XMarkIcon className="h-6 w-6 text-brand-text" />
+            </button>
+            <img
+              src="/qrZelle/image.png"
+              alt="QR Zelle Ampliado"
+              className="w-full h-auto max-h-[70vh] object-contain rounded-xl"
+            />
+            <p className="text-center text-sm font-bold text-brand-text mt-4">Escanea para pagar con Zelle</p>
+          </div>
         </DialogContent>
       </Dialog>
 

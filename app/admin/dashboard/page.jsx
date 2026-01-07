@@ -18,7 +18,8 @@ import {
   Search,
   Check,
   Ban,
-  DollarSign
+  DollarSign,
+  Pencil
 } from 'lucide-react';
 
 // Shadcn Components
@@ -61,6 +62,7 @@ function DashboardContent() {
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [showManualModal, setShowManualModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState({ title: '', description: '' });
 
   // Block Day Form
@@ -78,6 +80,18 @@ function DashboardContent() {
     serviceId: 'manual_service',
     bookingDate: '',
     paymentType: 'full', // full, reservation
+    amountPaid: '',
+    totalPrice: '',
+    notes: ''
+  });
+
+  // Edit Form State
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState({
+    clientName: '',
+    clientEmail: '',
+    clientPhone: '',
+    serviceName: '',
     amountPaid: '',
     totalPrice: '',
     notes: ''
@@ -113,6 +127,68 @@ function DashboardContent() {
       router.push('/admin/login');
     } catch (error) {
       console.error('Logout error:', error);
+    }
+  };
+
+  // --- Handlers: Edit Booking ---
+  const handleOpenEdit = (booking) => {
+    setEditingId(booking.id);
+    const paid = (booking.pricePaid || 0) / 100;
+    const total = (booking.price || 0) / 100;
+
+    setEditForm({
+      clientName: booking.buyer?.name || booking.clientName || '',
+      clientEmail: booking.buyer?.email || booking.clientEmail || '',
+      clientPhone: booking.buyer?.phone || booking.clientPhone || '',
+      serviceName: booking.serviceName || '',
+      amountPaid: paid.toFixed(2),
+      totalPrice: total.toFixed(2),
+      notes: booking.notes || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const handleUpdateBooking = async () => {
+    if (!editingId) return;
+    setActionLoading(true);
+    try {
+      // Parse with fallback to 0
+      const paidVal = parseFloat(editForm.amountPaid || '0');
+      const totalVal = parseFloat(editForm.totalPrice || '0');
+
+      const payload = {
+        id: editingId,
+        clientName: editForm.clientName,
+        clientEmail: editForm.clientEmail,
+        clientPhone: editForm.clientPhone,
+        serviceName: editForm.serviceName,
+        notes: editForm.notes,
+        price: Math.round(totalVal * 100),
+        pricePaid: Math.round(paidVal * 100),
+      };
+
+      const res = await fetch('/api/admin/bookings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        setShowEditModal(false);
+        setSuccessMessage({
+          title: 'Reserva Actualizada',
+          description: 'Los datos han sido guardados correctamente.'
+        });
+        setShowSuccessModal(true);
+        loadData();
+      } else {
+        alert('Error al actualizar');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Error de conexión');
+    } finally {
+      setActionLoading(false);
     }
   };
 
@@ -437,8 +513,11 @@ function DashboardContent() {
                               </div>
 
                               {/* Actions */}
-                              <div className="flex md:flex-col justify-end gap-2">
-                                <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => handleCancelBooking(booking.id)}>
+                              <div className="flex flex-row md:flex-col justify-end gap-2 border-t pt-4 md:pt-0 md:border-t-0 mt-2 md:mt-0">
+                                <Button variant="outline" size="icon" onClick={() => handleOpenEdit(booking)} title="Editar Reserva">
+                                  <Pencil className="h-4 w-4 text-zinc-600" />
+                                </Button>
+                                <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => handleCancelBooking(booking.id)} title="Cancelar Reserva">
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                               </div>
@@ -601,6 +680,71 @@ function DashboardContent() {
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowBlockModal(false)}>Cancelar</Button>
             <Button onClick={handleBlockDay} disabled={actionLoading}>Bloquear</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Booking Modal */}
+      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Editar Reserva</DialogTitle>
+            <DialogDescription>Modifica los detalles del pago o del cliente.</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2 border p-4 rounded bg-gray-50">
+              <h4 className="font-semibold text-sm">Estado del Pago</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label>Total ($)</Label>
+                  <Input type="number" value={editForm.totalPrice} onChange={e => setEditForm({ ...editForm, totalPrice: e.target.value })} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Pagado ($)</Label>
+                  <Input type="number" value={editForm.amountPaid} onChange={e => setEditForm({ ...editForm, amountPaid: e.target.value })} />
+                </div>
+              </div>
+              <div className="flex justify-end mt-2">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setEditForm({ ...editForm, amountPaid: editForm.totalPrice })}
+                >
+                  Marcar Pagado Completo
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Nombre del Servicio</Label>
+              <Input value={editForm.serviceName} onChange={e => setEditForm({ ...editForm, serviceName: e.target.value })} />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label>Nombre Cliente</Label>
+                <Input value={editForm.clientName} onChange={e => setEditForm({ ...editForm, clientName: e.target.value })} />
+              </div>
+              <div className="grid gap-2">
+                <Label>Teléfono</Label>
+                <Input value={editForm.clientPhone} onChange={e => setEditForm({ ...editForm, clientPhone: e.target.value })} />
+              </div>
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Email</Label>
+              <Input value={editForm.clientEmail} onChange={e => setEditForm({ ...editForm, clientEmail: e.target.value })} />
+            </div>
+
+            <div className="grid gap-2">
+              <Label>Notas</Label>
+              <Input value={editForm.notes} onChange={e => setEditForm({ ...editForm, notes: e.target.value })} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEditModal(false)}>Cancelar</Button>
+            <Button onClick={handleUpdateBooking} disabled={actionLoading}>Guardar Cambios</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
