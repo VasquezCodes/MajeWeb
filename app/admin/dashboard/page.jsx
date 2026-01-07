@@ -60,6 +60,8 @@ function DashboardContent() {
   // Modals State
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [showManualModal, setShowManualModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState({ title: '', description: '' });
 
   // Block Day Form
   const [blockDate, setBlockDate] = useState('');
@@ -166,7 +168,6 @@ function DashboardContent() {
       });
 
       if (res.ok) {
-        alert('Reserva manual creada exitosamente (Email enviado).');
         setShowManualModal(false);
         setManualForm({
           clientName: '', clientEmail: '', clientPhone: '',
@@ -175,6 +176,11 @@ function DashboardContent() {
           amountPaid: '', totalPrice: '', notes: ''
         });
         loadData();
+        setSuccessMessage({
+          title: '¡Reserva Creada!',
+          description: 'Se ha registrado el pago y enviado el email de confirmación correctamente.'
+        });
+        setShowSuccessModal(true);
       } else {
         const d = await res.json();
         alert(d.error || 'Falló la creación');
@@ -350,15 +356,15 @@ function DashboardContent() {
 
               return (
                 <Card key={date} className={`overflow-hidden ${blocked ? 'border-orange-200 bg-orange-50/30' : ''}`}>
-                  <div className="p-4 sm:p-6 bg-secondary/20 border-b flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div className="flex items-center gap-3">
-                      <Badge variant={blocked ? "destructive" : "outline"} className="h-8 text-base px-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-secondary/20 border-b p-4 sm:p-6">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <Badge variant={blocked ? "destructive" : "outline"} className="h-8 text-sm sm:text-base px-3 whitespace-nowrap">
                         {formatDate(date)}
                       </Badge>
                       {blocked && (
-                        <span className="text-sm font-medium text-orange-700 flex items-center gap-1">
-                          <Ban className="h-3 w-3" />
-                          Bloqueado: {blocked.reason}
+                        <span className="text-sm font-medium text-orange-700 flex items-center gap-1 break-words">
+                          <Ban className="h-3 w-3 flex-shrink-0" />
+                          <span className="break-all sm:break-normal">Bloqueado: {blocked.reason}</span>
                         </span>
                       )}
                     </div>
@@ -598,7 +604,27 @@ function DashboardContent() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+
+      {/* Success Modal */}
+      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 mb-4">
+              <Check className="h-6 w-6 text-green-600" />
+            </div>
+            <DialogTitle className="text-center text-xl">{successMessage.title}</DialogTitle>
+            <DialogDescription className="text-center pt-2">
+              {successMessage.description}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-center">
+            <Button onClick={() => setShowSuccessModal(false)} className="w-full sm:w-auto min-w-[120px]">
+              Entendido
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div >
   );
 }
 
