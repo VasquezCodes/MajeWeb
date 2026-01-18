@@ -7,6 +7,7 @@ import { Resend } from 'resend';
 // ===== Configuración Resend =====
 const EMAIL_FROM = process.env.EMAIL_FROM || 'Maje Nail Spa <onboarding@resend.dev>';
 const OWNER_EMAIL = process.env.OWNER_EMAIL || '';
+const OWNER_PHONE = '+1 (321) 314-5268'; // Teléfono de contacto de la dueña
 
 let resend = null;
 if (process.env.RESEND_API_KEY) {
@@ -28,12 +29,12 @@ function formatearFecha(dateStr) {
     } catch { return dateStr; }
 }
 
-function htmlComprador({ comprador, items, totalCents, currency, cartSummary = [], bookingDates = {}, packageInfo = null, paymentType = 'full' }) {
+function htmlComprador({ comprador, items, totalCents, currency, cartSummary = [], bookingDates = {}, packageInfo = null, paymentType = 'full', isPresencial = false, whatsappGroupUrl = null }) {
     return `
     <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
       <h2 style="color:#E91E63">¡Gracias por tu compra${comprador?.name ? ', ' + comprador.name : ''}!</h2>
       <p>Tu inscripción manual fue confirmada tras verificar tu transferencia.</p>
-      ${comprador?.phone ? `<p style="margin:8px 0"><strong>Teléfono de contacto:</strong> ${comprador.phone}</p>` : ''}
+      <p style="margin:8px 0"><strong>Teléfono de contacto:</strong> ${OWNER_PHONE}</p>
   
       ${packageInfo ? `
       <div style="background:linear-gradient(135deg, #FFC107 0%, #FF9800 100%);padding:12px;border-radius:10px;margin:12px 0">
@@ -58,6 +59,14 @@ function htmlComprador({ comprador, items, totalCents, currency, cartSummary = [
       </ul>
       <p style="font-size:18px;margin-top:12px"><strong>${paymentType === 'reservation' ? 'Reserva Pagada (Manual):' : 'Total Pagado (Manual):'}</strong> ${money(totalCents, currency)}</p>
       ${paymentType === 'reservation' && cartSummary.length > 0 ? `<p style="font-size:14px;color:#666;margin:8px 0">El saldo restante se debe abonar 3 días antes de la clase.</p>` : ''}
+      
+      ${isPresencial && whatsappGroupUrl ? `
+      <div style="background:#25D366;padding:16px;border-radius:10px;margin:16px 0;text-align:center">
+        <p style="margin:0 0 12px;color:#fff;font-weight:bold;font-size:16px">📱 ¡Únete al grupo de la clase!</p>
+        <a href="${whatsappGroupUrl}" target="_blank" style="display:inline-block;background:#fff;color:#25D366;padding:12px 24px;border-radius:25px;text-decoration:none;font-weight:bold;font-size:14px">Unirme al Grupo de WhatsApp</a>
+      </div>
+      ` : ''}
+      
       <p style="margin-top:18px">En breve te contactaremos para coordinar detalles. 💅</p>
     </div>`;
 }
@@ -149,11 +158,23 @@ export async function POST(req) {
             notes: notes || ''
         };
 
+        // Variable para guardar la URL del grupo de WhatsApp
+        let whatsappGroupUrl = null;
+
         if (isPresencial) {
             // Logic for Presencial Courses: Increment Enrolled
             if (serviceId && serviceId !== 'manual_id') {
                 try {
-                    await adminDb.collection('presencial_courses').doc(serviceId).update({
+                    const courseRef = adminDb.collection('presencial_courses').doc(serviceId);
+                    const courseDoc = await courseRef.get();
+                    if (courseDoc.exists) {
+                        const courseData = courseDoc.data();
+                        // Guardar la URL del grupo de WhatsApp si existe
+                        if (courseData.whatsappGroupUrl) {
+                            whatsappGroupUrl = courseData.whatsappGroupUrl;
+                        }
+                    }
+                    await courseRef.update({
                         enrolled: FieldValue.increment(1)
                     });
                 } catch (err) {
@@ -202,7 +223,9 @@ export async function POST(req) {
                         currency,
                         cartSummary,
                         bookingDates,
-                        paymentType
+                        paymentType,
+                        isPresencial,
+                        whatsappGroupUrl
                     }),
                 });
                 // Notify Owner

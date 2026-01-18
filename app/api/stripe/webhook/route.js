@@ -10,6 +10,7 @@ import { Resend } from 'resend';
 // ===== Configuración Resend =====
 const EMAIL_FROM = process.env.EMAIL_FROM || 'Maje Nail Spa <onboarding@resend.dev>';
 const OWNER_EMAIL = process.env.OWNER_EMAIL || '';
+const OWNER_PHONE = '+1 (321) 314-5268'; // Teléfono de contacto de la dueña
 
 let resend = null;
 if (process.env.RESEND_API_KEY) {
@@ -36,7 +37,7 @@ function formatearFecha(dateStr) {
   } catch { return dateStr; }
 }
 
-async function enviarEmails({ comprador, items, totalCents, currency, orderId, cartSummary, bookingDates, packageInfo, paymentType }) {
+async function enviarEmails({ comprador, items, totalCents, currency, orderId, cartSummary, bookingDates, packageInfo, paymentType, isPresencialClass, whatsappGroupUrl }) {
   if (!resend) return;
 
   // Cliente
@@ -46,7 +47,7 @@ async function enviarEmails({ comprador, items, totalCents, currency, orderId, c
         from: EMAIL_FROM,
         to: comprador.email,
         subject: 'Confirmación de compra - Mentorías Maje Nail Spa',
-        html: htmlComprador({ comprador, items, totalCents, currency, cartSummary, bookingDates, packageInfo, paymentType }),
+        html: htmlComprador({ comprador, items, totalCents, currency, cartSummary, bookingDates, packageInfo, paymentType, isPresencialClass, whatsappGroupUrl }),
       });
       console.log('📤 Email cliente:', comprador.email);
     } catch (e) {
@@ -70,12 +71,12 @@ async function enviarEmails({ comprador, items, totalCents, currency, orderId, c
   }
 }
 
-function htmlComprador({ comprador, items, totalCents, currency, cartSummary = [], bookingDates = {}, packageInfo = null, paymentType = 'full' }) {
+function htmlComprador({ comprador, items, totalCents, currency, cartSummary = [], bookingDates = {}, packageInfo = null, paymentType = 'full', isPresencialClass = false, whatsappGroupUrl = null }) {
   return `
   <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">
     <h2 style="color:#E91E63">¡Gracias por tu compra${comprador?.name ? ', ' + comprador.name : ''}!</h2>
-    <p>Tu inscripción para las siguientes mentorías fue confirmada:</p>
-    ${comprador?.phone ? `<p style="margin:8px 0"><strong>Teléfono de contacto:</strong> ${comprador.phone}</p>` : ''}
+    <p>Tu inscripción para las siguientes ${isPresencialClass ? 'clases' : 'mentorías'} fue confirmada:</p>
+    <p style="margin:8px 0"><strong>Teléfono de contacto:</strong> ${OWNER_PHONE}</p>
 
     ${packageInfo ? `
     <div style="background:linear-gradient(135deg, #FFC107 0%, #FF9800 100%);padding:12px;border-radius:10px;margin:12px 0">
@@ -104,6 +105,14 @@ function htmlComprador({ comprador, items, totalCents, currency, cartSummary = [
     </ul>
     <p style="font-size:18px;margin-top:12px"><strong>${paymentType === 'reservation' ? 'Reserva Pagada (30%):' : 'Total Pagado:'}</strong> ${money(totalCents, currency)}</p>
     ${paymentType === 'reservation' && cartSummary.length > 0 ? `<p style="font-size:14px;color:#666;margin:8px 0">El saldo restante se debe abonar 3 días antes de la clase. Se te comunicará por interno.</p>` : ''}
+    
+    ${isPresencialClass && whatsappGroupUrl ? `
+    <div style="background:#25D366;padding:16px;border-radius:10px;margin:16px 0;text-align:center">
+      <p style="margin:0 0 12px;color:#fff;font-weight:bold;font-size:16px">📱 ¡Únete al grupo de la clase!</p>
+      <a href="${whatsappGroupUrl}" target="_blank" style="display:inline-block;background:#fff;color:#25D366;padding:12px 24px;border-radius:25px;text-decoration:none;font-weight:bold;font-size:14px">Unirme al Grupo de WhatsApp</a>
+    </div>
+    ` : ''}
+    
     <p style="margin-top:18px">En breve te contactaremos para coordinar detalles. 💅</p>
   </div>`;
 }
@@ -314,11 +323,22 @@ export async function POST(req) {
       source: 'stripe-webhook',
     });
 
+    // Variable para guardar la URL del grupo de WhatsApp
+    let whatsappGroupUrl = null;
+
     if (isPresencialClass && cartSummary) {
       console.log('Procesando reserva Presencial para', orderId);
       for (const item of cartSummary) {
-        // Increment enrolled
+        // Increment enrolled y obtener la URL del grupo de WhatsApp
         const courseRef = adminDb.collection('presencial_courses').doc(item.id);
+        const courseDoc = await courseRef.get();
+        if (courseDoc.exists) {
+          const courseData = courseDoc.data();
+          // Guardar la URL del grupo de WhatsApp si existe
+          if (courseData.whatsappGroupUrl) {
+            whatsappGroupUrl = courseData.whatsappGroupUrl;
+          }
+        }
         await courseRef.update({
           enrolled: FieldValue.increment(1)
         });
@@ -418,7 +438,7 @@ export async function POST(req) {
 
     console.log('✅ Guardado en Firestore (orders & bookings):', orderId);
 
-    await enviarEmails({ comprador, items, totalCents: total, currency, orderId, cartSummary, bookingDates, packageInfo, paymentType });
+    await enviarEmails({ comprador, items, totalCents: total, currency, orderId, cartSummary, bookingDates, packageInfo, paymentType, isPresencialClass, whatsappGroupUrl });
 
     return NextResponse.json({ ok: true });
   } catch (err) {
