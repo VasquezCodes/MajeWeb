@@ -18,7 +18,7 @@ const pasarelas = [
     ],
     cta: "Ver programas 2026",
     ctaUrl: "/presencial",
-    image: "/nuevasImg/clasesGrupalesFechas.jpeg",
+    image: "/nuevasImg/clasesGrupalesINFO.jpeg",
     imagePosition: "right"
   },
   {
