@@ -40,10 +40,25 @@ export default function PresencialPage() {
     useEffect(() => {
         const q = query(collection(db, 'presencial_courses'));
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            const coursesData = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            }));
+            const coursesData = snapshot.docs.map(doc => {
+                const data = doc.data();
+                const id = doc.id;
+
+                // Override for Manicura Rusa High Level
+                if (id.includes('manicura')) {
+                    return {
+                        id,
+                        ...data,
+                        dates: '14-15 Marzo',
+                        startDate: '2026-03-14' // Ensure correct sorting
+                    };
+                }
+
+                return {
+                    id,
+                    ...data
+                };
+            });
             // Sort by startDate
             coursesData.sort((a, b) => (a.startDate || '').localeCompare(b.startDate || ''));
             setCourses(coursesData);
@@ -123,7 +138,7 @@ export default function PresencialPage() {
     // fallback images mapping in case DB isn't updated instantly for the user's session
     const getImage = (course) => {
         // Enforce the new images based on ID if the DB one is old or missing
-        if (course.id.includes('manicura')) return '/carruselMaje/manicuraRusa.jpg';
+        if (course.id.includes('manicura')) return '/nuevasImg/manicuraRusaFecha.jpeg';
         if (course.id.includes('dual')) return '/carruselMaje/sistemaDual.jpg';
         if (course.id.includes('poly')) return '/carruselMaje/polyGel.jpg';
         return course.image || '/placeholder.jpg';

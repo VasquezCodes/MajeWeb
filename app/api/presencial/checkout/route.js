@@ -24,7 +24,13 @@ export async function POST(req) {
         }
 
         const courseData = courseDoc.data();
-        const { title, price: originalPrice, capacity, enrolled } = courseData;
+        let { title, price: originalPrice, capacity, enrolled } = courseData;
+
+        // Override for Manicura Rusa High Level
+        if (courseId.includes('manicura')) {
+            courseData.startDate = '2026-03-14';
+            courseData.dates = '14-15 Marzo';
+        }
 
         // Lógica de Preventa: Si es antes del 17 de Enero 2026 y el precio es $800, cobrar $750
         const now = new Date();

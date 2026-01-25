@@ -18,7 +18,7 @@ const pasarelas = [
     ],
     cta: "Ver programas 2026",
     ctaUrl: "/presencial",
-    image: "/carruselMaje/2312_1.jpg",
+    image: "/nuevasImg/clasesGrupalesFechas.jpeg",
     imagePosition: "right"
   },
   {
@@ -80,7 +80,7 @@ export default function HomePage() {
           {/* Background Image */}
           <div className="absolute inset-0">
             <Image
-              src="/sesionFotosMaje/IMG_0192.jpg"
+              src="/nuevasImg/nuevoHero.jpg"
               alt="Mariajesus Matos fundadora de Maje Nail Spa"
               fill
               className="object-cover object-center opacity-90"
