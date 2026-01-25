@@ -103,9 +103,6 @@ export default function HomePage() {
               <p>
                 Soy Mariajesus Matos, fundadora y creadora de una marca dedicada a elevar el nivel de la industria de las uñas a través de formación y servicios especializados.
               </p>
-              <p>
-                Aquí encontrarás programas presenciales, mentorías VIP y procesos de aprendizaje diseñados para manicuristas que desean perfeccionar su técnica, trabajar con intención y construir una carrera sólida, con criterio y seguridad profesional.
-              </p>
             </div>
 
             <div className="pt-12 flex flex-col items-center gap-4 animate-bounce">
