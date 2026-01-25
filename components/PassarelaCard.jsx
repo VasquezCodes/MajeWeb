@@ -27,17 +27,33 @@ export default function PassarelaCard({
                     {/* --- IMAGEN --- */}
                     <div className="w-full lg:w-1/2 relative h-[500px] md:h-[60vh] lg:h-auto order-1 lg:order-none p-0">
                         <div className="w-full h-full relative">
-                            <Image
-                                src={image}
-                                alt={title}
-                                fill
-                                className="object-cover object-center transition-transform duration-[1.5s] hover:scale-105"
-                                priority={index === 0}
-                                sizes="(max-width: 768px) 100vw, 50vw"
-                            />
-
-                            {/* Gradiente para mobile para transición suave a blanco */}
-                            <div className="lg:hidden absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-brand-white to-transparent" />
+                            {ctaUrl ? (
+                                <Link href={ctaUrl} className="block w-full h-full relative cursor-pointer group">
+                                    <Image
+                                        src={image}
+                                        alt={title}
+                                        fill
+                                        className="object-cover object-center transition-transform duration-[1.5s] hover:scale-105"
+                                        priority={index === 0}
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                    />
+                                    {/* Gradiente para mobile para transición suave a blanco */}
+                                    <div className="lg:hidden absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-brand-white to-transparent pointer-events-none" />
+                                </Link>
+                            ) : (
+                                <>
+                                    <Image
+                                        src={image}
+                                        alt={title}
+                                        fill
+                                        className="object-cover object-center transition-transform duration-[1.5s] hover:scale-105"
+                                        priority={index === 0}
+                                        sizes="(max-width: 768px) 100vw, 50vw"
+                                    />
+                                    {/* Gradiente para mobile para transición suave a blanco */}
+                                    <div className="lg:hidden absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-brand-white to-transparent" />
+                                </>
+                            )}
                         </div>
                     </div>
 
