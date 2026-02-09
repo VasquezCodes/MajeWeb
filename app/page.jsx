@@ -85,7 +85,9 @@ export default function HomePage() {
               fill
               className="object-cover object-center opacity-90"
               priority
-              sizes="100vw"
+              quality={90}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
+              unoptimized={false}
             />
             {/* Gradient Overlay for better visibility of text while keeping face clear */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent" />
