@@ -7,6 +7,7 @@ const nextConfig = {
     // Tamaños adicionales para imágenes más pequeñas
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     // Calidad por defecto más alta para imágenes premium
+    qualities: [75, 90],
     remotePatterns: [
       {
         protocol: "https",

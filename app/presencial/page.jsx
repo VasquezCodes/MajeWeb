@@ -54,11 +54,16 @@ export default function PresencialPage() {
                     };
                 }
 
+                // Filtering out specific courses
+                if (id.includes('dual') || id.includes('poly')) {
+                    return null;
+                }
+
                 return {
                     id,
                     ...data
                 };
-            });
+            }).filter(Boolean);
             // Sort by startDate
             coursesData.sort((a, b) => (a.startDate || '').localeCompare(b.startDate || ''));
             setCourses(coursesData);

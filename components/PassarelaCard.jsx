@@ -15,6 +15,8 @@ export default function PassarelaCard({
     ctaUrl,
     image,
     imagePosition = 'right',
+    imageObjectFit = 'object-cover',
+    imageObjectPosition = 'object-center',
     index = 0,
 }) {
     const isImageRight = imagePosition === 'right';
@@ -33,12 +35,11 @@ export default function PassarelaCard({
                                         src={image}
                                         alt={title}
                                         fill
-                                        className="object-cover object-center transition-transform duration-[1.5s] hover:scale-105"
+                                        className={`transition-transform duration-[1.5s] hover:scale-105 ${imageObjectFit} ${imageObjectPosition}`}
                                         priority={index === 0}
                                         sizes="(max-width: 768px) 100vw, 50vw"
+                                        unoptimized={true}
                                     />
-                                    {/* Gradiente para mobile para transición suave a blanco */}
-                                    <div className="lg:hidden absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-brand-white to-transparent pointer-events-none" />
                                 </Link>
                             ) : (
                                 <>
@@ -46,12 +47,11 @@ export default function PassarelaCard({
                                         src={image}
                                         alt={title}
                                         fill
-                                        className="object-cover object-center transition-transform duration-[1.5s] hover:scale-105"
+                                        className={`transition-transform duration-[1.5s] hover:scale-105 ${imageObjectFit} ${imageObjectPosition}`}
                                         priority={index === 0}
                                         sizes="(max-width: 768px) 100vw, 50vw"
+                                        unoptimized={true}
                                     />
-                                    {/* Gradiente para mobile para transición suave a blanco */}
-                                    <div className="lg:hidden absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-brand-white to-transparent" />
                                 </>
                             )}
                         </div>

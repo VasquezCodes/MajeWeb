@@ -12,14 +12,15 @@ const pasarelas = [
     title: "Formación Presencial 2026",
     subtitle: "Clases Grupales",
     description: [
-      "Entrenamientos diseñados para manicuristas que desean aprender con profundidad, estructura y acompañamiento real.",
-      "Cada programa está enfocado en perfeccionar la técnica, ganar seguridad en mesa y desarrollar un criterio profesional que se refleja en resultados, confianza y valor.",
-      "Aquí no vienes a improvisar. Vienes a formarte con intención."
+      "Entrenamientos diseñados para manicuristas que no se conforman con lo básico y buscan absoluta precisión en su trabajo.",
+      "Dominarás la Manicura Rusa High Level con estructura y criterio, ganando la seguridad necesaria para ofrecer acabados impecables que fidelizan clientes.",
+      "Aquí no vienes a improvisar. Vienes a convertirte en una experta."
     ],
     cta: "Ver programas 2026",
     ctaUrl: "/presencial",
-    image: "/nuevasImg/clasesGrupalesINFO.jpeg",
-    imagePosition: "right"
+    image: "/nuevasImg/nuevaImagenMaria.jpeg",
+    imagePosition: "right",
+    imageObjectPosition: "object-[center_25%]"
   },
   {
     title: "Programas y Mentorías VIP",
