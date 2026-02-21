@@ -6,11 +6,10 @@ import stripe from "@/lib/stripe";
 // Helper para convertir imágenes locales a URLs absolutas (si es necesario)
 function toHttpsAbsolute(url) {
   if (!url || typeof url !== "string") return undefined;
-  if (url.startsWith("https://")) return url;
+  if (url.startsWith("https://")) return encodeURI(url);
   if (url.startsWith("/")) {
-    // Reemplaza esto con tu URL de producción o una URL de ngrok/tunnel para pruebas
     const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-    return `${base}${url}`;
+    return encodeURI(`${base}${url}`);
   }
   return undefined;
 }

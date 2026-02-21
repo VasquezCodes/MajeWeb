@@ -6,10 +6,10 @@ import stripe from "@/lib/stripe";
 // Helper para convertir imágenes locales a URLs absolutas
 function toHttpsAbsolute(url) {
   if (!url || typeof url !== "string") return undefined;
-  if (url.startsWith("https://")) return url;
+  if (url.startsWith("https://")) return encodeURI(url);
   if (url.startsWith("/")) {
-    const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"; 
-    return `${base}${url}`;
+    const base = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    return encodeURI(`${base}${url}`);
   }
   return undefined;
 }
@@ -18,15 +18,15 @@ function toHttpsAbsolute(url) {
 export async function POST(req) {
   try {
     const { cart, bookingDates, packageInfo } = await req.json();
-    
+
     if (!Array.isArray(cart) || cart.length === 0) {
       return NextResponse.json({ error: "El carrito está vacío." }, { status: 400 });
     }
 
     // Validación de fechas
     if (!bookingDates || typeof bookingDates !== 'object' || cart.some(item => !bookingDates[item.id])) {
-      return NextResponse.json({ 
-        error: "Debe seleccionar una fecha para CADA mentoría." 
+      return NextResponse.json({
+        error: "Debe seleccionar una fecha para CADA mentoría."
       }, { status: 400 });
     }
 
@@ -76,12 +76,12 @@ export async function POST(req) {
     metadata.full_prices = cart.map(item => item.price).join(',');
     metadata.reservation_amounts = cart.map(item => (item.price * RESERVATION_PERCENT).toFixed(2)).join(',');
     metadata.remaining = cart.map(item => (item.price * (1 - RESERVATION_PERCENT)).toFixed(2)).join(',');
-    
+
     // Guardar fechas de reserva de forma compacta
     const datesCompact = Object.entries(bookingDates)
       .map(([id, date]) => `${id}:${date}`)
       .join('|');
-    
+
     // Si las fechas son muy largas, dividirlas en múltiples campos
     if (datesCompact.length > 500) {
       const chunks = datesCompact.match(/.{1,450}/g) || [];
@@ -91,7 +91,7 @@ export async function POST(req) {
     } else {
       metadata.booking_dates = datesCompact;
     }
-    
+
     // Guardar títulos de forma compacta (solo si cabe)
     const titlesCompact = cart.map(item => item.title.substring(0, 30)).join('|');
     if (titlesCompact.length <= 500) {
@@ -141,9 +141,9 @@ export async function POST(req) {
     return NextResponse.json({ url: session.url, sessionId: session.id });
   } catch (err) {
     console.error("Error creando sesión de checkout de reserva:", err);
-    return NextResponse.json({ 
+    return NextResponse.json({
       error: "No se pudo crear la sesión",
-      details: err.message 
+      details: err.message
     }, { status: 500 });
   }
 }
