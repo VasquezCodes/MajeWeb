@@ -14,9 +14,10 @@ import { Analytics } from "@vercel/analytics/next";
 export default function MainLayout({ children }) {
     const pathname = usePathname();
     const isStudio = pathname?.startsWith("/studio");
+    const isAdmin = pathname?.startsWith("/admin");
 
-    // Si estamos en /studio, renderizar solo el contenido sin layout
-    if (isStudio) {
+    // Si estamos en /studio o /admin, renderizar solo el contenido sin layout
+    if (isStudio || isAdmin) {
         return <>{children}</>;
     }
 

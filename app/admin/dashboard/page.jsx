@@ -22,7 +22,6 @@ import {
   Pencil
 } from 'lucide-react';
 
-// Shadcn Components
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -46,60 +45,791 @@ import {
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 
+/* ─── Design System ─────────────────────────────────────────────────── */
+const dashStyles = `
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
+
+  :root {
+    --adm-bg:        #FAF7F4;
+    --adm-surface:   #FFFFFF;
+    --adm-surface2:  #F5F0EC;
+    --adm-border:    #EDE5DF;
+    --adm-rose:      #DA8695;
+    --adm-rose-dk:   #C4717F;
+    --adm-sage:      #A8B5A0;
+    --adm-sage-dk:   #7E9674;
+    --adm-beige:     #E1AA96;
+    --adm-text:      #2D2D2D;
+    --adm-text-md:   #6A6A6A;
+    --adm-text-sm:   #9E9E9E;
+    --adm-green:     #7AAD8A;
+    --adm-amber:     #D4956A;
+    --adm-red:       #C4717F;
+    --adm-font-disp: 'Playfair Display', serif;
+    --adm-font-ui:   'DM Sans', sans-serif;
+    --adm-radius:    14px;
+    --adm-shadow:    0 2px 8px rgba(0,0,0,0.05), 0 8px 24px rgba(0,0,0,0.04);
+    --adm-shadow-lg: 0 4px 12px rgba(0,0,0,0.08), 0 16px 48px rgba(0,0,0,0.07);
+  }
+
+  /* Layout */
+  .adm-root {
+    min-height: 100vh;
+    background: var(--adm-bg);
+    font-family: var(--adm-font-ui);
+    color: var(--adm-text);
+  }
+
+  /* ── Header ── */
+  .adm-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--adm-border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+
+  .adm-header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .adm-brand-title {
+    font-family: var(--adm-font-disp);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--adm-text);
+    letter-spacing: -0.02em;
+    margin: 0;
+    line-height: 1;
+  }
+
+  .adm-brand-sub {
+    font-size: 0.72rem;
+    color: var(--adm-sage);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0;
+    margin-top: 2px;
+  }
+
+  .adm-header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .adm-user-email {
+    font-size: 0.82rem;
+    color: var(--adm-text-md);
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .adm-user-email { display: block; }
+  }
+
+  .adm-logout-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: 8px;
+    border: 1.5px solid var(--adm-border);
+    background: transparent;
+    color: var(--adm-text-md);
+    font-size: 0.82rem;
+    font-family: var(--adm-font-ui);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .adm-logout-btn:hover {
+    border-color: var(--adm-rose);
+    color: var(--adm-rose);
+    background: rgba(218,134,149,0.05);
+  }
+
+  /* ── Main ── */
+  .adm-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  /* ── Stats ── */
+  .adm-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .adm-stats-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  .adm-stat-card {
+    background: var(--adm-surface);
+    border: 1px solid var(--adm-border);
+    border-radius: var(--adm-radius);
+    padding: 1.25rem 1.5rem;
+    box-shadow: var(--adm-shadow);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+  }
+
+  .adm-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--adm-shadow-lg);
+  }
+
+  .adm-stat-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--adm-text-sm);
+    font-weight: 500;
+    margin: 0 0 0.5rem;
+  }
+
+  .adm-stat-num {
+    font-family: var(--adm-font-disp);
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1;
+    margin: 0 0 0.3rem;
+  }
+
+  .adm-stat-num.rose { color: var(--adm-rose); }
+  .adm-stat-num.sage { color: var(--adm-sage-dk); }
+  .adm-stat-num.beige { color: var(--adm-amber); }
+
+  .adm-stat-desc {
+    font-size: 0.78rem;
+    color: var(--adm-text-sm);
+    margin: 0;
+  }
+
+  .adm-stat-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .adm-stat-icon.rose { background: rgba(218,134,149,0.12); color: var(--adm-rose); }
+  .adm-stat-icon.sage { background: rgba(168,181,160,0.15); color: var(--adm-sage-dk); }
+  .adm-stat-icon.beige { background: rgba(225,170,150,0.15); color: var(--adm-amber); }
+
+  /* ── Actions ── */
+  .adm-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  @media (min-width: 640px) {
+    .adm-actions { flex-direction: row; }
+  }
+
+  .adm-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.7rem 1.4rem;
+    border-radius: 10px;
+    border: none;
+    background: var(--adm-rose);
+    color: #fff;
+    font-family: var(--adm-font-ui);
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(218,134,149,0.28);
+    transition: background 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+  }
+
+  .adm-btn-primary:hover {
+    background: var(--adm-rose-dk);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(218,134,149,0.38);
+  }
+
+  .adm-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.7rem 1.4rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--adm-sage);
+    background: transparent;
+    color: var(--adm-sage-dk);
+    font-family: var(--adm-font-ui);
+    font-size: 0.88rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .adm-btn-secondary:hover {
+    background: rgba(168,181,160,0.1);
+    border-color: var(--adm-sage-dk);
+    transform: translateY(-1px);
+  }
+
+  /* ── Section Title ── */
+  .adm-section-title {
+    font-family: var(--adm-font-disp);
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--adm-text);
+    letter-spacing: -0.02em;
+    margin: 0 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .adm-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--adm-border);
+  }
+
+  /* ── Date Cards ── */
+  .adm-date-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .adm-date-card {
+    background: var(--adm-surface);
+    border: 1px solid var(--adm-border);
+    border-radius: var(--adm-radius);
+    overflow: hidden;
+    box-shadow: var(--adm-shadow);
+    animation: cardIn 0.4s ease both;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .adm-date-card.blocked {
+    border-color: rgba(212,149,106,0.4);
+  }
+
+  .adm-date-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    background: var(--adm-surface2);
+    padding: 0.875rem 1.25rem;
+    border-bottom: 1px solid var(--adm-border);
+  }
+
+  .adm-date-header.blocked {
+    background: #FFF6EF;
+    border-bottom-color: rgba(212,149,106,0.25);
+  }
+
+  .adm-date-title {
+    font-family: var(--adm-font-disp);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--adm-text);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .adm-date-left {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+
+  .adm-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.28rem 0.7rem;
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .adm-badge.blocked-badge {
+    background: rgba(212,149,106,0.15);
+    color: var(--adm-amber);
+    border: 1px solid rgba(212,149,106,0.3);
+  }
+
+  .adm-badge.full {
+    background: rgba(122,173,138,0.15);
+    color: var(--adm-green);
+    border: 1px solid rgba(122,173,138,0.3);
+  }
+
+  .adm-badge.reserved {
+    background: rgba(225,170,150,0.15);
+    color: var(--adm-beige);
+    border: 1px solid rgba(225,170,150,0.3);
+  }
+
+  .adm-badge.manual {
+    background: rgba(168,181,160,0.12);
+    color: var(--adm-sage-dk);
+    border: 1px solid rgba(168,181,160,0.25);
+  }
+
+  .adm-unblock-btn {
+    padding: 0.3rem 0.75rem;
+    border-radius: 7px;
+    border: 1px solid rgba(212,149,106,0.4);
+    background: transparent;
+    color: var(--adm-amber);
+    font-family: var(--adm-font-ui);
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .adm-unblock-btn:hover {
+    background: rgba(212,149,106,0.1);
+  }
+
+  /* ── Booking Row ── */
+  .adm-booking-row {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem;
+    border-bottom: 1px solid var(--adm-border);
+    transition: background 0.15s ease;
+  }
+
+  .adm-booking-row:last-child {
+    border-bottom: none;
+  }
+
+  .adm-booking-row:hover {
+    background: rgba(250,247,244,0.6);
+  }
+
+  @media (min-width: 768px) {
+    .adm-booking-row {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+
+  .adm-booking-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .adm-booking-service {
+    font-family: var(--adm-font-disp);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--adm-text);
+    margin: 0 0 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .adm-booking-meta {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+
+  @media (min-width: 480px) {
+    .adm-booking-meta { grid-template-columns: 1fr 1fr; }
+  }
+
+  .adm-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--adm-text-md);
+  }
+
+  .adm-meta-item svg {
+    width: 13px;
+    height: 13px;
+    color: var(--adm-sage);
+    flex-shrink: 0;
+  }
+
+  .adm-note-chip {
+    display: inline-block;
+    margin-top: 0.5rem;
+    padding: 0.3rem 0.7rem;
+    background: #F5EDE6;
+    border-radius: 7px;
+    font-size: 0.78rem;
+    font-style: italic;
+    color: #7A6055;
+    border: 1px solid rgba(225,170,150,0.25);
+    max-width: 100%;
+    word-break: break-word;
+  }
+
+  /* ── Payment Panel ── */
+  .adm-payment-panel {
+    min-width: 180px;
+    background: var(--adm-surface2);
+    border-radius: 10px;
+    border: 1px solid var(--adm-border);
+    padding: 0.875rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .adm-payment-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .adm-payment-key {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--adm-text-sm);
+    font-weight: 600;
+  }
+
+  .adm-payment-val {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--adm-text);
+  }
+
+  .adm-payment-val.paid { color: var(--adm-green); }
+  .adm-payment-val.pending { color: var(--adm-amber); }
+
+  .adm-payment-divider {
+    height: 1px;
+    background: var(--adm-border);
+    margin: 0.15rem 0;
+  }
+
+  .adm-payment-badge-wrap {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.25rem;
+  }
+
+  /* ── Action Buttons Column ── */
+  .adm-row-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    align-items: center;
+    border-top: 1px solid var(--adm-border);
+    padding-top: 0.75rem;
+    margin-top: 0;
+  }
+
+  @media (min-width: 768px) {
+    .adm-row-actions {
+      flex-direction: column;
+      border-top: none;
+      padding-top: 0;
+      align-items: flex-end;
+    }
+  }
+
+  .adm-icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--adm-border);
+    background: var(--adm-surface);
+    color: var(--adm-text-md);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .adm-icon-btn:hover {
+    border-color: var(--adm-rose);
+    color: var(--adm-rose);
+    background: rgba(218,134,149,0.06);
+  }
+
+  .adm-icon-btn.danger:hover {
+    border-color: var(--adm-red);
+    color: var(--adm-red);
+    background: rgba(196,113,127,0.06);
+  }
+
+  /* ── Empty / Loading ── */
+  .adm-empty {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--adm-text-sm);
+    border: 1.5px dashed var(--adm-border);
+    border-radius: var(--adm-radius);
+    background: var(--adm-surface);
+    font-size: 0.9rem;
+  }
+
+  .adm-loading-root {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--adm-bg);
+    font-family: var(--adm-font-ui);
+  }
+
+  .adm-loading-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .adm-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(218,134,149,0.2);
+    border-top-color: var(--adm-rose);
+    border-radius: 50%;
+    animation: adminSpin 0.75s linear infinite;
+  }
+
+  @keyframes adminSpin { to { transform: rotate(360deg); } }
+
+  .adm-loading-text {
+    font-size: 0.88rem;
+    color: var(--adm-text-md);
+    margin: 0;
+  }
+
+  /* ── Dialog overrides for admin ── */
+  .adm-dialog-section {
+    background: var(--adm-surface2);
+    border: 1px solid var(--adm-border);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .adm-dialog-section-title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--adm-sage-dk);
+    margin: 0 0 0.75rem;
+  }
+
+  .adm-blocked-reason {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--adm-amber);
+  }
+
+  /* ── Filter Bar ── */
+  .adm-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .adm-filter-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.9rem;
+    background: var(--adm-surface);
+    border: 1.5px solid var(--adm-border);
+    border-radius: 9px;
+    font-family: var(--adm-font-ui);
+    font-size: 0.85rem;
+    color: var(--adm-text);
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+  }
+
+  .adm-filter-date:focus {
+    outline: none;
+    border-color: var(--adm-rose);
+    box-shadow: 0 0 0 3px rgba(218,134,149,0.1);
+  }
+
+  .adm-filter-clear {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 9px;
+    border: 1px solid var(--adm-border);
+    background: transparent;
+    color: var(--adm-text-sm);
+    font-family: var(--adm-font-ui);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .adm-filter-clear:hover {
+    border-color: var(--adm-rose);
+    color: var(--adm-rose);
+    background: rgba(218,134,149,0.05);
+  }
+
+  .adm-filter-result {
+    font-size: 0.79rem;
+    color: var(--adm-text-sm);
+  }
+
+  /* ── Group Divider ── */
+  .adm-group-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .adm-group-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
+
+  .adm-group-label.upcoming { color: var(--adm-rose); }
+  .adm-group-label.past     { color: var(--adm-text-sm); }
+
+  .adm-group-line {
+    flex: 1;
+    height: 1px;
+    background: var(--adm-border);
+  }
+
+  .adm-group-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.65rem;
+    border-radius: 7px;
+    border: 1px solid var(--adm-border);
+    background: transparent;
+    color: var(--adm-text-sm);
+    font-family: var(--adm-font-ui);
+    font-size: 0.74rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .adm-group-toggle:hover {
+    background: var(--adm-surface2);
+    color: var(--adm-text);
+  }
+
+  .adm-past-section {
+    opacity: 0.75;
+  }
+
+  .adm-date-card.past {
+    border-style: dashed;
+  }
+
+  .adm-date-header.past {
+    background: var(--adm-bg);
+  }
+
+  .adm-date-title.past {
+    color: var(--adm-text-md);
+  }
+`;
+
+/* ═══════════════════════════════════════════════════════════════════ */
+
 function DashboardContent() {
   const { user, logout } = useAuth();
   const router = useRouter();
 
-  // Data State
   const [bookings, setBookings] = useState([]);
   const [blockedDays, setBlockedDays] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  // Actions State
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Modals State
+  // Filter & grouping state
+  const [filterDate, setFilterDate] = useState('');
+  const [pastCollapsed, setPastCollapsed] = useState(true);
+
   const [showBlockModal, setShowBlockModal] = useState(false);
   const [showManualModal, setShowManualModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState({ title: '', description: '' });
 
-  // Block Day Form
   const [blockDate, setBlockDate] = useState('');
   const [blockReason, setBlockReason] = useState('');
 
-  // Manual Booking Form
   const [manualForm, setManualForm] = useState({
-    clientName: '',
-    clientEmail: '',
-    clientPhone: '',
-    serviceType: 'mentoria', // mentoria, presencial, custom
-    serviceName: 'Mentoria 1:1',
-
-    serviceId: 'manual_service',
-    bookingDate: '',
-    paymentType: 'full', // full, reservation
-    amountPaid: '',
-    totalPrice: '',
-    notes: ''
+    clientName: '', clientEmail: '', clientPhone: '',
+    serviceType: 'mentoria', serviceName: 'Mentoria 1:1',
+    serviceId: 'manual_service', bookingDate: '',
+    paymentType: 'full', amountPaid: '', totalPrice: '', notes: ''
   });
 
-  // Edit Form State
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({
-    clientName: '',
-    clientEmail: '',
-    clientPhone: '',
-    serviceName: '',
-    amountPaid: '',
-    totalPrice: '',
-    notes: ''
+    clientName: '', clientEmail: '', clientPhone: '',
+    serviceName: '', amountPaid: '', totalPrice: '', notes: ''
   });
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
     setLoading(true);
@@ -108,10 +838,8 @@ function DashboardContent() {
         fetch('/api/admin/bookings'),
         fetch('/api/admin/blocked-days'),
       ]);
-
       const bookingsData = await bookingsRes.json();
       const blockedData = await blockedRes.json();
-
       setBookings(bookingsData.bookings || []);
       setBlockedDays(blockedData.blockedDays || []);
     } catch (error) {
@@ -122,20 +850,14 @@ function DashboardContent() {
   };
 
   const handleLogout = async () => {
-    try {
-      await logout();
-      router.push('/admin/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+    try { await logout(); router.push('/admin/login'); }
+    catch (error) { console.error('Logout error:', error); }
   };
 
-  // --- Handlers: Edit Booking ---
   const handleOpenEdit = (booking) => {
     setEditingId(booking.id);
     const paid = (booking.pricePaid || 0) / 100;
     const total = (booking.price || 0) / 100;
-
     setEditForm({
       clientName: booking.buyer?.name || booking.clientName || '',
       clientEmail: booking.buyer?.email || booking.clientEmail || '',
@@ -152,10 +874,8 @@ function DashboardContent() {
     if (!editingId) return;
     setActionLoading(true);
     try {
-      // Parse with fallback to 0
       const paidVal = parseFloat(editForm.amountPaid || '0');
       const totalVal = parseFloat(editForm.totalPrice || '0');
-
       const payload = {
         id: editingId,
         clientName: editForm.clientName,
@@ -166,83 +886,57 @@ function DashboardContent() {
         price: Math.round(totalVal * 100),
         pricePaid: Math.round(paidVal * 100),
       };
-
       const res = await fetch('/api/admin/bookings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-
       if (res.ok) {
         setShowEditModal(false);
-        setSuccessMessage({
-          title: 'Reserva Actualizada',
-          description: 'Los datos han sido guardados correctamente.'
-        });
+        setSuccessMessage({ title: 'Reserva Actualizada', description: 'Los datos han sido guardados correctamente.' });
         setShowSuccessModal(true);
         loadData();
       } else {
         alert('Error al actualizar');
       }
     } catch (e) {
-      console.error(e);
-      alert('Error de conexión');
+      console.error(e); alert('Error de conexión');
     } finally {
       setActionLoading(false);
     }
   };
 
-  // --- Handlers: Bookings ---
-
   const handleCancelBooking = async (bookingId) => {
     if (!confirm('¿Estás segura de cancelar esta reserva? Esta acción es irreversible.')) return;
-
     setActionLoading(true);
     try {
       const res = await fetch(`/api/admin/bookings?id=${bookingId}`, { method: 'DELETE' });
-      if (res.ok) {
-        loadData();
-      } else {
-        const data = await res.json();
-        alert(data.error || 'Error al cancelar');
-      }
-    } catch (error) {
-      alert('Error de conexión');
-    } finally {
-      setActionLoading(false);
-    }
+      if (res.ok) { loadData(); }
+      else { const data = await res.json(); alert(data.error || 'Error al cancelar'); }
+    } catch (error) { alert('Error de conexión'); }
+    finally { setActionLoading(false); }
   };
 
   const handleManualBookingSubmit = async () => {
     setActionLoading(true);
     try {
       const finalServiceName = manualForm.serviceName;
-      const finalDate = manualForm.bookingDate || null; // Allow no date
-
-      // Convert to cents
+      const finalDate = manualForm.bookingDate || null;
       const amountPaidCents = Math.round(parseFloat(manualForm.amountPaid) * 100);
       const totalPriceCents = Math.round(parseFloat(manualForm.totalPrice) * 100);
-
       const payload = {
-        clientName: manualForm.clientName,
-        clientEmail: manualForm.clientEmail,
-        clientPhone: manualForm.clientPhone,
-        serviceId: manualForm.serviceId || 'manual_id',
-        serviceName: finalServiceName,
-        bookingDate: finalDate,
-        paymentType: manualForm.paymentType,
-        amountPaid: amountPaidCents,
-        totalPrice: totalPriceCents,
-        notes: manualForm.notes,
+        clientName: manualForm.clientName, clientEmail: manualForm.clientEmail,
+        clientPhone: manualForm.clientPhone, serviceId: manualForm.serviceId || 'manual_id',
+        serviceName: finalServiceName, bookingDate: finalDate,
+        paymentType: manualForm.paymentType, amountPaid: amountPaidCents,
+        totalPrice: totalPriceCents, notes: manualForm.notes,
         isPresencial: manualForm.serviceType === 'presencial'
       };
-
       const res = await fetch('/api/admin/manual-booking', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-
       if (res.ok) {
         setShowManualModal(false);
         setManualForm({
@@ -252,24 +946,17 @@ function DashboardContent() {
           amountPaid: '', totalPrice: '', notes: ''
         });
         loadData();
-        setSuccessMessage({
-          title: '¡Reserva Creada!',
-          description: 'Se ha registrado el pago y enviado el email de confirmación correctamente.'
-        });
+        setSuccessMessage({ title: '¡Reserva Creada!', description: 'Se ha registrado el pago y enviado el email de confirmación correctamente.' });
         setShowSuccessModal(true);
       } else {
-        const d = await res.json();
-        alert(d.error || 'Falló la creación');
+        const d = await res.json(); alert(d.error || 'Falló la creación');
       }
     } catch (e) {
-      console.error(e);
-      alert('Error conectando con servidor');
+      console.error(e); alert('Error conectando con servidor');
     } finally {
       setActionLoading(false);
     }
   };
-
-  // --- Handlers: Block Days ---
 
   const handleBlockDay = async () => {
     if (!blockDate) return alert('Selecciona fecha');
@@ -281,16 +968,9 @@ function DashboardContent() {
         body: JSON.stringify({ date: blockDate, reason: blockReason }),
       });
       if (res.ok) {
-        setShowBlockModal(false);
-        setBlockDate('');
-        setBlockReason('');
-        loadData();
-      } else {
-        alert('Error al bloquear');
-      }
-    } finally {
-      setActionLoading(false);
-    }
+        setShowBlockModal(false); setBlockDate(''); setBlockReason(''); loadData();
+      } else { alert('Error al bloquear'); }
+    } finally { setActionLoading(false); }
   };
 
   const handleUnblockDay = async (date) => {
@@ -299,12 +979,9 @@ function DashboardContent() {
     try {
       const res = await fetch(`/api/admin/blocked-days?date=${date}`, { method: 'DELETE' });
       if (res.ok) loadData();
-    } finally {
-      setActionLoading(false);
-    }
+    } finally { setActionLoading(false); }
   };
 
-  // --- Helpers ---
   const formatDate = (dateStr) => {
     if (!dateStr) return '';
     try {
@@ -314,9 +991,8 @@ function DashboardContent() {
     } catch { return dateStr; }
   };
 
-  const formatMoney = (cents) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
-  };
+  const formatMoney = (cents) =>
+    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
 
   const getPaymentStatus = (booking) => {
     const total = booking.price || 0;
@@ -324,12 +1000,11 @@ function DashboardContent() {
     const remaining = total - paid;
     return {
       total, paid, remaining,
-      isPaidFull: remaining <= 50, // tolerance for rounding
+      isPaidFull: remaining <= 50,
       isReserved: paid > 0 && remaining > 50
     };
   };
 
-  // --- Processing Data ---
   const bookingsByDate = bookings.reduce((acc, booking) => {
     const date = booking.bookingDate || 'Sin Fecha';
     if (!acc[date]) acc[date] = [];
@@ -339,436 +1014,640 @@ function DashboardContent() {
 
   const allDates = [...new Set([...Object.keys(bookingsByDate), ...blockedDays.map(b => b.date)])].sort();
 
+  // Today's date as YYYY-MM-DD (local)
+  const todayStr = (() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  })();
+
+  // Apply date filter
+  const filteredDates = filterDate
+    ? allDates.filter(d => d === filterDate)
+    : allDates;
+
+  // Split into upcoming (>= today or 'Sin Fecha') and past (< today)
+  const upcomingDates = filteredDates.filter(d => d === 'Sin Fecha' || d >= todayStr);
+  const pastDates = filteredDates.filter(d => d !== 'Sin Fecha' && d < todayStr);
+
+  /* ── Loading ── */
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-900 border-t-transparent" />
-          <p className="font-medium text-gray-500">Cargando dashboard...</p>
+      <>
+        <style>{dashStyles}</style>
+        <div className="adm-loading-root">
+          <div className="adm-loading-inner">
+            <div className="adm-spinner" />
+            <p className="adm-loading-text">Cargando dashboard...</p>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
+  /* ── Render ── */
   return (
-    <div className="min-h-screen bg-gray-50/50">
-      {/* Navbar */}
-      <header className="sticky top-0 z-40 w-full border-b bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60">
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold tracking-tight">Admin Connect</h1>
-            <p className="text-xs text-muted-foreground">Maje Nail Spa</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium hidden sm:inline-block">{user?.email}</span>
-            <Button variant="outline" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Salir
-            </Button>
-          </div>
-        </div>
-      </header>
+    <>
+      <style>{dashStyles}</style>
+      <div className="adm-root">
 
-      <main className="container mx-auto px-4 py-8 space-y-8">
-
-        {/* Stats Row */}
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Reservas Totales</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{bookings.length}</div>
-              <p className="text-xs text-muted-foreground">Registros activos</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Días Bloqueados</CardTitle>
-              <Ban className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{blockedDays.length}</div>
-              <p className="text-xs text-muted-foreground">No disponibles al público</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Fechas Ocupadas</CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{allDates.filter(d => d !== 'Sin Fecha').length}</div>
-              <p className="text-xs text-muted-foreground">Días con actividad</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Actions Bar */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Button onClick={() => setShowManualModal(true)} className="bg-black hover:bg-zinc-800 text-white shadow-lg">
-            <Plus className="h-4 w-4 mr-2" />
-            Nueva Reserva Manual
-          </Button>
-          <Button variant="secondary" onClick={() => setShowBlockModal(true)}>
-            <Ban className="h-4 w-4 mr-2" />
-            Bloquear Día
-          </Button>
-        </div>
-
-        {/* Content Feed */}
-        <div className="space-y-6">
-          <h2 className="text-xl font-bold tracking-tight">Agenda & Actividad</h2>
-
-          {allDates.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground bg-white rounded-xl border border-dashed">
-              No hay actividad registrada.
+        {/* ── Header ── */}
+        <header className="adm-header">
+          <div className="adm-header-inner">
+            <div>
+              <h1 className="adm-brand-title">Admin Connect</h1>
+              <p className="adm-brand-sub">Maje Nail Spa</p>
             </div>
-          ) : (
-            allDates.map(date => {
-              const dateBookings = bookingsByDate[date] || [];
-              const blocked = blockedDays.find(b => b.date === date);
+            <div className="adm-header-right">
+              <span className="adm-user-email">{user?.email}</span>
+              <button className="adm-logout-btn" onClick={handleLogout}>
+                <LogOut size={13} />
+                Salir
+              </button>
+            </div>
+          </div>
+        </header>
 
-              return (
-                <Card key={date} className={`overflow-hidden ${blocked ? 'border-orange-200 bg-orange-50/30' : ''}`}>
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-secondary/20 border-b p-4 sm:p-6">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <Badge variant={blocked ? "destructive" : "outline"} className="h-8 text-sm sm:text-base px-3 whitespace-nowrap">
-                        {formatDate(date)}
-                      </Badge>
-                      {blocked && (
-                        <span className="text-sm font-medium text-orange-700 flex items-center gap-1 break-words">
-                          <Ban className="h-3 w-3 flex-shrink-0" />
-                          <span className="break-all sm:break-normal">Bloqueado: {blocked.reason}</span>
-                        </span>
-                      )}
-                    </div>
-                    {blocked && (
-                      <Button variant="ghost" size="sm" onClick={() => handleUnblockDay(date)} className="text-orange-600 hover:text-orange-700 hover:bg-orange-100">
-                        Desbloquear
-                      </Button>
-                    )}
-                  </div>
+        <main className="adm-main">
 
-                  <CardContent className="p-0">
-                    {dateBookings.length > 0 ? (
-                      <div className="divide-y">
-                        {dateBookings.map(booking => {
-                          const status = getPaymentStatus(booking);
-                          return (
-                            <div key={booking.id} className="p-4 sm:p-6 hover:bg-zinc-50 transition-colors flex flex-col md:flex-row gap-4">
-                              {/* Client Info */}
-                              <div className="flex-1 space-y-1">
-                                <div className="flex items-center gap-2">
-                                  <h3 className="font-bold text-lg">{booking.serviceName}</h3>
-                                  {booking.source === 'manual-admin' && <Badge variant="secondary">Manual</Badge>}
-                                </div>
-
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 text-sm text-muted-foreground mt-2">
-                                  <div className="flex items-center gap-2">
-                                    <Users className="h-3 w-3" />
-                                    {booking.buyer?.name || booking.clientName}
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Mail className="h-3 w-3" />
-                                    {booking.buyer?.email || booking.clientEmail}
-                                  </div>
-                                  <div className="flex items-center gap-2">
-                                    <Phone className="h-3 w-3" />
-                                    {booking.buyer?.phone || booking.clientPhone}
-                                  </div>
-                                </div>
-                                {booking.notes && (
-                                  <p className="text-xs bg-yellow-50 p-2 rounded mt-2 text-yellow-800 border border-yellow-100">
-                                    Nota: {booking.notes}
-                                  </p>
-                                )}
-                              </div>
-
-                              {/* Payment Info */}
-                              <div className="flex flex-col gap-2 min-w-[200px] bg-secondary/10 p-3 rounded-lg border border-secondary/20">
-                                <div className="flex justify-between items-center">
-                                  <span className="text-xs font-medium uppercase text-muted-foreground">Total</span>
-                                  <span className="font-bold">{formatMoney(status.total)}</span>
-                                </div>
-                                <div className="flex justify-between items-center text-green-700">
-                                  <span className="text-xs font-medium uppercase">Pagado</span>
-                                  <span className="font-bold flex items-center gap-1">
-                                    <Check className="h-3 w-3" />
-                                    {formatMoney(status.paid)}
-                                  </span>
-                                </div>
-                                {status.remaining > 0 && (
-                                  <div className="flex justify-between items-center text-orange-600 border-t pt-2 mt-1">
-                                    <span className="text-xs font-bold uppercase">Pendiente</span>
-                                    <span className="font-bold">{formatMoney(status.remaining)}</span>
-                                  </div>
-                                )}
-                                <div className="mt-2 text-right">
-                                  <Badge variant={status.isPaidFull ? "default" : "outline"} className={status.isPaidFull ? "bg-green-600 hover:bg-green-700" : "text-blue-600 border-blue-600"}>
-                                    {status.isPaidFull ? 'COMPLETADO' : 'RESERVADO 30%'}
-                                  </Badge>
-                                </div>
-                              </div>
-
-                              {/* Actions */}
-                              <div className="flex flex-row md:flex-col justify-end gap-2 border-t pt-4 md:pt-0 md:border-t-0 mt-2 md:mt-0">
-                                <Button variant="outline" size="icon" onClick={() => handleOpenEdit(booking)} title="Editar Reserva">
-                                  <Pencil className="h-4 w-4 text-zinc-600" />
-                                </Button>
-                                <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700 hover:bg-red-50" onClick={() => handleCancelBooking(booking.id)} title="Cancelar Reserva">
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    ) : (
-                      <div className="p-6 text-sm text-center text-muted-foreground">
-                        Sin reservas (solo día bloqueado).
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              )
-            })
-          )}
-        </div>
-      </main>
-
-      {/* Manual Booking Modal */}
-      <Dialog open={showManualModal} onOpenChange={setShowManualModal}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Nueva Reserva Manual (Zelle / Cash)</DialogTitle>
-            <DialogDescription>
-              Registra un pago realizado por fuera de Stripe. Se enviará email de confirmación.
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="grid gap-6 py-4">
-            {/* Cliente */}
-            <div className="grid gap-4 p-4 border rounded-lg bg-gray-50/50">
-              <h3 className="font-semibold text-sm">Datos del Cliente</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Nombre Completo</Label>
-                  <Input placeholder="Ej: María Pérez" value={manualForm.clientName} onChange={e => setManualForm({ ...manualForm, clientName: e.target.value })} />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Teléfono</Label>
-                  <Input placeholder="+1..." value={manualForm.clientPhone} onChange={e => setManualForm({ ...manualForm, clientPhone: e.target.value })} />
-                </div>
-                <div className="grid gap-2 sm:col-span-2">
-                  <Label>Email (para confirmación)</Label>
-                  <Input type="email" placeholder="cliente@email.com" value={manualForm.clientEmail} onChange={e => setManualForm({ ...manualForm, clientEmail: e.target.value })} />
-                </div>
+          {/* ── Stats ── */}
+          <div className="adm-stats-grid">
+            <div className="adm-stat-card">
+              <div>
+                <p className="adm-stat-label">Reservas Totales</p>
+                <p className="adm-stat-num rose">{bookings.length}</p>
+                <p className="adm-stat-desc">Registros activos</p>
+              </div>
+              <div className="adm-stat-icon rose">
+                <Calendar size={18} />
               </div>
             </div>
+            <div className="adm-stat-card">
+              <div>
+                <p className="adm-stat-label">Días Bloqueados</p>
+                <p className="adm-stat-num sage">{blockedDays.length}</p>
+                <p className="adm-stat-desc">No disponibles al público</p>
+              </div>
+              <div className="adm-stat-icon sage">
+                <Ban size={18} />
+              </div>
+            </div>
+            <div className="adm-stat-card">
+              <div>
+                <p className="adm-stat-label">Fechas Ocupadas</p>
+                <p className="adm-stat-num beige">{allDates.filter(d => d !== 'Sin Fecha').length}</p>
+                <p className="adm-stat-desc">Días con actividad</p>
+              </div>
+              <div className="adm-stat-icon beige">
+                <CheckCircle2 size={18} />
+              </div>
+            </div>
+          </div>
 
-            {/* Servicio */}
-            <div className="grid gap-4 p-4 border rounded-lg">
-              <h3 className="font-semibold text-sm">Servicio & Fecha</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Tipo de Servicio</Label>
-                  <Select value={manualForm.serviceType} onValueChange={v => setManualForm({ ...manualForm, serviceType: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="mentoria">Mentoria Online (1:1)</SelectItem>
-                      <SelectItem value="presencial">Clase Presencial</SelectItem>
-                      <SelectItem value="custom">Otro / Personalizado</SelectItem>
-                    </SelectContent>
-                  </Select>
+          {/* ── Actions ── */}
+          <div className="adm-actions">
+            <button className="adm-btn-primary" onClick={() => setShowManualModal(true)}>
+              <Plus size={15} />
+              Nueva Reserva Manual
+            </button>
+            <button className="adm-btn-secondary" onClick={() => setShowBlockModal(true)}>
+              <Ban size={15} />
+              Bloquear Día
+            </button>
+          </div>
+
+          {/* ── Filter Bar ── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <span style={{
+              fontFamily: 'var(--adm-font-ui)',
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              color: 'var(--adm-text-md)',
+              whiteSpace: 'nowrap',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}>
+              Filtrar por día:
+            </span>
+            <input
+              type="date"
+              className="adm-filter-date"
+              value={filterDate}
+              onChange={e => setFilterDate(e.target.value)}
+            />
+            {filterDate && (
+              <button className="adm-filter-clear" onClick={() => setFilterDate('')}>
+                <X size={12} />
+                Limpiar filtro
+              </button>
+            )}
+            {filterDate && (
+              <span className="adm-filter-result">
+                {filteredDates.length === 0 ? 'Sin resultados' : `${filteredDates.length} día(s)`}
+              </span>
+            )}
+          </div>
+
+          {/* ── Agenda Feed ── */}
+          <div>
+            <h2 className="adm-section-title">Agenda & Actividad</h2>
+
+            {filteredDates.length === 0 ? (
+              <div className="adm-empty">
+                {filterDate ? `No hay actividad el ${filterDate}.` : 'No hay actividad registrada aún.'}
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+
+                {/* ── Upcoming / Active ── */}
+                {upcomingDates.length > 0 && (
+                  <div>
+                    {!filterDate && (
+                      <div className="adm-group-header">
+                        <span className="adm-group-label upcoming">Próximas</span>
+                        <div className="adm-group-line" />
+                      </div>
+                    )}
+                    <div className="adm-date-cards">
+                      {upcomingDates.map(date => {
+                        const dateBookings = bookingsByDate[date] || [];
+                        const blocked = blockedDays.find(b => b.date === date);
+                        return (
+                          <div key={date} className={`adm-date-card${blocked ? ' blocked' : ''}`}>
+
+                            {/* Date Header */}
+                            <div className={`adm-date-header${blocked ? ' blocked' : ''}`}>
+                              <div className="adm-date-left">
+                                <h3 className="adm-date-title">{formatDate(date) || date}</h3>
+                                {blocked && (
+                                  <span className="adm-blocked-reason">
+                                    <Ban size={12} />
+                                    Bloqueado: {blocked.reason}
+                                  </span>
+                                )}
+                              </div>
+                              {blocked && (
+                                <button className="adm-unblock-btn" onClick={() => handleUnblockDay(date)}>
+                                  Desbloquear
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Bookings */}
+                            {dateBookings.length > 0 ? (
+                              <div>
+                                {dateBookings.map(booking => {
+                                  const status = getPaymentStatus(booking);
+                                  return (
+                                    <div key={booking.id} className="adm-booking-row">
+
+                                      {/* Info */}
+                                      <div className="adm-booking-info">
+                                        <p className="adm-booking-service">
+                                          {booking.serviceName}
+                                          {booking.source === 'manual-admin' && (
+                                            <span className="adm-badge manual">Manual</span>
+                                          )}
+                                        </p>
+                                        <div className="adm-booking-meta">
+                                          <span className="adm-meta-item">
+                                            <Users size={13} />
+                                            {booking.buyer?.name || booking.clientName}
+                                          </span>
+                                          <span className="adm-meta-item">
+                                            <Mail size={13} />
+                                            {booking.buyer?.email || booking.clientEmail}
+                                          </span>
+                                          <span className="adm-meta-item">
+                                            <Phone size={13} />
+                                            {booking.buyer?.phone || booking.clientPhone}
+                                          </span>
+                                        </div>
+                                        {booking.notes && (
+                                          <span className="adm-note-chip">📌 {booking.notes}</span>
+                                        )}
+                                      </div>
+
+                                      {/* Payment */}
+                                      <div className="adm-payment-panel">
+                                        <div className="adm-payment-row">
+                                          <span className="adm-payment-key">Total</span>
+                                          <span className="adm-payment-val">{formatMoney(status.total)}</span>
+                                        </div>
+                                        <div className="adm-payment-row">
+                                          <span className="adm-payment-key">Pagado</span>
+                                          <span className="adm-payment-val paid">{formatMoney(status.paid)}</span>
+                                        </div>
+                                        {status.remaining > 0 && (
+                                          <>
+                                            <div className="adm-payment-divider" />
+                                            <div className="adm-payment-row">
+                                              <span className="adm-payment-key">Pendiente</span>
+                                              <span className="adm-payment-val pending">{formatMoney(status.remaining)}</span>
+                                            </div>
+                                          </>
+                                        )}
+                                        <div className="adm-payment-badge-wrap">
+                                          <span className={`adm-badge ${status.isPaidFull ? 'full' : 'reserved'}`}>
+                                            {status.isPaidFull ? '✓ Completado' : 'Reservado 30%'}
+                                          </span>
+                                        </div>
+                                      </div>
+
+                                      {/* Actions */}
+                                      <div className="adm-row-actions">
+                                        <button
+                                          className="adm-icon-btn"
+                                          onClick={() => handleOpenEdit(booking)}
+                                          title="Editar Reserva"
+                                        >
+                                          <Pencil size={14} />
+                                        </button>
+                                        <button
+                                          className="adm-icon-btn danger"
+                                          onClick={() => handleCancelBooking(booking.id)}
+                                          title="Cancelar Reserva"
+                                        >
+                                          <Trash2 size={14} />
+                                        </button>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <p style={{ padding: '1rem 1.25rem', fontSize: '0.82rem', color: 'var(--adm-text-sm)', margin: 0 }}>
+                                Sin reservas — solo día bloqueado.
+                              </p>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Past ── */}
+                {!filterDate && pastDates.length > 0 && (
+                  <div className={pastCollapsed ? '' : 'adm-past-section'}>
+                    <div className="adm-group-header">
+                      <span className="adm-group-label past">Historial</span>
+                      <div className="adm-group-line" />
+                      <button
+                        className="adm-group-toggle"
+                        onClick={() => setPastCollapsed(c => !c)}
+                      >
+                        {pastCollapsed
+                          ? `Ver ${pastDates.length} reservas pasadas ↓`
+                          : 'Colapsar ↑'
+                        }
+                      </button>
+                    </div>
+                    {!pastCollapsed && (
+                      <div className="adm-date-cards">
+                        {pastDates.map(date => {
+                          const dateBookings = bookingsByDate[date] || [];
+                          const blocked = blockedDays.find(b => b.date === date);
+                          return (
+                            <div key={date} className={`adm-date-card past${blocked ? ' blocked' : ''}`}>
+                              <div className={`adm-date-header past${blocked ? ' blocked' : ''}`}>
+                                <div className="adm-date-left">
+                                  <h3 className="adm-date-title past">{formatDate(date) || date}</h3>
+                                  {blocked && (
+                                    <span className="adm-blocked-reason">
+                                      <Ban size={12} />
+                                      Bloqueado: {blocked.reason}
+                                    </span>
+                                  )}
+                                </div>
+                                {blocked && (
+                                  <button className="adm-unblock-btn" onClick={() => handleUnblockDay(date)}>
+                                    Desbloquear
+                                  </button>
+                                )}
+                              </div>
+                              {dateBookings.length > 0 ? (
+                                <div>
+                                  {dateBookings.map(booking => {
+                                    const status = getPaymentStatus(booking);
+                                    return (
+                                      <div key={booking.id} className="adm-booking-row">
+                                        <div className="adm-booking-info">
+                                          <p className="adm-booking-service">
+                                            {booking.serviceName}
+                                            {booking.source === 'manual-admin' && <span className="adm-badge manual">Manual</span>}
+                                          </p>
+                                          <div className="adm-booking-meta">
+                                            <span className="adm-meta-item"><Users size={13} />{booking.buyer?.name || booking.clientName}</span>
+                                            <span className="adm-meta-item"><Mail size={13} />{booking.buyer?.email || booking.clientEmail}</span>
+                                            <span className="adm-meta-item"><Phone size={13} />{booking.buyer?.phone || booking.clientPhone}</span>
+                                          </div>
+                                          {booking.notes && <span className="adm-note-chip">📌 {booking.notes}</span>}
+                                        </div>
+                                        <div className="adm-payment-panel">
+                                          <div className="adm-payment-row">
+                                            <span className="adm-payment-key">Total</span>
+                                            <span className="adm-payment-val">{formatMoney(status.total)}</span>
+                                          </div>
+                                          <div className="adm-payment-row">
+                                            <span className="adm-payment-key">Pagado</span>
+                                            <span className="adm-payment-val paid">{formatMoney(status.paid)}</span>
+                                          </div>
+                                          {status.remaining > 0 && (
+                                            <><div className="adm-payment-divider" />
+                                              <div className="adm-payment-row">
+                                                <span className="adm-payment-key">Pendiente</span>
+                                                <span className="adm-payment-val pending">{formatMoney(status.remaining)}</span>
+                                              </div></>
+                                          )}
+                                          <div className="adm-payment-badge-wrap">
+                                            <span className={`adm-badge ${status.isPaidFull ? 'full' : 'reserved'}`}>
+                                              {status.isPaidFull ? '✓ Completado' : 'Reservado 30%'}
+                                            </span>
+                                          </div>
+                                        </div>
+                                        <div className="adm-row-actions">
+                                          <button className="adm-icon-btn" onClick={() => handleOpenEdit(booking)} title="Editar">
+                                            <Pencil size={14} />
+                                          </button>
+                                          <button className="adm-icon-btn danger" onClick={() => handleCancelBooking(booking.id)} title="Cancelar">
+                                            <Trash2 size={14} />
+                                          </button>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              ) : (
+                                <p style={{ padding: '1rem 1.25rem', fontSize: '0.82rem', color: 'var(--adm-text-sm)', margin: 0 }}>
+                                  Sin reservas — solo día bloqueado.
+                                </p>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </main>
+
+        {/* ══════════════════════════════ MODALS ══════════════════════════════ */}
+
+        {/* Manual Booking */}
+        <Dialog open={showManualModal} onOpenChange={setShowManualModal}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="font-playfair" style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.2rem' }}>
+                Nueva Reserva Manual
+              </DialogTitle>
+              <DialogDescription>
+                Registra un pago por Zelle / Cash. Se enviará email de confirmación.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '0.5rem' }}>
+
+              {/* Cliente */}
+              <div className="adm-dialog-section">
+                <p className="adm-dialog-section-title">Datos del Cliente</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.875rem' }}>
+                  <div style={{ gridColumn: '1' }}>
+                    <Label style={{ fontSize: '0.78rem', color: 'var(--adm-text-md)' }}>Nombre Completo</Label>
+                    <Input className="mt-1" placeholder="Ej: María Pérez" value={manualForm.clientName}
+                      onChange={e => setManualForm({ ...manualForm, clientName: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label style={{ fontSize: '0.78rem', color: 'var(--adm-text-md)' }}>Teléfono</Label>
+                    <Input className="mt-1" placeholder="+1..." value={manualForm.clientPhone}
+                      onChange={e => setManualForm({ ...manualForm, clientPhone: e.target.value })} />
+                  </div>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <Label style={{ fontSize: '0.78rem', color: 'var(--adm-text-md)' }}>Email (para confirmación)</Label>
+                    <Input className="mt-1" type="email" placeholder="cliente@email.com" value={manualForm.clientEmail}
+                      onChange={e => setManualForm({ ...manualForm, clientEmail: e.target.value })} />
+                  </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label>Nombre del Servicio</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Escribe el nombre del servicio..."
-                      value={manualForm.serviceName}
-                      onChange={e => setManualForm({ ...manualForm, serviceName: e.target.value })}
-                    />
-                    <Select
-                      onValueChange={(v) => {
-                        setManualForm({
-                          ...manualForm,
-                          serviceName: v,
-                          totalPrice: v.includes('Presencial') ? '800' : '200'
-                        });
-                      }}
-                    >
-                      <SelectTrigger className="w-[40px] px-2">
-                        <span className="sr-only">Elegir</span>
-                        <Search className="h-4 w-4 opacity-50" />
-                      </SelectTrigger>
-                      <SelectContent align="end">
-                        <SelectItem value="Mentoria 1:1 - Nail Business">Mentoria Business</SelectItem>
-                        <SelectItem value="Mentoria 1:1 - Marketing">Mentoria Marketing</SelectItem>
-                        <SelectItem value="Clase Presencial Grupal">Clase Presencial</SelectItem>
-                        <SelectItem value="Taller de Diseño">Taller de Diseño</SelectItem>
+              </div>
+
+              {/* Servicio */}
+              <div className="adm-dialog-section">
+                <p className="adm-dialog-section-title">Servicio & Fecha</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.875rem' }}>
+                  <div>
+                    <Label style={{ fontSize: '0.78rem', color: 'var(--adm-text-md)' }}>Tipo de Servicio</Label>
+                    <Select value={manualForm.serviceType} onValueChange={v => setManualForm({ ...manualForm, serviceType: v })}>
+                      <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="mentoria">Mentoria Online (1:1)</SelectItem>
+                        <SelectItem value="presencial">Clase Presencial</SelectItem>
+                        <SelectItem value="custom">Otro / Personalizado</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
-                <div className="grid gap-2 sm:col-span-2">
-                  <Label>Fecha de Reserva (Opcional)</Label>
-                  <Input type="date" value={manualForm.bookingDate} onChange={e => setManualForm({ ...manualForm, bookingDate: e.target.value })} />
-                  <p className="text-[10px] text-muted-foreground">Si se deja vacío, no bloquea calendario.</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Pago */}
-            <div className="grid gap-4 p-4 border rounded-lg bg-green-50/30">
-              <h3 className="font-semibold text-sm">Detalles del Pago</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="grid gap-2">
-                  <Label>Tipo Pago</Label>
-                  <Select value={manualForm.paymentType} onValueChange={v => setManualForm({ ...manualForm, paymentType: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="full">Pago Completo</SelectItem>
-                      <SelectItem value="reservation">Reserva (30%)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="grid gap-2">
-                  <Label>Precio Total ($)</Label>
-                  <Input type="number" placeholder="0.00" value={manualForm.totalPrice} onChange={e => setManualForm({ ...manualForm, totalPrice: e.target.value })} />
-                </div>
-                <div className="grid gap-2">
-                  <Label>Pagado Hoy ($)</Label>
-                  <Input type="number" placeholder="0.00" value={manualForm.amountPaid} onChange={e => setManualForm({ ...manualForm, amountPaid: e.target.value })} />
+                  <div>
+                    <Label style={{ fontSize: '0.78rem', color: 'var(--adm-text-md)' }}>Nombre del Servicio</Label>
+                    <div className="mt-1" style={{ display: 'flex', gap: '0.5rem' }}>
+                      <Input placeholder="Nombre del servicio..." value={manualForm.serviceName}
+                        onChange={e => setManualForm({ ...manualForm, serviceName: e.target.value })} />
+                      <Select onValueChange={(v) => {
+                        setManualForm({ ...manualForm, serviceName: v, totalPrice: v.includes('Presencial') ? '800' : '200' });
+                      }}>
+                        <SelectTrigger style={{ width: '40px', padding: '0 8px' }}>
+                          <span className="sr-only">Elegir</span>
+                          <Search size={14} style={{ opacity: 0.5 }} />
+                        </SelectTrigger>
+                        <SelectContent align="end">
+                          <SelectItem value="Mentoria 1:1 - Nail Business">Mentoria Business</SelectItem>
+                          <SelectItem value="Mentoria 1:1 - Marketing">Mentoria Marketing</SelectItem>
+                          <SelectItem value="Clase Presencial Grupal">Clase Presencial</SelectItem>
+                          <SelectItem value="Taller de Diseño">Taller de Diseño</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div style={{ gridColumn: '1 / -1' }}>
+                    <Label style={{ fontSize: '0.78rem', color: 'var(--adm-text-md)' }}>Fecha de Reserva <span style={{ color: 'var(--adm-text-sm)' }}>(Opcional)</span></Label>
+                    <Input className="mt-1" type="date" value={manualForm.bookingDate}
+                      onChange={e => setManualForm({ ...manualForm, bookingDate: e.target.value })} />
+                    <p style={{ fontSize: '0.7rem', color: 'var(--adm-text-sm)', marginTop: '0.25rem' }}>Si se deja vacío, no bloquea calendario.</p>
+                  </div>
                 </div>
               </div>
-              <div className="grid gap-2">
-                <Label>Notas Internas</Label>
-                <Input placeholder="Ej: Pagó por Zelle ref 12345" value={manualForm.notes} onChange={e => setManualForm({ ...manualForm, notes: e.target.value })} />
-              </div>
-            </div>
-          </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowManualModal(false)}>Cancelar</Button>
-            <Button onClick={handleManualBookingSubmit} disabled={actionLoading}>
-              {actionLoading ? 'Procesando...' : 'Crear Reserva'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Block Day Modal */}
-      <Dialog open={showBlockModal} onOpenChange={setShowBlockModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Bloquear Día</DialogTitle>
-            <DialogDescription>Selecciona una fecha para cerrar la disponibilidad.</DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label>Fecha</Label>
-              <Input type="date" value={blockDate} onChange={e => setBlockDate(e.target.value)} />
-            </div>
-            <div className="grid gap-2">
-              <Label>Razón</Label>
-              <Input placeholder="Ej: Vacaciones" value={blockReason} onChange={e => setBlockReason(e.target.value)} />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowBlockModal(false)}>Cancelar</Button>
-            <Button onClick={handleBlockDay} disabled={actionLoading}>Bloquear</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Booking Modal */}
-      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Editar Reserva</DialogTitle>
-            <DialogDescription>Modifica los detalles del pago o del cliente.</DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2 border p-4 rounded bg-gray-50">
-              <h4 className="font-semibold text-sm">Estado del Pago</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="grid gap-2">
-                  <Label>Total ($)</Label>
-                  <Input type="number" value={editForm.totalPrice} onChange={e => setEditForm({ ...editForm, totalPrice: e.target.value })} />
+              {/* Pago */}
+              <div className="adm-dialog-section" style={{ background: 'rgba(122,173,138,0.06)', borderColor: 'rgba(122,173,138,0.25)' }}>
+                <p className="adm-dialog-section-title" style={{ color: 'var(--adm-green)' }}>Detalles del Pago</p>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.875rem' }}>
+                  <div>
+                    <Label style={{ fontSize: '0.78rem', color: 'var(--adm-text-md)' }}>Tipo Pago</Label>
+                    <Select value={manualForm.paymentType} onValueChange={v => setManualForm({ ...manualForm, paymentType: v })}>
+                      <SelectTrigger className="mt-1"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="full">Pago Completo</SelectItem>
+                        <SelectItem value="reservation">Reserva (30%)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label style={{ fontSize: '0.78rem', color: 'var(--adm-text-md)' }}>Precio Total ($)</Label>
+                    <Input className="mt-1" type="number" placeholder="0.00" value={manualForm.totalPrice}
+                      onChange={e => setManualForm({ ...manualForm, totalPrice: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label style={{ fontSize: '0.78rem', color: 'var(--adm-text-md)' }}>Pagado Hoy ($)</Label>
+                    <Input className="mt-1" type="number" placeholder="0.00" value={manualForm.amountPaid}
+                      onChange={e => setManualForm({ ...manualForm, amountPaid: e.target.value })} />
+                  </div>
                 </div>
-                <div className="grid gap-2">
-                  <Label>Pagado ($)</Label>
-                  <Input type="number" value={editForm.amountPaid} onChange={e => setEditForm({ ...editForm, amountPaid: e.target.value })} />
+                <div style={{ marginTop: '0.75rem' }}>
+                  <Label style={{ fontSize: '0.78rem', color: 'var(--adm-text-md)' }}>Notas Internas</Label>
+                  <Input className="mt-1" placeholder="Ej: Pagó por Zelle ref 12345" value={manualForm.notes}
+                    onChange={e => setManualForm({ ...manualForm, notes: e.target.value })} />
                 </div>
               </div>
-              <div className="flex justify-end mt-2">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setEditForm({ ...editForm, amountPaid: editForm.totalPrice })}
-                >
-                  Marcar Pagado Completo
-                </Button>
+            </div>
+
+            <DialogFooter className="mt-2">
+              <Button variant="outline" onClick={() => setShowManualModal(false)}>Cancelar</Button>
+              <Button
+                onClick={handleManualBookingSubmit}
+                disabled={actionLoading}
+                style={{ background: 'var(--adm-rose)', color: '#fff' }}
+              >
+                {actionLoading ? 'Procesando...' : 'Crear Reserva'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Block Day */}
+        <Dialog open={showBlockModal} onOpenChange={setShowBlockModal}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle style={{ fontFamily: 'Playfair Display, serif' }}>Bloquear Día</DialogTitle>
+              <DialogDescription>Selecciona una fecha para cerrar la disponibilidad.</DialogDescription>
+            </DialogHeader>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '0.5rem' }}>
+              <div>
+                <Label>Fecha</Label>
+                <Input className="mt-1" type="date" value={blockDate} onChange={e => setBlockDate(e.target.value)} />
+              </div>
+              <div>
+                <Label>Razón</Label>
+                <Input className="mt-1" placeholder="Ej: Vacaciones" value={blockReason} onChange={e => setBlockReason(e.target.value)} />
               </div>
             </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowBlockModal(false)}>Cancelar</Button>
+              <Button onClick={handleBlockDay} disabled={actionLoading}
+                style={{ background: 'var(--adm-sage-dk)', color: '#fff' }}>
+                Bloquear
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-            <div className="grid gap-2">
-              <Label>Nombre del Servicio</Label>
-              <Input value={editForm.serviceName} onChange={e => setEditForm({ ...editForm, serviceName: e.target.value })} />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="grid gap-2">
-                <Label>Nombre Cliente</Label>
-                <Input value={editForm.clientName} onChange={e => setEditForm({ ...editForm, clientName: e.target.value })} />
+        {/* Edit Booking */}
+        <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+          <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle style={{ fontFamily: 'Playfair Display, serif' }}>Editar Reserva</DialogTitle>
+              <DialogDescription>Modifica los detalles del pago o del cliente.</DialogDescription>
+            </DialogHeader>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', paddingTop: '0.5rem' }}>
+              <div className="adm-dialog-section" style={{ background: 'rgba(122,173,138,0.06)', borderColor: 'rgba(122,173,138,0.25)' }}>
+                <p className="adm-dialog-section-title" style={{ color: 'var(--adm-green)' }}>Estado del Pago</p>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+                  <div>
+                    <Label>Total ($)</Label>
+                    <Input className="mt-1" type="number" value={editForm.totalPrice}
+                      onChange={e => setEditForm({ ...editForm, totalPrice: e.target.value })} />
+                  </div>
+                  <div>
+                    <Label>Pagado ($)</Label>
+                    <Input className="mt-1" type="number" value={editForm.amountPaid}
+                      onChange={e => setEditForm({ ...editForm, amountPaid: e.target.value })} />
+                  </div>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.625rem' }}>
+                  <Button type="button" variant="outline" size="sm"
+                    onClick={() => setEditForm({ ...editForm, amountPaid: editForm.totalPrice })}>
+                    Marcar Pagado Completo
+                  </Button>
+                </div>
               </div>
-              <div className="grid gap-2">
-                <Label>Teléfono</Label>
-                <Input value={editForm.clientPhone} onChange={e => setEditForm({ ...editForm, clientPhone: e.target.value })} />
+
+              <div>
+                <Label>Nombre del Servicio</Label>
+                <Input className="mt-1" value={editForm.serviceName}
+                  onChange={e => setEditForm({ ...editForm, serviceName: e.target.value })} />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.875rem' }}>
+                <div>
+                  <Label>Nombre Cliente</Label>
+                  <Input className="mt-1" value={editForm.clientName}
+                    onChange={e => setEditForm({ ...editForm, clientName: e.target.value })} />
+                </div>
+                <div>
+                  <Label>Teléfono</Label>
+                  <Input className="mt-1" value={editForm.clientPhone}
+                    onChange={e => setEditForm({ ...editForm, clientPhone: e.target.value })} />
+                </div>
+              </div>
+              <div>
+                <Label>Email</Label>
+                <Input className="mt-1" value={editForm.clientEmail}
+                  onChange={e => setEditForm({ ...editForm, clientEmail: e.target.value })} />
+              </div>
+              <div>
+                <Label>Notas</Label>
+                <Input className="mt-1" value={editForm.notes}
+                  onChange={e => setEditForm({ ...editForm, notes: e.target.value })} />
               </div>
             </div>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowEditModal(false)}>Cancelar</Button>
+              <Button onClick={handleUpdateBooking} disabled={actionLoading}
+                style={{ background: 'var(--adm-rose)', color: '#fff' }}>
+                {actionLoading ? 'Guardando...' : 'Guardar Cambios'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-            <div className="grid gap-2">
-              <Label>Email</Label>
-              <Input value={editForm.clientEmail} onChange={e => setEditForm({ ...editForm, clientEmail: e.target.value })} />
-            </div>
+        {/* Success */}
+        <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <div style={{
+                width: 52, height: 52, borderRadius: '50%',
+                background: 'rgba(122,173,138,0.15)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto 1rem'
+              }}>
+                <Check size={22} style={{ color: 'var(--adm-green)' }} />
+              </div>
+              <DialogTitle style={{ textAlign: 'center', fontFamily: 'Playfair Display, serif', fontSize: '1.2rem' }}>
+                {successMessage.title}
+              </DialogTitle>
+              <DialogDescription style={{ textAlign: 'center', paddingTop: '0.25rem' }}>
+                {successMessage.description}
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter style={{ justifyContent: 'center' }}>
+              <Button onClick={() => setShowSuccessModal(false)}
+                style={{ minWidth: 120, background: 'var(--adm-rose)', color: '#fff' }}>
+                Entendido
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-            <div className="grid gap-2">
-              <Label>Notas</Label>
-              <Input value={editForm.notes} onChange={e => setEditForm({ ...editForm, notes: e.target.value })} />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditModal(false)}>Cancelar</Button>
-            <Button onClick={handleUpdateBooking} disabled={actionLoading}>Guardar Cambios</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Success Modal */}
-      <Dialog open={showSuccessModal} onOpenChange={setShowSuccessModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-green-100 mb-4">
-              <Check className="h-6 w-6 text-green-600" />
-            </div>
-            <DialogTitle className="text-center text-xl">{successMessage.title}</DialogTitle>
-            <DialogDescription className="text-center pt-2">
-              {successMessage.description}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="sm:justify-center">
-            <Button onClick={() => setShowSuccessModal(false)} className="w-full sm:w-auto min-w-[120px]">
-              Entendido
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div >
+      </div>
+    </>
   );
 }
 
