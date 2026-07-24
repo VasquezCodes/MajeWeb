@@ -407,3 +407,66 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* ============================================================
+   LANDING DE CAPTACIÓN (/) — utilidades de movimiento
+   ============================================================ */
+
+/* Marquee infinito (CSS puro) */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+/* Revelado tipográfico por máscara (hero): cada línea sube desde un overflow oculto */
+.reveal-mask {
+  overflow: hidden;
+  display: block;
+}
+
+.reveal-mask > span {
+  display: block;
+  transform: translateY(110%);
+  animation: revealUp 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes revealUp {
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Aparición simple para subtítulo / CTA del hero */
+.fade-in-rise {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInRise 0.9s ease-out forwards;
+}
+
+@keyframes fadeInRise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Accesibilidad: anular animaciones de la landing si el usuario lo pide */
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+  .reveal-mask > span,
+  .fade-in-rise {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+}

@@ -1,10 +1,17 @@
-import { Inter, Playfair_Display, Crimson_Text, Lato } from "next/font/google";
+import { Inter, Playfair_Display, Crimson_Text, Lato, Anton } from "next/font/google";
 import "./globals.css";
 import MainLayout from "../components/MainLayout";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+});
+
+// Display font para la landing (titulares de alto impacto)
+const anton = Anton({
+  variable: "--font-anton",
+  subsets: ["latin"],
+  weight: ["400"],
 });
 
 const playfairDisplay = Playfair_Display({
@@ -147,7 +154,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body
-        className={`${inter.variable} ${playfairDisplay.variable} ${crimsonText.variable} ${lato.variable} antialiased bg-brand-white text-brand-text`}
+        className={`${inter.variable} ${playfairDisplay.variable} ${crimsonText.variable} ${lato.variable} ${anton.variable} antialiased bg-brand-white text-brand-text`}
       >
         <MainLayout>{children}</MainLayout>
       </body>

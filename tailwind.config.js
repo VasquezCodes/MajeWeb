@@ -19,6 +19,16 @@ module.exports = {
 				'brand-text': '#2C2C2C',
 				'brand-text-light': '#808080',
 				'brand-accent': '#000000',
+				'whatsapp': '#25D366',
+				// Paleta "Atelier Spa" — landing de captación
+				'spa-cream': '#FBF7F2',     // papel cálido, fondo primario
+				'spa-sand': '#EFE6D9',      // arena, fondo secundario
+				'spa-espresso': '#2A1F1B',  // café oscuro, texto/fondos dramáticos (no negro puro)
+				'spa-mocha': '#7A6A5F',     // mocha, texto cuerpo/secundario
+				'spa-clay': '#C19479',      // arcilla cálida, acento principal
+				'spa-blush': '#E0BFB1',     // rosa cuarzo, acento suave
+				'spa-taupe': '#5C4E42',     // taupe medio, dramático cálido
+				'spa-taupe-dark': '#3F352D',// taupe oscuro, fondo hero editorial
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				card: {
@@ -65,6 +75,11 @@ module.exports = {
 					'var(--font-inter)',
 					'ui-sans-serif',
 					'system-ui'
+				],
+				display: [
+					'var(--font-anton)',
+					'Impact',
+					'sans-serif'
 				],
 				serif: [
 					'var(--font-playfair)',

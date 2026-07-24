@@ -15,9 +15,12 @@ export default function MainLayout({ children }) {
     const pathname = usePathname();
     const isStudio = pathname?.startsWith("/studio");
     const isAdmin = pathname?.startsWith("/admin");
+    // La landing de captación (/) trae su propio header/footer minimal y NO debe
+    // enlazar al lado de ventas, así que se renderiza sin el chrome global.
+    const isLanding = pathname === "/";
 
-    // Si estamos en /studio o /admin, renderizar solo el contenido sin layout
-    if (isStudio || isAdmin) {
+    // Si estamos en /studio, /admin o la landing, renderizar solo el contenido sin layout de ventas
+    if (isStudio || isAdmin || isLanding) {
         return <>{children}</>;
     }
 
